@@ -15,6 +15,7 @@ void inic_mapa(int i, char *ptab_mapa);
 void ekran_gry(int i, int j, int k, int linia, int ruch, int *ptab_stat, char *ptab_mapa);
 void reakcja(int i, int j, int k, int linia, int tab, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_mapa);
 void instrukcja(int i, int linia, int tab, int *ptab_legenda);
+void atrybut();
 void test(int i, int j, int *pzwrot, int *pruch, char *ptab_mapa);
 
 void ekran_koncowy(int linia, int tab, int *ptab_stat);
@@ -348,7 +349,11 @@ void ekran_gry(int i, int j, int k, int linia, int ruch, int *ptab_stat, char *p
 }
 
 void reakcja(int i, int j, int k, int linia, int tab, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_mapa) {
-    char tekst = ' '; //przechowuje tekst wpisany przez gracza
+    /*
+     * ptab_mapa2 - pomocniczy wskaznik na tablice tab_mapa
+     * tekst - przechowuje tekst wpisany przez gracza
+     */
+    char tekst = ' ', *ptab_mapa2;
 
     /*
      * wiersz, kolumna - polozenie elementu wybranego przez gracza
@@ -387,385 +392,65 @@ void reakcja(int i, int j, int k, int linia, int tab, int *pzwrot, int *pruch, i
             instrukcja(i, linia, tab, ptab_legenda);
             break;
         }
+            //Wybor atrybutu
+        else if (isdigit(tekst) && tekst != '0') {
+            for (j = 0; j < 5; j++) {
+                switch (j) {
+                    case 0:
+                        wiersz = tekst - 48;
+                        break;
+                    case 1:
+                        if (isdigit(tekst) && tekst != '0') wiersz = (wiersz * 10) + (tekst - 48);
+                        else if (tekst != ' ') break;
+                        else j = 5;
+                        break;
+                    case 2:
+                        if (isdigit(tekst) && tekst != '0') kolumna = tekst - 48;
+                        if (tekst != ' ');
+                        else j = 5;
+                        break;
+                    case 3:
+                        if (isdigit(tekst) && tekst != '0') kolumna = tekst - 48;
+                        else j = 5;
+                        break;
+                    case 4:
+                        kolumna = (kolumna * 10) + tekst - 48;
+                        j = 5;
+                        break;
+                    default:
+                        j = 5;
+                        break;
+                }
+                tekst = getchar();
+            }
+            if (tekst == '\n') {
+                //tab_mapa[wiersz - 1][kolumna - 1][0];
+                ptab_mapa += (kolumna - 1);
+                ptab_mapa += (wiersz - 1) * KOLUMNA;
+                ptab_mapa2 = ptab_mapa;
+                ptab_mapa2++;
+                printf("%c %c", *ptab_mapa, *ptab_mapa2);
+                if (*ptab_mapa == ' ' || *ptab_mapa2 == 'Z' ||
+                    wiersz > WIERSZ || kolumna > KOLUMNA)
+                    printf("\tTen element jest niedostepny!\n");
+                else {
+                    i = 3;
+                    //atrybut();
+                }
+            }
+            else {
+                printf("\tBledne wartosci!\n");
+                while (tekst != '\n') tekst = getchar();
+            }
+        }
         else if (tekst == 'p') {
             *pzwrot = 1;
             break;
         }
-        /*
-    //Wybor atrybutu
-    else if (isdigit(bug)) {
-        for (j = 0; j < 4; j++) {
-            if (isdigit(bug) && bug > 48 && bug < 58) {
-                switch (j) {
-                    case 0:
-                        wiersz = bug - 48;
-                        break;
-                    case 1:
-                        wiersz = (wiersz * 10) + (bug - 48);
-                        j--;
-                        break;
-                    case 2:
-                        kolumna = bug - 48;
-                        break;
-                    case 3:
-                        kolumna = (kolumna * 10) + bug - 48;
-                        break;
-                    default:
-                        break;
-                }
-            } else if (bug != ' ') break;
-            bug = getchar();
-        }
-        if (bug == '\n') {
-            if (tab_mapa[wiersz - 1][kolumna - 1][0] == ' ' ||
-                tab_mapa[wiersz - 1][kolumna - 1][1] == 'Z' ||
-                wiersz > WIERSZ || kolumna > KOLUMNA)
-                printf("\tTen element jest niedostepny!\n");
-                //Reakcja programu na wybranie wlasciwego elementu
-            else {
-                //Zakończenie pętli
-                i = 3;
-                //Zmiana statystyk i dezaktywacja elementu
-                switch (tab_mapa[wiersz - 1][kolumna - 1][0]) {
-                    //Zwykle atrybuty
-                    case 105:
-                        if (ruch < tab_legenda[0][1]) {
-                            printf("Za malo punktow ruchu!\n");
-                            i = 0;
-                        } else {
-                            ruch -= tab_legenda[0][1];
-                            tab_stat[0] += tab_legenda[0][0];
-                            tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
-                        }
-                        break;
-                    case 101:
-                        if (ruch < tab_legenda[0][1]) {
-                            printf("Za malo punktow ruchu!\n");
-                            i = 0;
-                        } else {
-                            ruch -= tab_legenda[0][1];
-                            tab_stat[1] += tab_legenda[0][0];
-                            tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
-                        }
-                        break;
-                    case 115:
-                        if (ruch < tab_legenda[0][1]) {
-                            printf("Za malo punktow ruchu!\n");
-                            i = 0;
-                        } else {
-                            ruch -= tab_legenda[0][1];
-                            tab_stat[2] += tab_legenda[0][0];
-                            tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
-                        }
-                        break;
-                    case 112:
-                        if (ruch < tab_legenda[0][1]) {
-                            printf("Za malo punktow ruchu!\n");
-                            i = 0;
-                        } else {
-                            ruch -= tab_legenda[0][1];
-                            tab_stat[3] += tab_legenda[0][0];
-                            tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
-                        }
-                        break;
-                    case 119:
-                        if (ruch < tab_legenda[0][1]) {
-                            printf("Za malo punktow ruchu!\n");
-                            i = 0;
-                        } else {
-                            ruch -= tab_legenda[0][1];
-                            tab_stat[4] += tab_legenda[0][0];
-                            tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
-                        }
-                        break;
-                    case 117:
-                        if (ruch < tab_legenda[0][1]) {
-                            printf("Za malo punktow ruchu!\n");
-                            i = 0;
-                        } else {
-                            ruch -= tab_legenda[0][1];
-                            tab_stat[5] += tab_legenda[0][0];
-                            tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
-                        }
-                        break;
-                        //Super atrybuty
-                    case 73:
-                        if (ruch < tab_legenda[1][1]) {
-                            printf("Za malo punktow ruchu!\n");
-                            i = 0;
-                        } else {
-                            ruch -= tab_legenda[1][1];
-                            tab_stat[0] += tab_legenda[1][0];
-                            tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
-                        }
-                        break;
-                    case 69:
-                        if (ruch < tab_legenda[1][1]) {
-                            printf("Za malo punktow ruchu!\n");
-                            i = 0;
-                        } else {
-                            ruch -= tab_legenda[1][1];
-                            tab_stat[1] += tab_legenda[1][0];
-                            tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
-                        }
-                        break;
-                    case 83:
-                        if (ruch < tab_legenda[1][1]) {
-                            printf("Za malo punktow ruchu!\n");
-                            i = 0;
-                        } else {
-                            ruch -= tab_legenda[1][1];
-                            tab_stat[2] += tab_legenda[1][0];
-                            tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
-                        }
-                        break;
-                    case 80:
-                        if (ruch < tab_legenda[1][1]) {
-                            printf("Za malo punktow ruchu!\n");
-                            i = 0;
-                        } else {
-                            ruch -= tab_legenda[1][1];
-                            tab_stat[3] += tab_legenda[1][0];
-                            tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
-                        }
-                        break;
-                    case 87:
-                        if (ruch < tab_legenda[1][1]) {
-                            printf("Za malo punktow ruchu!\n");
-                            i = 0;
-                        } else {
-                            ruch -= tab_legenda[1][1];
-                            tab_stat[4] += tab_legenda[1][0];
-                            tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
-                        }
-                        break;
-                    case 85:
-                        if (ruch < tab_legenda[1][1]) {
-                            printf("Za malo punktow ruchu!\n");
-                            i = 0;
-                        } else {
-                            ruch -= tab_legenda[1][1];
-                            tab_stat[5] += tab_legenda[1][0];
-                            tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
-                        }
-                        break;
-                        //Mega atrybuty
-                    case 97:
-                        if (ruch < tab_legenda[2][1]) {
-                            printf("Za malo punktow ruchu!\n");
-                            i = 0;
-                        } else {
-                            ruch -= tab_legenda[2][1];
-                            for (j = 0; j < WIERSZ; ++j) {
-                                for (int k = 0; k < KOLUMNA; ++k) {
-                                    if (tab_mapa[j][k][1] == 'O') {
-                                        if (tab_mapa[j][k][0] == 'i') {
-                                            tab_stat[0] += tab_legenda[0][0];
-                                            tab_mapa[j][k][0] = ' ';
-                                        }
-                                    }
-                                }
-                            }
-                            tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
-                        }
-                        break;
-                    case 98:
-                        if (ruch < tab_legenda[2][1]) {
-                            printf("Za malo punktow ruchu!\n");
-                            i = 0;
-                        } else {
-                            ruch -= tab_legenda[2][1];
-                            for (j = 0; j < WIERSZ; ++j) {
-                                for (int k = 0; k < KOLUMNA; ++k) {
-                                    if (tab_mapa[j][k][1] == 'O') {
-                                        if (tab_mapa[j][k][0] == 'e') {
-                                            tab_stat[1] += tab_legenda[0][0];
-                                            tab_mapa[j][k][0] = ' ';
-                                        }
-                                    }
-                                }
-                            }
-                            tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
-                        }
-                        break;
-                    case 99:
-                        if (ruch < tab_legenda[2][1]) {
-                            printf("Za malo punktow ruchu!\n");
-                            i = 0;
-                        } else {
-                            ruch -= tab_legenda[2][1];
-                            for (j = 0; j < WIERSZ; ++j) {
-                                for (int k = 0; k < KOLUMNA; ++k) {
-                                    if (tab_mapa[j][k][1] == 'O') {
-                                        if (tab_mapa[j][k][0] == 's') {
-                                            tab_stat[2] += tab_legenda[0][0];
-                                            tab_mapa[j][k][0] = ' ';
-                                        }
-                                    }
-                                }
-                            }
-                            tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
-                        }
-                        break;
-                    case 100:
-                        if (ruch < tab_legenda[2][1]) {
-                            printf("Za malo punktow ruchu!\n");
-                            i = 0;
-                        } else {
-                            ruch -= tab_legenda[2][1];
-                            for (j = 0; j < WIERSZ; ++j) {
-                                for (int k = 0; k < KOLUMNA; ++k) {
-                                    if (tab_mapa[j][k][1] == 'O') {
-                                        if (tab_mapa[j][k][0] == 'p') {
-                                            tab_stat[3] += tab_legenda[0][0];
-                                            tab_mapa[j][k][0] = ' ';
-                                        }
-                                    }
-                                }
-                            }
-                            tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
-                        }
-                        break;
-                    case 102:
-                        if (ruch < tab_legenda[2][1]) {
-                            printf("Za malo punktow ruchu!\n");
-                            i = 0;
-                        } else {
-                            ruch -= tab_legenda[2][1];
-                            for (j = 0; j < WIERSZ; ++j) {
-                                for (int k = 0; k < KOLUMNA; ++k) {
-                                    if (tab_mapa[j][k][1] == 'O') {
-                                        if (tab_mapa[j][k][0] == 'w') {
-                                            tab_stat[4] += tab_legenda[0][0];
-                                            tab_mapa[j][k][0] = ' ';
-                                        }
-                                    }
-                                }
-                            }
-                            tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
-                        }
-                        break;
-                    case 103:
-                        if (ruch < tab_legenda[2][1]) {
-                            printf("Za malo punktow ruchu!\n");
-                            i = 0;
-                        } else {
-                            ruch -= tab_legenda[2][1];
-                            for (j = 0; j < WIERSZ; ++j) {
-                                for (int k = 0; k < KOLUMNA; ++k) {
-                                    if (tab_mapa[j][k][1] == 'O') {
-                                        if (tab_mapa[j][k][0] == 'u') {
-                                            tab_stat[5] += tab_legenda[0][0];
-                                            tab_mapa[j][k][0] = ' ';
-                                        }
-                                    }
-                                }
-                            }
-                            tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
-                        }
-                        break;
-                        //Hiper atrybut
-                    case 36:
-                        if (ruch < tab_legenda[3][1]) {
-                            printf("Za malo punktow ruchu!\n");
-                            i = 0;
-                        } else {
-                            ruch -= tab_legenda[3][1];
-                            for (j = 0; j < 6; ++j) tab_stat[j] += tab_legenda[3][0];
-                            tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
-                        }
-                        break;
-                        //Oko
-                    case 94:
-                        if (ruch < tab_legenda[4][1]) {
-                            printf("Za malo punktow ruchu!\n");
-                            i = 0;
-                        } else {
-                            ruch -= tab_legenda[4][1];
-                        }
-                        break;
-                        //Super oko
-                    case 35:
-                        if (ruch < tab_legenda[5][1]) {
-                            printf("Za malo punktow ruchu!\n");
-                            i = 0;
-                        } else {
-                            ruch -= tab_legenda[5][1];
-                        }
-                        break;
-                        //Zacmienie
-                    case 64:
-                        if (ruch < tab_legenda[6][1]) {
-                            printf("Za malo punktow ruchu!\n");
-                            i = 0;
-                        } else {
-                            ruch -= tab_legenda[6][1];
-                            tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
-                        }
-                        break;
-                        //Bonus do punktow ruchu
-                    case 43:
-                        ruch += tab_legenda[7][0];
-                        tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
-                        break;
-                    default:
-                        break;
-                }
-                //Odkrywanie elementow wokol wybranego
-                if (tab_mapa[wiersz - 1][kolumna - 1][0] == ' ') {
-                    for (j = 0; j < 8; ++j) {
-                        if (!j) {
-                            odwiersz = -1;
-                            odkolumna = -1;
-                        } else if (j == 3 || j == 5) {
-                            odwiersz++;
-                            odkolumna = -1;
-                        } else if (j == 4) odkolumna += 2;
-                        else odkolumna++;
-                        if (tab_mapa[(wiersz - 1) + odwiersz][(kolumna - 1) + odkolumna][1] != 'O' &&
-                            (wiersz - 1) + odwiersz >= 0 && (kolumna - 1) + odkolumna >= 0 &&
-                            (wiersz - 1) + odwiersz <= WIERSZ - 1 &&
-                            (kolumna - 1) + odkolumna <= KOLUMNA - 1)
-                            tab_mapa[(wiersz - 1) + odwiersz][(kolumna - 1) + odkolumna][1] = 'O';
-                    }
-                }
-                    //Odkrywanie elementow dla oka
-                else if (tab_mapa[wiersz - 1][kolumna - 1][0] == '^') {
-                    for (j = 0; j < 24; ++j) {
-                        if (!j) {
-                            odwiersz = -2;
-                            odkolumna = -2;
-                        } else if (j == 5 || j == 10 || j == 14 || j == 19) {
-                            odwiersz++;
-                            odkolumna = -2;
-                        } else if (j == 12) odkolumna += 2;
-                        else odkolumna++;
-                        if (tab_mapa[(wiersz - 1) + odwiersz][(kolumna - 1) + odkolumna][1] != 'O' &&
-                            (wiersz - 1) + odwiersz >= 0 && (kolumna - 1) + odkolumna >= 0 &&
-                            (wiersz - 1) + odwiersz <= WIERSZ - 1 &&
-                            (kolumna - 1) + odkolumna <= KOLUMNA - 1)
-                            tab_mapa[(wiersz - 1) + odwiersz][(kolumna - 1) + odkolumna][1] = 'O';
-                    }
-                    tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
-                }
-                    //Odkrywanie elementow dla super oka
-                else {
-                    for (j = 0; j < WIERSZ; j++) {
-                        for (k = 0; k < KOLUMNA; k++) {
-                            if (tab_mapa[j][k][1] == 'Z') tab_mapa[j][k][1] = 'O';
-                        }
-                    }
-                    tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
-                }
-            }
-        } else {
+        else {
             printf("\tBledne wartosci!\n");
-            while (bug != '\n') bug = getchar();
+            while (tekst != '\n') tekst = getchar();
         }
-    } else {
-        printf("\tBledne wartosci!\n");
-        while (bug != '\n') bug = getchar();
-    }*/
     }
     if (tekst != 'p') *pzwrot = 2;
     else while (tekst != '\n') tekst = getchar();
@@ -826,6 +511,341 @@ void instrukcja(int i, int linia, int tab, int *ptab_legenda) {
     tekst = getchar();
     while (tekst != '\n') tekst = getchar();
 }
+
+/*void atrybut() {
+    //Zmiana statystyk i dezaktywacja elementu
+    switch (tab_mapa[wiersz - 1][kolumna - 1][0]) {
+        //Zwykle atrybuty
+        case 105:
+            if (ruch < tab_legenda[0][1]) {
+                printf("Za malo punktow ruchu!\n");
+                i = 0;
+            } else {
+                ruch -= tab_legenda[0][1];
+                tab_stat[0] += tab_legenda[0][0];
+                tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
+            }
+            break;
+        case 101:
+            if (ruch < tab_legenda[0][1]) {
+                printf("Za malo punktow ruchu!\n");
+                i = 0;
+            } else {
+                ruch -= tab_legenda[0][1];
+                tab_stat[1] += tab_legenda[0][0];
+                tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
+            }
+            break;
+        case 115:
+            if (ruch < tab_legenda[0][1]) {
+                printf("Za malo punktow ruchu!\n");
+                i = 0;
+            } else {
+                ruch -= tab_legenda[0][1];
+                tab_stat[2] += tab_legenda[0][0];
+                tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
+            }
+            break;
+        case 112:
+            if (ruch < tab_legenda[0][1]) {
+                printf("Za malo punktow ruchu!\n");
+                i = 0;
+            } else {
+                ruch -= tab_legenda[0][1];
+                tab_stat[3] += tab_legenda[0][0];
+                tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
+            }
+            break;
+        case 119:
+            if (ruch < tab_legenda[0][1]) {
+                printf("Za malo punktow ruchu!\n");
+                i = 0;
+            } else {
+                ruch -= tab_legenda[0][1];
+                tab_stat[4] += tab_legenda[0][0];
+                tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
+            }
+            break;
+        case 117:
+            if (ruch < tab_legenda[0][1]) {
+                printf("Za malo punktow ruchu!\n");
+                i = 0;
+            } else {
+                ruch -= tab_legenda[0][1];
+                tab_stat[5] += tab_legenda[0][0];
+                tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
+            }
+            break;
+            //Super atrybuty
+        case 73:
+            if (ruch < tab_legenda[1][1]) {
+                printf("Za malo punktow ruchu!\n");
+                i = 0;
+            } else {
+                ruch -= tab_legenda[1][1];
+                tab_stat[0] += tab_legenda[1][0];
+                tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
+            }
+            break;
+        case 69:
+            if (ruch < tab_legenda[1][1]) {
+                printf("Za malo punktow ruchu!\n");
+                i = 0;
+            } else {
+                ruch -= tab_legenda[1][1];
+                tab_stat[1] += tab_legenda[1][0];
+                tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
+            }
+            break;
+        case 83:
+            if (ruch < tab_legenda[1][1]) {
+                printf("Za malo punktow ruchu!\n");
+                i = 0;
+            } else {
+                ruch -= tab_legenda[1][1];
+                tab_stat[2] += tab_legenda[1][0];
+                tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
+            }
+            break;
+        case 80:
+            if (ruch < tab_legenda[1][1]) {
+                printf("Za malo punktow ruchu!\n");
+                i = 0;
+            } else {
+                ruch -= tab_legenda[1][1];
+                tab_stat[3] += tab_legenda[1][0];
+                tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
+            }
+            break;
+        case 87:
+            if (ruch < tab_legenda[1][1]) {
+                printf("Za malo punktow ruchu!\n");
+                i = 0;
+            } else {
+                ruch -= tab_legenda[1][1];
+                tab_stat[4] += tab_legenda[1][0];
+                tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
+            }
+            break;
+        case 85:
+            if (ruch < tab_legenda[1][1]) {
+                printf("Za malo punktow ruchu!\n");
+                i = 0;
+            } else {
+                ruch -= tab_legenda[1][1];
+                tab_stat[5] += tab_legenda[1][0];
+                tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
+            }
+            break;
+            //Mega atrybuty
+        case 97:
+            if (ruch < tab_legenda[2][1]) {
+                printf("Za malo punktow ruchu!\n");
+                i = 0;
+            } else {
+                ruch -= tab_legenda[2][1];
+                for (j = 0; j < WIERSZ; ++j) {
+                    for (int k = 0; k < KOLUMNA; ++k) {
+                        if (tab_mapa[j][k][1] == 'O') {
+                            if (tab_mapa[j][k][0] == 'i') {
+                                tab_stat[0] += tab_legenda[0][0];
+                                tab_mapa[j][k][0] = ' ';
+                            }
+                        }
+                    }
+                }
+                tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
+            }
+            break;
+        case 98:
+            if (ruch < tab_legenda[2][1]) {
+                printf("Za malo punktow ruchu!\n");
+                i = 0;
+            } else {
+                ruch -= tab_legenda[2][1];
+                for (j = 0; j < WIERSZ; ++j) {
+                    for (int k = 0; k < KOLUMNA; ++k) {
+                        if (tab_mapa[j][k][1] == 'O') {
+                            if (tab_mapa[j][k][0] == 'e') {
+                                tab_stat[1] += tab_legenda[0][0];
+                                tab_mapa[j][k][0] = ' ';
+                            }
+                        }
+                    }
+                }
+                tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
+            }
+            break;
+        case 99:
+            if (ruch < tab_legenda[2][1]) {
+                printf("Za malo punktow ruchu!\n");
+                i = 0;
+            } else {
+                ruch -= tab_legenda[2][1];
+                for (j = 0; j < WIERSZ; ++j) {
+                    for (int k = 0; k < KOLUMNA; ++k) {
+                        if (tab_mapa[j][k][1] == 'O') {
+                            if (tab_mapa[j][k][0] == 's') {
+                                tab_stat[2] += tab_legenda[0][0];
+                                tab_mapa[j][k][0] = ' ';
+                            }
+                        }
+                    }
+                }
+                tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
+            }
+            break;
+        case 100:
+            if (ruch < tab_legenda[2][1]) {
+                printf("Za malo punktow ruchu!\n");
+                i = 0;
+            } else {
+                ruch -= tab_legenda[2][1];
+                for (j = 0; j < WIERSZ; ++j) {
+                    for (int k = 0; k < KOLUMNA; ++k) {
+                        if (tab_mapa[j][k][1] == 'O') {
+                            if (tab_mapa[j][k][0] == 'p') {
+                                tab_stat[3] += tab_legenda[0][0];
+                                tab_mapa[j][k][0] = ' ';
+                            }
+                        }
+                    }
+                }
+                tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
+            }
+            break;
+        case 102:
+            if (ruch < tab_legenda[2][1]) {
+                printf("Za malo punktow ruchu!\n");
+                i = 0;
+            } else {
+                ruch -= tab_legenda[2][1];
+                for (j = 0; j < WIERSZ; ++j) {
+                    for (int k = 0; k < KOLUMNA; ++k) {
+                        if (tab_mapa[j][k][1] == 'O') {
+                            if (tab_mapa[j][k][0] == 'w') {
+                                tab_stat[4] += tab_legenda[0][0];
+                                tab_mapa[j][k][0] = ' ';
+                            }
+                        }
+                    }
+                }
+                tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
+            }
+            break;
+        case 103:
+            if (ruch < tab_legenda[2][1]) {
+                printf("Za malo punktow ruchu!\n");
+                i = 0;
+            } else {
+                ruch -= tab_legenda[2][1];
+                for (j = 0; j < WIERSZ; ++j) {
+                    for (int k = 0; k < KOLUMNA; ++k) {
+                        if (tab_mapa[j][k][1] == 'O') {
+                            if (tab_mapa[j][k][0] == 'u') {
+                                tab_stat[5] += tab_legenda[0][0];
+                                tab_mapa[j][k][0] = ' ';
+                            }
+                        }
+                    }
+                }
+                tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
+            }
+            break;
+            //Hiper atrybut
+        case 36:
+            if (ruch < tab_legenda[3][1]) {
+                printf("Za malo punktow ruchu!\n");
+                i = 0;
+            } else {
+                ruch -= tab_legenda[3][1];
+                for (j = 0; j < 6; ++j) tab_stat[j] += tab_legenda[3][0];
+                tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
+            }
+            break;
+            //Oko
+        case 94:
+            if (ruch < tab_legenda[4][1]) {
+                printf("Za malo punktow ruchu!\n");
+                i = 0;
+            } else {
+                ruch -= tab_legenda[4][1];
+            }
+            break;
+            //Super oko
+        case 35:
+            if (ruch < tab_legenda[5][1]) {
+                printf("Za malo punktow ruchu!\n");
+                i = 0;
+            } else {
+                ruch -= tab_legenda[5][1];
+            }
+            break;
+            //Zacmienie
+        case 64:
+            if (ruch < tab_legenda[6][1]) {
+                printf("Za malo punktow ruchu!\n");
+                i = 0;
+            } else {
+                ruch -= tab_legenda[6][1];
+                tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
+            }
+            break;
+            //Bonus do punktow ruchu
+        case 43:
+            ruch += tab_legenda[7][0];
+            tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
+            break;
+        default:
+            break;
+    }
+    //Odkrywanie elementow wokol wybranego
+    if (tab_mapa[wiersz - 1][kolumna - 1][0] == ' ') {
+        for (j = 0; j < 8; ++j) {
+            if (!j) {
+                odwiersz = -1;
+                odkolumna = -1;
+            } else if (j == 3 || j == 5) {
+                odwiersz++;
+                odkolumna = -1;
+            } else if (j == 4) odkolumna += 2;
+            else odkolumna++;
+            if (tab_mapa[(wiersz - 1) + odwiersz][(kolumna - 1) + odkolumna][1] != 'O' &&
+                (wiersz - 1) + odwiersz >= 0 && (kolumna - 1) + odkolumna >= 0 &&
+                (wiersz - 1) + odwiersz <= WIERSZ - 1 &&
+                (kolumna - 1) + odkolumna <= KOLUMNA - 1)
+                tab_mapa[(wiersz - 1) + odwiersz][(kolumna - 1) + odkolumna][1] = 'O';
+        }
+    }
+        //Odkrywanie elementow dla oka
+    else if (tab_mapa[wiersz - 1][kolumna - 1][0] == '^') {
+        for (j = 0; j < 24; ++j) {
+            if (!j) {
+                odwiersz = -2;
+                odkolumna = -2;
+            } else if (j == 5 || j == 10 || j == 14 || j == 19) {
+                odwiersz++;
+                odkolumna = -2;
+            } else if (j == 12) odkolumna += 2;
+            else odkolumna++;
+            if (tab_mapa[(wiersz - 1) + odwiersz][(kolumna - 1) + odkolumna][1] != 'O' &&
+                (wiersz - 1) + odwiersz >= 0 && (kolumna - 1) + odkolumna >= 0 &&
+                (wiersz - 1) + odwiersz <= WIERSZ - 1 &&
+                (kolumna - 1) + odkolumna <= KOLUMNA - 1)
+                tab_mapa[(wiersz - 1) + odwiersz][(kolumna - 1) + odkolumna][1] = 'O';
+        }
+        tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
+    }
+        //Odkrywanie elementow dla super oka
+    else {
+        for (j = 0; j < WIERSZ; j++) {
+            for (k = 0; k < KOLUMNA; k++) {
+                if (tab_mapa[j][k][1] == 'Z') tab_mapa[j][k][1] = 'O';
+            }
+        }
+        tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
+    }
+}*/
 
 void test(int i, int j, int *pzwrot, int *pruch, char *ptab_mapa) {
     int zuzyte = 0;
