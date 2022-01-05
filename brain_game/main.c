@@ -423,10 +423,12 @@ void reakcja(int i, int j, int k, int linia, int tab, int *pzwrot, int *pruch, i
                 }
                 tekst = getchar();
             }
+            tekst = '\n';
             if (tekst == '\n') {
+                wiersz = 2;
+                kolumna = 2;
                 //tab_mapa[wiersz - 1][kolumna - 1][0];
-                ptab_mapa += (kolumna - 1);
-                ptab_mapa += (wiersz - 1) * KOLUMNA;
+                ptab_mapa += 2 * ((wiersz - 1) * KOLUMNA + (kolumna - 1));
                 ptab_mapa2 = ptab_mapa;
                 ptab_mapa2++;
                 printf("%c %c", *ptab_mapa, *ptab_mapa2);
