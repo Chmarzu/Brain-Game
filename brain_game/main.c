@@ -15,7 +15,7 @@ void inic_mapa(int i, char *ptab_mapa);
 void ekran_gry(int i, int j, int k, int linia, int ruch, int *ptab_stat, char *ptab_mapa);
 void reakcja(int i, int j, int k, int linia, int tab, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_mapa);
 void instrukcja(int i, int linia, int tab, int *ptab_legenda);
-void atrybut();
+void atrybut(char *ptab_mapa, char *ptab_mapa2, int *ptab_stat, int *ptab_legenda, int *pruch);
 void test(int i, int j, int *pzwrot, int *pruch, char *ptab_mapa);
 
 void ekran_koncowy(int linia, int tab, int *ptab_stat);
@@ -147,7 +147,7 @@ void inic_mapa(int i, char *ptab_mapa) {
             ptab_mapa2 += 2;
         }
 
-        los = rand() % 24 + 0;
+        los = 0; //rand() % 24 + 0;
 
         switch (los) {
             case 0:
@@ -359,7 +359,7 @@ void reakcja(int i, int j, int k, int linia, int tab, int *pzwrot, int *pruch, i
      * wiersz, kolumna - polozenie elementu wybranego przez gracza
      * odwiersz, odkolumna - przesuniecia indeksu elementu wybranego przez gracza, uzyte przy odkrywaniu nowych elementow na mapie
      */
-    int wiersz, kolumna, odwiersz, odkolumna;
+    int wiersz = 0, kolumna = 0, odwiersz, odkolumna, spacja = 0;
 
     //Tablica dla legendy atrybutow i jej wskaznik
     //Kolejnosc: zwykly atrybut, super atrybut, mega atrybut, hiper atrybut, oko, super oko, zacmienie, bonusowe pkt ruchu
@@ -394,50 +394,31 @@ void reakcja(int i, int j, int k, int linia, int tab, int *pzwrot, int *pruch, i
         }
             //Wybor atrybutu
         else if (isdigit(tekst) && tekst != '0') {
+            wiersz = tekst - 48;
+            tekst = getchar();
             for (j = 0; j < 5; j++) {
-                switch (j) {
-                    case 0:
-                        wiersz = tekst - 48;
-                        break;
-                    case 1:
-                        if (isdigit(tekst) && tekst != '0') wiersz = (wiersz * 10) + (tekst - 48);
-                        else if (tekst != ' ') break;
-                        else j = 5;
-                        break;
-                    case 2:
-                        if (isdigit(tekst) && tekst != '0') kolumna = tekst - 48;
-                        if (tekst != ' ');
-                        else j = 5;
-                        break;
-                    case 3:
-                        if (isdigit(tekst) && tekst != '0') kolumna = tekst - 48;
-                        else j = 5;
-                        break;
-                    case 4:
-                        kolumna = (kolumna * 10) + tekst - 48;
-                        j = 5;
-                        break;
-                    default:
-                        j = 5;
-                        break;
+                if (isdigit(tekst) && tekst != '0') {
+                    if (j == 0) wiersz = (wiersz * 10) + (tekst - 48);
+                    else if (!kolumna) kolumna = tekst - 48;
+                    else kolumna = (kolumna * 10) + (tekst - 48);
                 }
+                else if (j == 0 || j == 1 && !spacja) {
+                    if (isspace(tekst)) spacja = 1;
+                    else break; //ewentualnie: i = 5
+                } else break; //ewentualnie: i = 5
                 tekst = getchar();
             }
-            tekst = '\n';
             if (tekst == '\n') {
-                wiersz = 2;
-                kolumna = 2;
                 //tab_mapa[wiersz - 1][kolumna - 1][0];
                 ptab_mapa += 2 * ((wiersz - 1) * KOLUMNA + (kolumna - 1));
                 ptab_mapa2 = ptab_mapa;
                 ptab_mapa2++;
-                printf("%c %c", *ptab_mapa, *ptab_mapa2);
                 if (*ptab_mapa == ' ' || *ptab_mapa2 == 'Z' ||
                     wiersz > WIERSZ || kolumna > KOLUMNA)
                     printf("\tTen element jest niedostepny!\n");
                 else {
                     i = 3;
-                    //atrybut();
+                    atrybut(ptab_mapa, ptab_mapa2, ptab_stat, ptab_legenda, pruch);
                 }
             }
             else {
@@ -514,19 +495,23 @@ void instrukcja(int i, int linia, int tab, int *ptab_legenda) {
     while (tekst != '\n') tekst = getchar();
 }
 
-/*void atrybut() {
+void atrybut(char *ptab_mapa, char *ptab_mapa2, int *ptab_stat, int *ptab_legenda, int *pruch) {
     //Zmiana statystyk i dezaktywacja elementu
+    if (*ptab_mapa == 'i') {
+        ptab_legenda++;
+        if (*pruch < *ptab_legenda) {
+            printf("Za malo punktow ruchu!\n");
+        } else {
+            *pruch -= *ptab_legenda;
+            *ptab_mapa = ' ';
+            ptab_legenda--;
+            *ptab_stat += *ptab_legenda;
+        }
+    }
+    /*
     switch (tab_mapa[wiersz - 1][kolumna - 1][0]) {
         //Zwykle atrybuty
         case 105:
-            if (ruch < tab_legenda[0][1]) {
-                printf("Za malo punktow ruchu!\n");
-                i = 0;
-            } else {
-                ruch -= tab_legenda[0][1];
-                tab_stat[0] += tab_legenda[0][0];
-                tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
-            }
             break;
         case 101:
             if (ruch < tab_legenda[0][1]) {
@@ -847,7 +832,8 @@ void instrukcja(int i, int linia, int tab, int *ptab_legenda) {
         }
         tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
     }
-}*/
+     */
+}
 
 void test(int i, int j, int *pzwrot, int *pruch, char *ptab_mapa) {
     int zuzyte = 0;
@@ -911,10 +897,12 @@ void ekran_koncowy(int linia, int tab, int *ptab_stat) {
 
 //Funkcja "suwak" odpowiada za "czyszczenie ekranu" - przesuwanie tekstu tak, aby nie bylo widac wczesniejszych, niepotrzebnych komunikatow.
 void suwak (int linia) {
-    for (int i = 0; i < linia; i++) printf("\n");
+    for (int i = 0; i < linia; i++)
+        printf("\n");
 }
 
 //Funkcja "tabulator" odpowiada za wykonanie tabulacji tekstu
 void tabulator (int tab) {
-    for (int i = 0; i < tab; i++) printf("\t");
+    for (int i = 0; i < tab; i++)
+        printf("\t");
 }
