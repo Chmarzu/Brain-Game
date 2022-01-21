@@ -581,15 +581,16 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2, int *ptab_stat, int *ptab
             *pruch -= *ptab_legenda;
             ptab_legenda--;
             for (i = 0; i < WIERSZ * KOLUMNA; i++) {
+              if (*ptab_mapa4 == 'O') {
               switch (*ptab_mapa) {
                   case 'a':
-                      if (*ptab_mapa3 == 'i' && *ptab_mapa4 == 'O') {
+                      if (*ptab_mapa3 == 'i') {
                         *ptab_stat += *ptab_legenda;
                         *ptab_mapa3 = ' ';
                       }
                       break;
                   case 'b':
-                      if (*ptab_mapa3 == 'i' && *ptab_mapa4 == 'O') {
+                      if (*ptab_mapa3 == 'i') {
                         ptab_stat++;
                         *ptab_stat += *ptab_legenda;
                         *ptab_mapa3 = ' ';
@@ -614,6 +615,7 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2, int *ptab_stat, int *ptab
                   default:
                       printf("Blad w switch nr 3 w funkcji atrybut!");
                       break;
+              }
               }
               ptab_mapa3 += 2;
               ptab_mapa4 += 2;
