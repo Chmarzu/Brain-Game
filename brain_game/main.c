@@ -590,27 +590,39 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2, int *ptab_stat, int *ptab
                       }
                       break;
                   case 'b':
-                      if (*ptab_mapa3 == 'i') {
+                      if (*ptab_mapa3 == 's') {
                         ptab_stat++;
                         *ptab_stat += *ptab_legenda;
                         *ptab_mapa3 = ' ';
                       }
                       break;
                   case 'c':
-                      ptab_stat += 2;
-                      *ptab_stat += *ptab_legenda;
+                      if (*ptab_mapa3 == 's') {
+                        ptab_stat += 2;
+                        *ptab_stat += *ptab_legenda;
+                        *ptab_mapa3 = ' ';
+                      }
                       break;
                   case 'd':
-                      ptab_stat += 3;
-                      *ptab_stat += *ptab_legenda;
+                      if (*ptab_mapa3 == 's') {
+                        ptab_stat += 3;
+                        *ptab_stat += *ptab_legenda;
+                        *ptab_mapa3 = ' ';
+                      }
                       break;
                   case 'f':
-                      ptab_stat += 4;
-                      *ptab_stat += *ptab_legenda;
+                      if (*ptab_mapa3 == 's') {
+                        ptab_stat += 4;
+                        *ptab_stat += *ptab_legenda;
+                        *ptab_mapa3 = ' ';
+                      }
                       break;
                   case 'g':
-                      ptab_stat += 5;
-                      *ptab_stat += *ptab_legenda;
+                      if (*ptab_mapa3 == 's') {
+                        ptab_stat += 5;
+                        *ptab_stat += *ptab_legenda;
+                        *ptab_mapa3 = ' ';
+                      }
                       break;
                   default:
                       printf("Blad w switch nr 3 w funkcji atrybut!");
@@ -625,120 +637,6 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2, int *ptab_stat, int *ptab
     }
     /*
     switch (tab_mapa[wiersz - 1][kolumna - 1][0]) {
-        case 97:
-            if (ruch < tab_legenda[2][1]) {
-                printf("Za malo punktow ruchu!\n");
-                i = 0;
-            } else {
-                ruch -= tab_legenda[2][1];
-                for (j = 0; j < WIERSZ; ++j) {
-                    for (int k = 0; k < KOLUMNA; ++k) {
-                        if (tab_mapa[j][k][1] == 'O') {
-                            if (tab_mapa[j][k][0] == 'i') {
-                                tab_stat[0] += tab_legenda[0][0];
-                                tab_mapa[j][k][0] = ' ';
-                            }
-                        }
-                    }
-                }
-                tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
-            }
-            break;
-        case 98:
-            if (ruch < tab_legenda[2][1]) {
-                printf("Za malo punktow ruchu!\n");
-                i = 0;
-            } else {
-                ruch -= tab_legenda[2][1];
-                for (j = 0; j < WIERSZ; ++j) {
-                    for (int k = 0; k < KOLUMNA; ++k) {
-                        if (tab_mapa[j][k][1] == 'O') {
-                            if (tab_mapa[j][k][0] == 'e') {
-                                tab_stat[1] += tab_legenda[0][0];
-                                tab_mapa[j][k][0] = ' ';
-                            }
-                        }
-                    }
-                }
-                tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
-            }
-            break;
-        case 99:
-            if (ruch < tab_legenda[2][1]) {
-                printf("Za malo punktow ruchu!\n");
-                i = 0;
-            } else {
-                ruch -= tab_legenda[2][1];
-                for (j = 0; j < WIERSZ; ++j) {
-                    for (int k = 0; k < KOLUMNA; ++k) {
-                        if (tab_mapa[j][k][1] == 'O') {
-                            if (tab_mapa[j][k][0] == 's') {
-                                tab_stat[2] += tab_legenda[0][0];
-                                tab_mapa[j][k][0] = ' ';
-                            }
-                        }
-                    }
-                }
-                tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
-            }
-            break;
-        case 100:
-            if (ruch < tab_legenda[2][1]) {
-                printf("Za malo punktow ruchu!\n");
-                i = 0;
-            } else {
-                ruch -= tab_legenda[2][1];
-                for (j = 0; j < WIERSZ; ++j) {
-                    for (int k = 0; k < KOLUMNA; ++k) {
-                        if (tab_mapa[j][k][1] == 'O') {
-                            if (tab_mapa[j][k][0] == 'p') {
-                                tab_stat[3] += tab_legenda[0][0];
-                                tab_mapa[j][k][0] = ' ';
-                            }
-                        }
-                    }
-                }
-                tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
-            }
-            break;
-        case 102:
-            if (ruch < tab_legenda[2][1]) {
-                printf("Za malo punktow ruchu!\n");
-                i = 0;
-            } else {
-                ruch -= tab_legenda[2][1];
-                for (j = 0; j < WIERSZ; ++j) {
-                    for (int k = 0; k < KOLUMNA; ++k) {
-                        if (tab_mapa[j][k][1] == 'O') {
-                            if (tab_mapa[j][k][0] == 'w') {
-                                tab_stat[4] += tab_legenda[0][0];
-                                tab_mapa[j][k][0] = ' ';
-                            }
-                        }
-                    }
-                }
-                tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
-            }
-            break;
-        case 103:
-            if (ruch < tab_legenda[2][1]) {
-                printf("Za malo punktow ruchu!\n");
-                i = 0;
-            } else {
-                ruch -= tab_legenda[2][1];
-                for (j = 0; j < WIERSZ; ++j) {
-                    for (int k = 0; k < KOLUMNA; ++k) {
-                        if (tab_mapa[j][k][1] == 'O') {
-                            if (tab_mapa[j][k][0] == 'u') {
-                                tab_stat[5] += tab_legenda[0][0];
-                                tab_mapa[j][k][0] = ' ';
-                            }
-                        }
-                    }
-                }
-                tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
-            }
-            break;
             //Hiper atrybut
         case 36:
             if (ruch < tab_legenda[3][1]) {
