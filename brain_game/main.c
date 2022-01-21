@@ -15,7 +15,7 @@ void inic_mapa(int i, char *ptab_mapa);
 void ekran_gry(int i, int j, int k, int linia, int ruch, int *ptab_stat, char *ptab_mapa);
 void reakcja(int i, int j, int k, int linia, int tab, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_mapa);
 void instrukcja(int i, int linia, int tab, int *ptab_legenda);
-void atrybut(char *ptab_mapa, char *ptab_mapa2, int *ptab_stat, int *ptab_legenda, int *pruch);
+void atrybut(int i, char *ptab_mapa, char *ptab_mapa2, int *ptab_stat, int *ptab_legenda, int *pruch);
 void test(int i, int j, int *pzwrot, int *pruch, char *ptab_mapa);
 
 void ekran_koncowy(int linia, int tab, int *ptab_stat);
@@ -415,7 +415,7 @@ void reakcja(int i, int j, int k, int linia, int tab, int *pzwrot, int *pruch, i
                     printf("\tTen element jest niedostepny!\n");
                 else {
                     i = 3;
-                    atrybut(ptab_mapa, ptab_mapa2, ptab_stat, ptab_legenda, pruch);
+                    atrybut(i, ptab_mapa, ptab_mapa2, ptab_stat, ptab_legenda, pruch);
                 }
             }
             else {
@@ -492,7 +492,7 @@ void instrukcja(int i, int linia, int tab, int *ptab_legenda) {
     while (tekst != '\n') tekst = getchar();
 }
 
-void atrybut(char *ptab_mapa, char *ptab_mapa2, int *ptab_stat, int *ptab_legenda, int *pruch) {
+void atrybut(int i, char *ptab_mapa, char *ptab_mapa2, int *ptab_stat, int *ptab_legenda, int *pruch) {
     //Zmiana statystyk i dezaktywacja elementu
     //Zwykle atrybuty
     if (*ptab_mapa == 'i' || *ptab_mapa == 'e' || *ptab_mapa == 's' ||
@@ -572,10 +572,57 @@ void atrybut(char *ptab_mapa, char *ptab_mapa2, int *ptab_stat, int *ptab_legend
             }
             *ptab_mapa = ' ';
         }
+    //Mega atrybuty
+    } else if (*ptab_mapa > 96 && *ptab_mapa < 104 && *ptab_mapa != 101) {
+      ptab_legenda += 5;
+        if (*pruch < *ptab_legenda)
+            printf("Za malo punktow ruchu!\n");
+        else {
+            *pruch -= *ptab_legenda;
+            ptab_legenda--;
+            for (i = 0; i < WIERSZ * KOLUMNA; i++) {
+              switch (*ptab_mapa) {
+                  case 'a':
+                      if (*ptab_mapa3 == 'i' && *ptab_mapa4 == 'O') {
+                        *ptab_stat += *ptab_legenda;
+                        *ptab_mapa3 = ' ';
+                      }
+                      break;
+                  case 'b':
+                      if (*ptab_mapa3 == 'i' && *ptab_mapa4 == 'O') {
+                        ptab_stat++;
+                        *ptab_stat += *ptab_legenda;
+                        *ptab_mapa3 = ' ';
+                      }
+                      break;
+                  case 'c':
+                      ptab_stat += 2;
+                      *ptab_stat += *ptab_legenda;
+                      break;
+                  case 'd':
+                      ptab_stat += 3;
+                      *ptab_stat += *ptab_legenda;
+                      break;
+                  case 'f':
+                      ptab_stat += 4;
+                      *ptab_stat += *ptab_legenda;
+                      break;
+                  case 'g':
+                      ptab_stat += 5;
+                      *ptab_stat += *ptab_legenda;
+                      break;
+                  default:
+                      printf("Blad w switch nr 3 w funkcji atrybut!");
+                      break;
+              }
+              ptab_mapa3 += 2;
+              ptab_mapa4 += 2;
+            }
+            *ptab_mapa = ' ';
+        }
     }
     /*
     switch (tab_mapa[wiersz - 1][kolumna - 1][0]) {
-            //Mega atrybuty
         case 97:
             if (ruch < tab_legenda[2][1]) {
                 printf("Za malo punktow ruchu!\n");
