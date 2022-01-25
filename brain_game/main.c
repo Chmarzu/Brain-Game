@@ -13,9 +13,9 @@ int ekran_powitalny(int linia, int tab);
 void gra(int linia, int tab, int *pzwrot, int *ptab_stat);
 void inic_mapa(int i, char *ptab_mapa);
 void ekran_gry(int i, int j, int k, int linia, int ruch, int *ptab_stat, char *ptab_mapa);
-void reakcja(int i, int j, int k, int linia, int tab, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_mapa);
+void reakcja(int i, int j, int k, int linia, int tab, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3);
 void instrukcja(int i, int linia, int tab, int *ptab_legenda);
-void atrybut(int i, char *ptab_mapa, char *ptab_mapa2, int *ptab_stat, int *ptab_legenda, int *pruch);
+void atrybut(int i, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3, int *ptab_stat, int *ptab_legenda, int *pruch);
 void test(int i, int j, int *pzwrot, int *pruch, char *ptab_mapa);
 
 void ekran_koncowy(int linia, int tab, int *ptab_stat);
@@ -106,20 +106,20 @@ void gra(int linia, int tab, int *pzwrot, int *ptab_stat) {
 
     //Tablica dla elementow wyswietlanych na mapie gry oraz jej wskaznik
     char tab_mapa[WIERSZ][KOLUMNA][GLEBOKOSC], *ptab_mapa;
-    ptab_mapa = &tab_mapa[0][0][0];
+    //ptab_mapa = &tab_mapa[0][0][0];
 
     do {
         //Inicjalizacja tablicy tab_mapa
-        if (*pzwrot == 1) inic_mapa(i, ptab_mapa);
+        if (*pzwrot == 1) inic_mapa(i, &tab_mapa[0][0][0]);
 
         //Ekran gry
-        ekran_gry(i, j, k, linia, ruch, ptab_stat, ptab_mapa);
+        ekran_gry(i, j, k, linia, ruch, ptab_stat, &tab_mapa[0][0][0]);
 
         //Sekcja interaktywna
-        reakcja(i, j, k, linia, tab, pzwrot, pruch, ptab_stat, ptab_mapa);
+        reakcja(i, j, k, linia, tab, pzwrot, pruch, ptab_stat, &tab_mapa[0][0][0], &tab_mapa[0][0][0], &tab_mapa[0][0][1]);
 
         //Test mapy gry
-        if (*pzwrot == 2) test(i, j, pzwrot, pruch, ptab_mapa);
+        if (*pzwrot == 2) test(i, j, pzwrot, pruch, &tab_mapa[0][0][0]);
 
         linia = 40;
         suwak(linia);
@@ -144,7 +144,10 @@ void inic_mapa(int i, char *ptab_mapa) {
             ptab_mapa2 += 2;
         }
 
-        los = rand() % 24 + 0;
+        if (!i) los = 14;
+        else los = 2;
+
+        //los = rand() % 25;
 
         switch (los) {
             case 0:
@@ -220,7 +223,6 @@ void inic_mapa(int i, char *ptab_mapa) {
                 *ptab_mapa = ' ';
                 break;
         }
-
         //Usunac do update'a
         *ptab_mapa2 = 'O';
         //if (i == 0) *ptab_mapa2 = 'O';
@@ -345,12 +347,8 @@ void ekran_gry(int i, int j, int k, int linia, int ruch, int *ptab_stat, char *p
     printf("\n\tWybierz element (podaj numer wiersza, a potem kolumny: ""x x"").\n\tAby przejsc do instrukcji, wpisz: ""i"".\n\tJesli chcesz opusic gre, wcisnij Enter...\n");
 }
 
-void reakcja(int i, int j, int k, int linia, int tab, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_mapa) {
-    /*
-     * ptab_mapa2 - pomocniczy wskaznik na tablice tab_mapa
-     * tekst - przechowuje tekst wpisany przez gracza
-     */
-    char tekst = ' ', *ptab_mapa2;
+void reakcja(int i, int j, int k, int linia, int tab, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3) {
+    char tekst = ' '; //tekst - przechowuje tekst wpisany przez gracza
 
     /*
      * wiersz, kolumna - polozenie elementu wybranego przez gracza
@@ -415,7 +413,8 @@ void reakcja(int i, int j, int k, int linia, int tab, int *pzwrot, int *pruch, i
                     printf("\tTen element jest niedostepny!\n");
                 else {
                     i = 3;
-                    atrybut(i, ptab_mapa, ptab_mapa2, ptab_stat, ptab_legenda, pruch);
+                    ptab_mapa2 = ptab_mapa3 - 1;
+                    atrybut(i, ptab_mapa, ptab_mapa2, ptab_mapa3, ptab_stat, ptab_legenda, pruch);
                 }
             }
             else {
@@ -492,7 +491,7 @@ void instrukcja(int i, int linia, int tab, int *ptab_legenda) {
     while (tekst != '\n') tekst = getchar();
 }
 
-void atrybut(int i, char *ptab_mapa, char *ptab_mapa2, int *ptab_stat, int *ptab_legenda, int *pruch) {
+void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *ptab_stat, int *ptab_legenda, int *pruch) {
     //Zmiana statystyk i dezaktywacja elementu
     //Zwykle atrybuty
     if (*ptab_mapa == 'i' || *ptab_mapa == 'e' || *ptab_mapa == 's' ||
@@ -579,58 +578,58 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2, int *ptab_stat, int *ptab
             printf("Za malo punktow ruchu!\n");
         else {
             *pruch -= *ptab_legenda;
-            ptab_legenda--;
+            ptab_legenda -= 5;
             for (i = 0; i < WIERSZ * KOLUMNA; i++) {
-              if (*ptab_mapa4 == 'O') {
-              switch (*ptab_mapa) {
-                  case 'a':
-                      if (*ptab_mapa3 == 'i') {
-                        *ptab_stat += *ptab_legenda;
-                        *ptab_mapa3 = ' ';
-                      }
-                      break;
-                  case 'b':
-                      if (*ptab_mapa3 == 's') {
-                        ptab_stat++;
-                        *ptab_stat += *ptab_legenda;
-                        *ptab_mapa3 = ' ';
-                      }
-                      break;
-                  case 'c':
-                      if (*ptab_mapa3 == 's') {
-                        ptab_stat += 2;
-                        *ptab_stat += *ptab_legenda;
-                        *ptab_mapa3 = ' ';
-                      }
-                      break;
-                  case 'd':
-                      if (*ptab_mapa3 == 's') {
-                        ptab_stat += 3;
-                        *ptab_stat += *ptab_legenda;
-                        *ptab_mapa3 = ' ';
-                      }
-                      break;
-                  case 'f':
-                      if (*ptab_mapa3 == 's') {
-                        ptab_stat += 4;
-                        *ptab_stat += *ptab_legenda;
-                        *ptab_mapa3 = ' ';
-                      }
-                      break;
-                  case 'g':
-                      if (*ptab_mapa3 == 's') {
-                        ptab_stat += 5;
-                        *ptab_stat += *ptab_legenda;
-                        *ptab_mapa3 = ' ';
-                      }
-                      break;
-                  default:
-                      printf("Blad w switch nr 3 w funkcji atrybut!");
-                      break;
-              }
-              }
-              ptab_mapa3 += 2;
-              ptab_mapa4 += 2;
+                if (*ptab_mapa3 == 'O') {
+                    switch (*ptab_mapa) {
+                        case 'a':
+                            if (*ptab_mapa2 == 'i') {
+                                *ptab_stat += *ptab_legenda;
+                                *ptab_mapa2 = ' ';
+                            }
+                            break;
+                        case 'b':
+                            if (*ptab_mapa2 == 'e') {
+                                ptab_stat++;
+                                *ptab_stat += *ptab_legenda;
+                                *ptab_mapa2 = ' ';
+                            }
+                            break;
+                        case 'c':
+                            if (*ptab_mapa2 == 's') {
+                                ptab_stat += 2;
+                                *ptab_stat += *ptab_legenda;
+                                *ptab_mapa2 = ' ';
+                            }
+                            break;
+                        case 'd':
+                            if (*ptab_mapa2 == 'p') {
+                                ptab_stat += 3;
+                                *ptab_stat += *ptab_legenda;
+                                *ptab_mapa2 = ' ';
+                            }
+                            break;
+                        case 'f':
+                            if (*ptab_mapa2 == 'w') {
+                                ptab_stat += 4;
+                                *ptab_stat += *ptab_legenda;
+                                *ptab_mapa2 = ' ';
+                            }
+                            break;
+                        case 'g':
+                            if (*ptab_mapa2 == 'u') {
+                                ptab_stat += 5;
+                                *ptab_stat += *ptab_legenda;
+                                *ptab_mapa2 = ' ';
+                            }
+                            break;
+                        default:
+                            printf("Blad w switch nr 3 w funkcji atrybut!");
+                            break;
+                    }
+                }
+                ptab_mapa2 += 2;
+                ptab_mapa3 += 2;
             }
             *ptab_mapa = ' ';
         }
