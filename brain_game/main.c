@@ -11,8 +11,8 @@
 int ekran_powitalny(int linia, int tab);
 
 void gra(int linia, int tab, int *pzwrot, int *ptab_stat);
-void inic_mapa(int i, char *ptab_mapa);
-void ekran_gry(int i, int j, int k, int linia, int ruch, int *ptab_stat, char *ptab_mapa);
+void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2);
+void ekran_gry(int i, int j, int k, int linia, int ruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2);
 void reakcja(int i, int j, int k, int linia, int tab, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3);
 void instrukcja(int i, int linia, int tab, int *ptab_legenda);
 void atrybut(int i, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3, int *ptab_stat, int *ptab_legenda, int *pruch);
@@ -32,27 +32,26 @@ int main() {
     int zwrot, linia = 3, tab = 3;
 
     /*
-    Tablica z wartościami statystyk oraz jej wskaznik
+    Tablica z wartościami statystyk
     Kolejnosc: Inteligencja, Empatia, Sprawnosc, Pamiec, Wyobraznia, Urok
      */
-    int tab_stat[6] = {0, 0, 0, 0, 0, 0}, *ptab_stat;
-    ptab_stat = &tab_stat[0];
+    int tab_stat[6] = {0, 0, 0, 0, 0, 0};
 
     srand(time(NULL));
 
     //Ekran powitalny
     zwrot = ekran_powitalny(linia, tab);
     if (!zwrot) {
-        ekran_koncowy(linia, tab, ptab_stat);
+        ekran_koncowy(linia, tab, &tab_stat[0]);
         return 0;
     }
 
     //Gra
     zwrot = 1;
-    gra(linia, tab, &zwrot, ptab_stat);
+    gra(linia, tab, &zwrot, &tab_stat[0]);
 
     //Ekran koncowy
-    ekran_koncowy(linia, tab, ptab_stat);
+    ekran_koncowy(linia, tab, &tab_stat[0]);
 
     return 0;
 }
@@ -100,26 +99,24 @@ void gra(int linia, int tab, int *pzwrot, int *ptab_stat) {
      * zuzyte - warunek przy sprawdzaniu zuzycia elementow
      * ruch - mechanika punktow ruchu
      */
-    int i = 0, j = 0, k = 0, *pruch;
+    int i = 0, j = 0, k = 0;
     static int ruch = 30;
-    pruch = &ruch;
 
-    //Tablica dla elementow wyswietlanych na mapie gry oraz jej wskaznik
-    char tab_mapa[WIERSZ][KOLUMNA][GLEBOKOSC], *ptab_mapa;
-    //ptab_mapa = &tab_mapa[0][0][0];
+    //Tablica dla elementow wyswietlanych na mapie gry
+    char tab_mapa[WIERSZ][KOLUMNA][GLEBOKOSC];
 
     do {
         //Inicjalizacja tablicy tab_mapa
-        if (*pzwrot == 1) inic_mapa(i, &tab_mapa[0][0][0]);
+        if (*pzwrot == 1) inic_mapa(i, &tab_mapa[0][0][0], &tab_mapa[0][0][1]);
 
         //Ekran gry
-        ekran_gry(i, j, k, linia, ruch, ptab_stat, &tab_mapa[0][0][0]);
+        ekran_gry(i, j, k, linia, ruch, ptab_stat, &tab_mapa[0][0][0], &tab_mapa[0][0][1]);
 
         //Sekcja interaktywna
-        reakcja(i, j, k, linia, tab, pzwrot, pruch, ptab_stat, &tab_mapa[0][0][0], &tab_mapa[0][0][0], &tab_mapa[0][0][1]);
+        reakcja(i, j, k, linia, tab, pzwrot, &ruch, ptab_stat, &tab_mapa[0][0][0], &tab_mapa[0][0][0], &tab_mapa[0][0][1]);
 
         //Test mapy gry
-        if (*pzwrot == 2) test(i, j, pzwrot, pruch, &tab_mapa[0][0][0]);
+        if (*pzwrot == 2) test(i, j, pzwrot, &ruch, &tab_mapa[0][0][0]);
 
         linia = 40;
         suwak(linia);
@@ -128,16 +125,13 @@ void gra(int linia, int tab, int *pzwrot, int *ptab_stat) {
     while (*pzwrot > 0);
 }
 
-void inic_mapa(int i, char *ptab_mapa) {
+void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2) {
     /*
     los - decyduje ktory atrybut ma zostac zainicjalizowany
     odkryte - ogranicza liczbe odkrytych zwyklych atrybutow
      */
     int los, odkryte = 0;
-    char *ptab_mapa2; //dodatkowy wskaznik na tablice tab_mapa
 
-    ptab_mapa2 = ptab_mapa;
-    ptab_mapa2++;
     for (i = 0; i < (WIERSZ * KOLUMNA); i++) {
         if (i > 0) {
             ptab_mapa += 2;
@@ -239,11 +233,9 @@ void inic_mapa(int i, char *ptab_mapa) {
     }
 }
 
-void ekran_gry(int i, int j, int k, int linia, int ruch, int *ptab_stat, char *ptab_mapa) {
+void ekran_gry(int i, int j, int k, int linia, int ruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2) {
     int pom = 1; //odpowiada za pomocnicze liczby wokol mapy gry
-    char *ptab_mapa2; //dodatkowy wskaznik na tablice tab_mapa
-    ptab_mapa2 = ptab_mapa;
-    ptab_mapa2++;
+
     //Statystyki
     printf("\tTwoje statystyki:\n");
     for (i = 0; i < 6; i++) {
@@ -356,7 +348,7 @@ void reakcja(int i, int j, int k, int linia, int tab, int *pzwrot, int *pruch, i
      */
     int wiersz = 0, kolumna = 0, odwiersz, odkolumna, spacja = 0;
 
-    //Tablica dla legendy atrybutow i jej wskaznik
+    //Tablica dla legendy atrybutow
     //Kolejnosc: zwykly atrybut, super atrybut, mega atrybut, hiper atrybut, oko, super oko, zacmienie, bonusowe pkt ruchu
     //{bonus, koszt}
     int tab_legenda[][2] = {{1, 1},
@@ -367,8 +359,6 @@ void reakcja(int i, int j, int k, int linia, int tab, int *pzwrot, int *pruch, i
                             {0, 7},
                             {0, 5},
                             {5, 0}};
-    int *ptab_legenda;
-    ptab_legenda = &tab_legenda[0][0];
 
     //Modul interaktywny (petla w razie pomylki)
 
@@ -384,7 +374,7 @@ void reakcja(int i, int j, int k, int linia, int tab, int *pzwrot, int *pruch, i
         //Instrukcja
         else if (tekst == 'i' || tekst == 'I') {
             while (tekst != '\n') tekst = getchar();
-            instrukcja(i, linia, tab, ptab_legenda);
+            instrukcja(i, linia, tab, &tab_legenda[0][0]);
             break;
         }
         //Wybor atrybutu
@@ -414,7 +404,7 @@ void reakcja(int i, int j, int k, int linia, int tab, int *pzwrot, int *pruch, i
                 else {
                     i = 3;
                     ptab_mapa2 = ptab_mapa3 - 1;
-                    atrybut(i, ptab_mapa, ptab_mapa2, ptab_mapa3, ptab_stat, ptab_legenda, pruch);
+                    atrybut(i, ptab_mapa, ptab_mapa2, ptab_mapa3, ptab_stat, &tab_legenda[0][0], pruch);
                 }
             }
             else {
