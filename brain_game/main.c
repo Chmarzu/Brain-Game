@@ -137,12 +137,7 @@ void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2) {
             ptab_mapa += 2;
             ptab_mapa2 += 2;
         }
-
-        if (!i) los = 14;
-        else los = 2;
-
-        //los = rand() % 25;
-
+        los = rand() % 25;
         switch (los) {
             case 0:
                 *ptab_mapa = 'i';
@@ -382,9 +377,9 @@ void reakcja(int i, int j, int k, int linia, int tab, int *pzwrot, int *pruch, i
             wiersz = tekst - 48;
             tekst = getchar();
             for (j = 0; j < 5; j++) {
-                if (isdigit(tekst) && tekst != '0') {
+                if (isdigit(tekst)) {
                     if (j == 0) wiersz = (wiersz * 10) + (tekst - 48);
-                    else if (!kolumna) kolumna = tekst - 48;
+                    else if (!kolumna && tekst != '0') kolumna = tekst - 48;
                     else kolumna = (kolumna * 10) + (tekst - 48);
                 }
                 else if (j == 0 || j == 1 && !spacja) {
@@ -569,6 +564,23 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *p
         else {
             *pruch -= *ptab_legenda;
             ptab_legenda -= 5;
+            switch (*ptab_mapa) {
+                case 'b':
+                    ptab_stat++;
+                    break;
+                case 'c':
+                    ptab_stat += 2;
+                    break;
+                case 'd':
+                    ptab_stat += 3;
+                    break;
+                case 'f':
+                    ptab_stat += 4;
+                    break;
+                case 'g':
+                    ptab_stat += 5;
+                    break;
+            }
             for (i = 0; i < WIERSZ * KOLUMNA; i++) {
                 if (*ptab_mapa3 == 'O') {
                     switch (*ptab_mapa) {
@@ -580,35 +592,30 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *p
                             break;
                         case 'b':
                             if (*ptab_mapa2 == 'e') {
-                                ptab_stat++;
                                 *ptab_stat += *ptab_legenda;
                                 *ptab_mapa2 = ' ';
                             }
                             break;
                         case 'c':
                             if (*ptab_mapa2 == 's') {
-                                ptab_stat += 2;
                                 *ptab_stat += *ptab_legenda;
                                 *ptab_mapa2 = ' ';
                             }
                             break;
                         case 'd':
                             if (*ptab_mapa2 == 'p') {
-                                ptab_stat += 3;
                                 *ptab_stat += *ptab_legenda;
                                 *ptab_mapa2 = ' ';
                             }
                             break;
                         case 'f':
                             if (*ptab_mapa2 == 'w') {
-                                ptab_stat += 4;
                                 *ptab_stat += *ptab_legenda;
                                 *ptab_mapa2 = ' ';
                             }
                             break;
                         case 'g':
                             if (*ptab_mapa2 == 'u') {
-                                ptab_stat += 5;
                                 *ptab_stat += *ptab_legenda;
                                 *ptab_mapa2 = ' ';
                             }
