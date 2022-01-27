@@ -138,6 +138,9 @@ void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2) {
             ptab_mapa2 += 2;
         }
         los = rand() % 25;
+        if (!i)
+            los = 18;
+
         switch (los) {
             case 0:
                 *ptab_mapa = 'i';
@@ -631,19 +634,23 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *p
             *ptab_mapa = ' ';
         }
     }
+    //Hiper atrybut
+    else if (*ptab_mapa == '$') {
+        ptab_legenda += 7;
+        if (*pruch < *ptab_legenda) {
+            printf("Za malo punktow ruchu!\n");
+        } else {
+            *pruch -= *ptab_legenda;
+            ptab_legenda--;
+            for (i = 0; i < 6; i++) {
+                *ptab_stat += *ptab_legenda;
+                ptab_stat++;
+            }
+            *ptab_mapa = ' ';
+        }
+    }
     /*
     switch (tab_mapa[wiersz - 1][kolumna - 1][0]) {
-            //Hiper atrybut
-        case 36:
-            if (ruch < tab_legenda[3][1]) {
-                printf("Za malo punktow ruchu!\n");
-                i = 0;
-            } else {
-                ruch -= tab_legenda[3][1];
-                for (j = 0; j < 6; ++j) tab_stat[j] += tab_legenda[3][0];
-                tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
-            }
-            break;
             //Oko
         case 94:
             if (ruch < tab_legenda[4][1]) {
