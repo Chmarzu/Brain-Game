@@ -689,11 +689,9 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *p
     //Odkrywanie elementow wokol wybranego
     if (*ptab_mapa == ' ') {
         for (i = 0; i < 8; i++) {
-            if (!i) {
-                ptab_mapa -= 2 * KOLUMNA + 1;
-            } else if (i == 3 || i == 5) {
-                ptab_mapa += 2 * KOLUMNA - 4;
-            } else if (i == 4) ptab_mapa += 4;
+            if (!i) ptab_mapa -= 2 * KOLUMNA + 1;
+            else if (i == 3 || i == 5) ptab_mapa += 2 * KOLUMNA - 4;
+            else if (i == 4) ptab_mapa += 4;
             else ptab_mapa += 2;
             if (*ptab_mapa != 'O' && ptab_mapa > ptmp && ptab_mapa < ptmk)
                 *ptab_mapa = 'O';
@@ -703,11 +701,9 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *p
     else if (*ptab_mapa == '^') {
         ptab_mapa2 = ptab_mapa;
         for (i = 0; i < 24; i++) {
-            if (!i) {
-                ptab_mapa -= 4 * KOLUMNA + 3;
-            } else if (i == 5 || i == 10 || i == 14 || i == 19) {
-                ptab_mapa += 2 * KOLUMNA - 4;
-            } else if (i == 12) ptab_mapa += 4;
+            if (!i) ptab_mapa -= 4 * KOLUMNA + 3;
+            else if (i == 5 || i == 10 || i == 14 || i == 19) ptab_mapa += 2 * KOLUMNA - 4;
+            else if (i == 12) ptab_mapa += 4;
             else ptab_mapa += 2;
             if (*ptab_mapa != 'O' && ptab_mapa > ptmp && ptab_mapa < ptmk)
                 *ptab_mapa = 'O';
