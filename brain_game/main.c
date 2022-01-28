@@ -137,9 +137,11 @@ void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2) {
             ptab_mapa += 2;
             ptab_mapa2 += 2;
         }
-        los = rand() % 25;
+        los = rand() % 24;
+        /*
         if (!i)
             los = 18;
+            */
 
         switch (los) {
             case 0:
@@ -216,18 +218,14 @@ void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2) {
                 break;
         }
         //Usunac do update'a
-        *ptab_mapa2 = 'O';
+        //*ptab_mapa2 = 'O';
         //if (i == 0) *ptab_mapa2 = 'O';
-        /*
         if (*ptab_mapa == ' ') *ptab_mapa2 = 'O';
-        else if (odkryte < 3) {
-            if (*ptab_mapa == 'i' || *ptab_mapa == 'e' || *ptab_mapa == 's' ||
-                *ptab_mapa == 'p' || *ptab_mapa == 'w' || *ptab_mapa == 'u') {
-                *ptab_mapa2 = 'O';
-                odkryte++;
-            }
+        else if (odkryte < 3 && (*ptab_mapa == 'i' || *ptab_mapa == 'e' || *ptab_mapa == 's' ||
+                 *ptab_mapa == 'p' || *ptab_mapa == 'w' || *ptab_mapa == 'u')) {
+            *ptab_mapa2 = 'O';
+            odkryte++;
         } else *ptab_mapa2 = 'Z';
-        */
     }
 }
 
@@ -480,6 +478,10 @@ void instrukcja(int i, int linia, int tab, int *ptab_legenda) {
 }
 
 void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *ptab_stat, int *ptab_legenda, int *pruch) {
+    char *ptmp, *ptmk;
+    ptmp = ptmk = ptab_mapa2;
+    ptmk += 2 * WIERSZ * KOLUMNA;
+
     //Zmiana statystyk i dezaktywacja elementu
     //Zwykle atrybuty
     if (*ptab_mapa == 'i' || *ptab_mapa == 'e' || *ptab_mapa == 's' ||
@@ -681,25 +683,21 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *p
         *pruch += *ptab_legenda;
         *ptab_mapa = ' ';
     }
-    /*
+
     //Odkrywanie elementow wokol wybranego
-    if (tab_mapa[wiersz - 1][kolumna - 1][0] == ' ') {
-        for (j = 0; j < 8; ++j) {
-            if (!j) {
-                odwiersz = -1;
-                odkolumna = -1;
-            } else if (j == 3 || j == 5) {
-                odwiersz++;
-                odkolumna = -1;
-            } else if (j == 4) odkolumna += 2;
-            else odkolumna++;
-            if (tab_mapa[(wiersz - 1) + odwiersz][(kolumna - 1) + odkolumna][1] != 'O' &&
-                (wiersz - 1) + odwiersz >= 0 && (kolumna - 1) + odkolumna >= 0 &&
-                (wiersz - 1) + odwiersz <= WIERSZ - 1 &&
-                (kolumna - 1) + odkolumna <= KOLUMNA - 1)
-                tab_mapa[(wiersz - 1) + odwiersz][(kolumna - 1) + odkolumna][1] = 'O';
+    if (*ptab_mapa == ' ') {
+        for (i = 0; i < 8; i++) {
+            if (!i) {
+                ptab_mapa -= 2 * KOLUMNA + 1;
+            } else if (i == 3 || i == 5) {
+                ptab_mapa += 2 * KOLUMNA - 4;
+            } else if (i == 4) ptab_mapa += 4;
+            else ptab_mapa += 2;
+            if (*ptab_mapa != 'O' && ptab_mapa > ptmp && ptab_mapa < ptmk)
+                *ptab_mapa = 'O';
         }
     }
+    /*
         //Odkrywanie elementow dla oka
     else if (tab_mapa[wiersz - 1][kolumna - 1][0] == '^') {
         for (j = 0; j < 24; ++j) {
