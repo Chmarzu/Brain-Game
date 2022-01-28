@@ -649,44 +649,39 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *p
             *ptab_mapa = ' ';
         }
     }
-    /*
-    switch (tab_mapa[wiersz - 1][kolumna - 1][0]) {
-            //Oko
-        case 94:
-            if (ruch < tab_legenda[4][1]) {
-                printf("Za malo punktow ruchu!\n");
-                i = 0;
-            } else {
-                ruch -= tab_legenda[4][1];
-            }
-            break;
-            //Super oko
-        case 35:
-            if (ruch < tab_legenda[5][1]) {
-                printf("Za malo punktow ruchu!\n");
-                i = 0;
-            } else {
-                ruch -= tab_legenda[5][1];
-            }
-            break;
-            //Zacmienie
-        case 64:
-            if (ruch < tab_legenda[6][1]) {
-                printf("Za malo punktow ruchu!\n");
-                i = 0;
-            } else {
-                ruch -= tab_legenda[6][1];
-                tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
-            }
-            break;
-            //Bonus do punktow ruchu
-        case 43:
-            ruch += tab_legenda[7][0];
-            tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
-            break;
-        default:
-            break;
+    //Oko
+    else if (*ptab_mapa == '^') {
+        ptab_legenda += 9;
+        if (*pruch < *ptab_legenda) {
+            printf("Za malo punktow ruchu!\n");
+        } else
+            *pruch -= *ptab_legenda;
     }
+    //Super oko
+    else if (*ptab_mapa == '#') {
+        ptab_legenda += 11;
+        if (*pruch < *ptab_legenda) {
+            printf("Za malo punktow ruchu!\n");
+        } else
+            *pruch -= *ptab_legenda;
+    }
+    //Zacmienie
+    else if (*ptab_mapa == '@') {
+        ptab_legenda += 13;
+        if (*pruch < *ptab_legenda) {
+            printf("Za malo punktow ruchu!\n");
+        } else {
+            *pruch -= *ptab_legenda;
+            *ptab_mapa = ' ';
+        }
+    }
+    //Bonus do punktow ruchu
+    else if (*ptab_mapa == '+') {
+        ptab_legenda += 14;
+        *pruch += *ptab_legenda;
+        *ptab_mapa = ' ';
+    }
+    /*
     //Odkrywanie elementow wokol wybranego
     if (tab_mapa[wiersz - 1][kolumna - 1][0] == ' ') {
         for (j = 0; j < 8; ++j) {
