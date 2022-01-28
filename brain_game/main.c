@@ -5,7 +5,7 @@
 
 //Wymiary tabeli tab_mapa
 #define WIERSZ 5
-#define KOLUMNA 23
+#define KOLUMNA 5
 #define GLEBOKOSC 2
 
 int ekran_powitalny(int linia, int tab);
@@ -138,10 +138,9 @@ void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2) {
             ptab_mapa2 += 2;
         }
         los = rand() % 24;
-        /*
-        if (!i)
-            los = 18;
-            */
+
+        if (i == 12)
+            los = 19;
 
         switch (los) {
             case 0:
@@ -221,10 +220,13 @@ void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2) {
         //*ptab_mapa2 = 'O';
         //if (i == 0) *ptab_mapa2 = 'O';
         if (*ptab_mapa == ' ') *ptab_mapa2 = 'O';
+        /*
         else if (odkryte < 3 && (*ptab_mapa == 'i' || *ptab_mapa == 'e' || *ptab_mapa == 's' ||
                  *ptab_mapa == 'p' || *ptab_mapa == 'w' || *ptab_mapa == 'u')) {
             *ptab_mapa2 = 'O';
             odkryte++;
+            */
+        if (*ptab_mapa == '^') {*ptab_mapa2 = 'O';
         } else *ptab_mapa2 = 'Z';
     }
 }
@@ -697,36 +699,30 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *p
                 *ptab_mapa = 'O';
         }
     }
-    /*
-        //Odkrywanie elementow dla oka
-    else if (tab_mapa[wiersz - 1][kolumna - 1][0] == '^') {
-        for (j = 0; j < 24; ++j) {
-            if (!j) {
-                odwiersz = -2;
-                odkolumna = -2;
-            } else if (j == 5 || j == 10 || j == 14 || j == 19) {
-                odwiersz++;
-                odkolumna = -2;
-            } else if (j == 12) odkolumna += 2;
-            else odkolumna++;
-            if (tab_mapa[(wiersz - 1) + odwiersz][(kolumna - 1) + odkolumna][1] != 'O' &&
-                (wiersz - 1) + odwiersz >= 0 && (kolumna - 1) + odkolumna >= 0 &&
-                (wiersz - 1) + odwiersz <= WIERSZ - 1 &&
-                (kolumna - 1) + odkolumna <= KOLUMNA - 1)
-                tab_mapa[(wiersz - 1) + odwiersz][(kolumna - 1) + odkolumna][1] = 'O';
+    //Odkrywanie elementow dla oka
+    else if (*ptab_mapa == '^') {
+        ptab_mapa2 = ptab_mapa;
+        for (i = 0; i < 24; i++) {
+            if (!i) {
+                ptab_mapa -= 4 * KOLUMNA + 3;
+            } else if (i == 5 || i == 10 || i == 14 || i == 19) {
+                ptab_mapa += 2 * KOLUMNA - 4;
+            } else if (i == 12) ptab_mapa += 4;
+            else ptab_mapa += 2;
+            if (*ptab_mapa != 'O' && ptab_mapa > ptmp && ptab_mapa < ptmk)
+                *ptab_mapa = 'O';
         }
-        tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
+        *ptab_mapa2 = ' ';
     }
-        //Odkrywanie elementow dla super oka
+    //Odkrywanie elementow dla super oka
     else {
-        for (j = 0; j < WIERSZ; j++) {
-            for (k = 0; k < KOLUMNA; k++) {
-                if (tab_mapa[j][k][1] == 'Z') tab_mapa[j][k][1] = 'O';
-            }
+        ptmp++;
+        for (i = 0; i < WIERSZ * KOLUMNA; i++) {
+            if (*ptmp == 'Z') *ptmp = 'O';
+            ptmp += 2;
         }
-        tab_mapa[wiersz - 1][kolumna - 1][0] = ' ';
+        *ptab_mapa = ' ';
     }
-     */
 }
 
 void test(int i, int j, int *pzwrot, int *pruch, char *ptab_mapa) {
