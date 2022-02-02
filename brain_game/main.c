@@ -5,7 +5,7 @@
 
 //Wymiary tabeli tab_mapa
 #define WIERSZ 5
-#define KOLUMNA 6
+#define KOLUMNA 5
 #define GLEBOKOSC 2
 
 int ekran_powitalny(int linia, int tab);
@@ -139,7 +139,7 @@ void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2) {
         }
         //los = rand() % 24;
 
-        if (i == 12) los = 19;
+        if (i == 10) los = 19;
         else los = rand() % 5 + 0;
 
         switch (los) {
@@ -699,15 +699,18 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *p
     else if (*ptab_mapa == '^') {
         ptab_mapa2 = ptab_mapa;
         for (i = 0; i < 24; i++) {
-            if (!i) ptab_mapa = ptab_mapa2 - (23 + (KOLUMNA - 5) * 4);
-            else if (i == 12) ptab_mapa += 4;
-            else if (i == 5 || i == 10 || i == 14 || i == 19) {
                 switch (i) {
+                    case 0:
+                        ptab_mapa = ptab_mapa2 - (23 + (KOLUMNA - 5) * 4);
+                        break;
                     case 5:
                         ptab_mapa = ptab_mapa2 - (13 + (KOLUMNA - 5) * 2);
                         break;
                     case 10:
                         ptab_mapa = ptab_mapa2 - 3;
+                        break;
+                    case 12:
+                        ptab_mapa += 4;
                         break;
                     case 14:
                         ptab_mapa = ptab_mapa2 + (7 + (KOLUMNA - 5) * 2);
@@ -716,12 +719,10 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *p
                         ptab_mapa = ptab_mapa2 + (17 + (KOLUMNA - 5) * 4);
                         break;
                     default:
-                        printf("Blad w switchu dla odslaniania oka");
+                        ptab_mapa += 2;
+                        break;
                 }
-            }
-            else ptab_mapa += 2;
-            if (*ptab_mapa != 'O' && ptab_mapa > ptmp && ptab_mapa < ptmk)
-                *ptab_mapa = 'O';
+            if (*ptab_mapa != 'O' && ptab_mapa > ptmp && ptab_mapa < ptmk) *ptab_mapa = 'O';
         }
         *ptab_mapa2 = ' ';
     }
