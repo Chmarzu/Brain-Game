@@ -1,7 +1,18 @@
-Screnariusze dla ustawienia atrybuta oka w tablicy:
+Screnariusze dla ustawienia atrybutu "oko" w tablicy:
 - lewy gorny rog:
-przeskoki: 1, 2, 3 - ok
-przeskoki: 4, 5 - zle
-- prawy gorny rog
-- lewy dolny rog
-- prawy dolny rog
+zle przeskoki: 4 (2 pierwsze elem), 5 (jak w 4)
+- prawy gorny rog:
+zle przeskoki: 2 (2 ostatnie elem), 3 (jak w 2), 4 (jak w 2),
+5 (jak w 2) 
+- lewy dolny rog:
+zle przeskoki: 1 (2 pierwsze elem), 2 (jak w 1), 3 (jak w 1), 4 (jak w 1)
+- prawy dolny rog:
+zle przeskoki: 1 (2 ostatnie elem), 2 (jak w 1)
+- lewy bok - 1 element od brzegu:
+zle przeskoki: 2 (pierwszy elem), 3 (jak w 2), 4 (jak w 2), 5 (jak w 2)
+- lewy bok - przy brzegu:
+zle przeskoki: 2 (2 pierwsze elem), 3 (jak w 2), 4 (jak w 2), 5 (jak w 2)
+- prawy bok - 1 element od brzegu:
+zle przeskoki: 1 (ostatni elem), 2 (jak w 1), 3 (jak w 1), 4 (jak w 1)
+- prawy bok - przy brzegu:
+zle przeskoki: 1 (2 ostatnie elem), 2 (jak w 1), 3 (jak w 1), 4 (jak w 1)

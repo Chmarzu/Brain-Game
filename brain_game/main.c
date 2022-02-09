@@ -4,8 +4,8 @@
 #include <time.h>
 
 //Wymiary tabeli tab_mapa
-#define WIERSZ 5
-#define KOLUMNA 5
+#define WIERSZ 7
+#define KOLUMNA 23
 #define GLEBOKOSC 2
 
 int ekran_powitalny(int linia, int tab);
@@ -133,14 +133,12 @@ void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2) {
     int los, odkryte = 0;
 
     for (i = 0; i < (WIERSZ * KOLUMNA); i++) {
-        if (i > 0) {
-            ptab_mapa += 2;
-            ptab_mapa2 += 2;
-        }
-        //los = rand() % 24;
+        los = rand() % 24;
 
-        if (i == 10) los = 19;
+        /*
+        if (i == 18) los = 19;
         else los = rand() % 5 + 0;
+         */
 
         switch (los) {
             case 0:
@@ -220,12 +218,15 @@ void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2) {
         //*ptab_mapa2 = 'O';
         if (*ptab_mapa == ' ') *ptab_mapa2 = 'O';
         //if (i == 0) *ptab_mapa2 = 'O';
-        if (*ptab_mapa == '^') { *ptab_mapa2 = 'O';
-        /*else if (odkryte < 3 && (*ptab_mapa == 'i' || *ptab_mapa == 'e' || *ptab_mapa == 's' ||
+        //if (*ptab_mapa == '^') { *ptab_mapa2 = 'O';
+        else if (odkryte < 3 && (*ptab_mapa == 'i' || *ptab_mapa == 'e' || *ptab_mapa == 's' ||
                  *ptab_mapa == 'p' || *ptab_mapa == 'w' || *ptab_mapa == 'u')) {
             *ptab_mapa2 = 'O';
-            odkryte++;*/
+            odkryte++;
         } else *ptab_mapa2 = 'Z';
+
+        ptab_mapa += 2;
+        ptab_mapa2 += 2;
     }
 }
 
@@ -478,6 +479,7 @@ void instrukcja(int i, int linia, int tab, int *ptab_legenda) {
 }
 
 void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *ptab_stat, int *ptab_legenda, int *pruch) {
+    unsigned short lewo, prawo;
     char *ptmp, *ptmk;
     ptmp = ptmk = ptab_mapa2;
     ptmk += 2 * WIERSZ * KOLUMNA;
@@ -699,30 +701,60 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *p
     else if (*ptab_mapa == '^') {
         ptab_mapa2 = ptab_mapa;
         for (i = 0; i < 24; i++) {
-                switch (i) {
-                    case 0:
-                        ptab_mapa = ptab_mapa2 - (23 + (KOLUMNA - 5) * 4);
-                        break;
-                    case 5:
-                        ptab_mapa = ptab_mapa2 - (13 + (KOLUMNA - 5) * 2);
-                        break;
-                    case 10:
-                        ptab_mapa = ptab_mapa2 - 3;
-                        break;
-                    case 12:
-                        ptab_mapa += 4;
-                        break;
-                    case 14:
-                        ptab_mapa = ptab_mapa2 + (7 + (KOLUMNA - 5) * 2);
-                        break;
-                    case 19:
-                        ptab_mapa = ptab_mapa2 + (17 + (KOLUMNA - 5) * 4);
-                        break;
-                    default:
-                        ptab_mapa += 2;
-                        break;
+            if (!i) {
+                ptab_mapa++;
+                lewo = ((ptab_mapa2 - ptmp) / 2) % KOLUMNA;
+                prawo = ((ptmk - ptab_mapa2 - 1) / 2) % KOLUMNA;
+            }
+            switch (i) {
+                case 0:
+                    ptab_mapa = ptab_mapa2 - (23 + (KOLUMNA - 5) * 4);
+                    break;
+                case 5:
+                    ptab_mapa = ptab_mapa2 - (13 + (KOLUMNA - 5) * 2);
+                    break;
+                case 10:
+                    ptab_mapa = ptab_mapa2 - 3;
+                    break;
+                case 12:
+                    ptab_mapa += 4;
+                    break;
+                case 14:
+                    ptab_mapa = ptab_mapa2 + (7 + (KOLUMNA - 5) * 2);
+                    break;
+                case 19:
+                    ptab_mapa = ptab_mapa2 + (17 + (KOLUMNA - 5) * 4);
+                    break;
+                default:
+                    ptab_mapa += 2;
+                    break;
+            }
+            if (*ptab_mapa != 'O' && ptab_mapa > ptmp && ptab_mapa < ptmk) {
+                if (lewo < 2) {
+                    switch (lewo) {
+                        case 0:
+                            if (i > 1 && i != 5 && i != 6 && i != 10 && i != 11 && i != 14 && i != 15 && i != 19 && i != 20)
+                                *ptab_mapa = 'O';
+                            break;
+                        case 1:
+                            if (i && i != 5 && i != 10 && i != 14 && i != 19)
+                                *ptab_mapa = 'O';
+                            break;
+                    }
                 }
-            if (*ptab_mapa != 'O' && ptab_mapa > ptmp && ptab_mapa < ptmk) *ptab_mapa = 'O';
+                if (prawo < 2) {
+                    switch (prawo) {
+                        case 0:
+                            if (i != 3 && i != 4 && i != 8 && i != 9 && i != 12 && i != 13 && i != 17 && i != 18 && i != 22 && i != 23)
+                                *ptab_mapa = 'O';
+                            break;
+                        case 1:
+                            if (i != 4 && i != 9 && i != 13 && i != 18 && i != 23)
+                                *ptab_mapa = 'O';
+                            break;
+                    }
+                } else if (lewo >= 2 && prawo >= 2) *ptab_mapa = 'O';
+            }
         }
         *ptab_mapa2 = ' ';
     }
