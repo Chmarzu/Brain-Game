@@ -740,6 +740,9 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *p
                             if (i && i != 5 && i != 10 && i != 14 && i != 19)
                                 *ptab_mapa = 'O';
                             break;
+                        default:
+                            printf("Blad w switchu korekcyjnym nr 1!");
+                            break;
                     }
                 }
                 if (prawo < 2) {
@@ -751,6 +754,9 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *p
                         case 1:
                             if (i != 4 && i != 9 && i != 13 && i != 18 && i != 23)
                                 *ptab_mapa = 'O';
+                            break;
+                        default:
+                            printf("Blad w switchu korekcyjnym nr 2!");
                             break;
                     }
                 } else if (lewo >= 2 && prawo >= 2) *ptab_mapa = 'O';
