@@ -8,7 +8,7 @@
 #define KOLUMNA 23
 #define GLEBOKOSC 2
 
-int ekran_powitalny(int linia, int tab);
+int ekran_powitalny();
 
 void gra(int linia, int tab, int *pzwrot, int *ptab_stat);
 void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2);
@@ -18,14 +18,14 @@ void instrukcja(int i, int linia, int tab, int *ptab_legenda);
 void atrybut(int i, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3, int *ptab_stat, int *ptab_legenda, int *pruch);
 void test(int i, int j, int *pzwrot, int *pruch, char *ptab_mapa);
 
-void ekran_koncowy(int linia, int tab, int *ptab_stat);
+void ekran_koncowy(int *ptab_stat);
 
 void suwak(int linia);
 void tabulator(int tab);
 
 int main() {
     /*
-     zwrot - wynik funkcji
+     zwrot - wartosc zwracana przez funkcje
      linia - ilosc przesuwanych linijek w funkcji "suwak"
      tab - ilosc wykonywanych tabulacji w funkcji "tabulator"
     */
@@ -40,10 +40,10 @@ int main() {
     srand(time(NULL));
 
     //Ekran powitalny
-    zwrot = ekran_powitalny(linia, tab);
+    zwrot = ekran_powitalny();
     if (!zwrot) {
-        ekran_koncowy(linia, tab, &tab_stat[0]);
-        return 0;
+        ekran_koncowy(&tab_stat[0]);
+        exit(0);
     }
 
     //Gra
@@ -51,44 +51,43 @@ int main() {
     gra(linia, tab, &zwrot, &tab_stat[0]);
 
     //Ekran koncowy
-    ekran_koncowy(linia, tab, &tab_stat[0]);
+    ekran_koncowy(&tab_stat[0]);
 
     return 0;
 }
 
-int ekran_powitalny(int linia, int tab) {
+int ekran_powitalny() {
     char bug;
 
-    suwak(linia);
-    tabulator(tab);
+    suwak(3);
+    tabulator(3);
     printf("Witaj w Mapie Mozgu!\n");
-    tabulator(tab);
+    tabulator(3);
     printf("Gra ta jest inspirowana mini gra z Growing Up.");
-    suwak(linia);
-    tabulator(tab);
+    suwak(3);
+    tabulator(3);
     printf("Aby przejsc dalej, wcisnij Enter...");
 
     bug = getchar();
-    linia = 40;
-    suwak(linia);
+    suwak(40);
 
     if (bug != '\n') {
-        while (bug != '\n') bug = getchar();
+        while (bug != '\n')
+            bug = getchar();
 
-        tabulator(tab);
+        tabulator(3);
         printf("Nie ladnie psuc gre!\n");
-        tabulator(tab);
+        tabulator(3);
         printf("Masz ostatnia szanse.");
-        linia = 3;
-        suwak(linia);
-        tabulator(tab);
+        suwak(3);
+        tabulator(3);
         printf("Aby przejsc dalej, wcisnij Enter...");
 
         bug = getchar();
-        linia = 40;
-        suwak(linia);
+        suwak(40);
 
-        if (bug == '\n') return 1;
+        if (bug == '\n')
+            return 1;
         else return 0;
     } else return 1;
 }
@@ -801,15 +800,12 @@ void test(int i, int j, int *pzwrot, int *pruch, char *ptab_mapa) {
     }
 }
 
-void ekran_koncowy(int linia, int tab, int *ptab_stat) {
-    tab = 8;
-    tabulator(tab);
+void ekran_koncowy(int *ptab_stat) {
+    tabulator(8);
     printf("Gratulacje!\n");
-    tab = 7;
-    tabulator(tab);
+    tabulator(7);
     printf("Oto twoj koncowy wynik:\n\n");
-    tab = 3;
-    tabulator(tab);
+    tabulator(3);
 
     for (int i = 0; i < 6; i++) {
         switch (i) {
