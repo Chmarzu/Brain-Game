@@ -16,6 +16,10 @@ void ekran_gry(int i, int j, int k, int linia, int ruch, int *ptab_stat, char *p
 void reakcja(int i, int j, int k, int linia, int tab, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3);
 void instrukcja(int i, int linia, int tab, int *ptab_legenda);
 void atrybut(int i, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3, int *ptab_stat, int *ptab_legenda, int *pruch);
+void zwykly_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch);
+void super_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch);
+void mega_at(int i, char ptab_mapa, char *ptab_mapa2, char *ptab_mapa3, int *ptab_stat, int *ptab_legenda, int *pruch);
+void hiper_at(int i, int *ptab_stat, int *ptab_legenda, int *pruch);
 void test(int i, int j, int *pzwrot, int *pruch, char *ptab_mapa);
 
 void ekran_koncowy(int *ptab_stat);
@@ -487,203 +491,45 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *p
     //Zwykle atrybuty
     if (*ptab_mapa == 'i' || *ptab_mapa == 'e' || *ptab_mapa == 's' ||
         *ptab_mapa == 'p' || *ptab_mapa == 'w' || *ptab_mapa == 'u') {
-        ptab_legenda++;
-        if (*pruch < *ptab_legenda)
-            printf("Za malo punktow ruchu!\n");
-        else {
-            *pruch -= *ptab_legenda;
-            ptab_legenda--;
-            switch (*ptab_mapa) {
-                case 'i':
-                    *ptab_stat += *ptab_legenda;
-                    break;
-                case 'e':
-                    ptab_stat++;
-                    *ptab_stat += *ptab_legenda;
-                    break;
-                case 's':
-                    ptab_stat += 2;
-                    *ptab_stat += *ptab_legenda;
-                    break;
-                case 'p':
-                    ptab_stat += 3;
-                    *ptab_stat += *ptab_legenda;
-                    break;
-                case 'w':
-                    ptab_stat += 4;
-                    *ptab_stat += *ptab_legenda;
-                    break;
-                case 'u':
-                    ptab_stat += 5;
-                    *ptab_stat += *ptab_legenda;
-                    break;
-                default:
-                    printf("Blad w switch nr 1 w funkcji atrybut!");
-                    break;
-            }
-            *ptab_mapa = ' ';
-        }
+        zwykly_at(ptab_mapa, ptab_stat, ptab_legenda, pruch);
     //Super atrybuty
     } else if (*ptab_mapa == 'I' || *ptab_mapa == 'E' || *ptab_mapa == 'S' ||
                *ptab_mapa == 'P' || *ptab_mapa == 'W' || *ptab_mapa == 'U') {
-        ptab_legenda += 3;
-        if (*pruch < *ptab_legenda)
-            printf("Za malo punktow ruchu!\n");
-        else {
-            *pruch -= *ptab_legenda;
-            ptab_legenda--;
-            switch (*ptab_mapa) {
-                case 'I':
-                    *ptab_stat += *ptab_legenda;
-                    break;
-                case 'E':
-                    ptab_stat++;
-                    *ptab_stat += *ptab_legenda;
-                    break;
-                case 'S':
-                    ptab_stat += 2;
-                    *ptab_stat += *ptab_legenda;
-                    break;
-                case 'P':
-                    ptab_stat += 3;
-                    *ptab_stat += *ptab_legenda;
-                    break;
-                case 'W':
-                    ptab_stat += 4;
-                    *ptab_stat += *ptab_legenda;
-                    break;
-                case 'U':
-                    ptab_stat += 5;
-                    *ptab_stat += *ptab_legenda;
-                    break;
-                default:
-                    printf("Blad w switch nr 2 w funkcji atrybut!");
-                    break;
-            }
-            *ptab_mapa = ' ';
-        }
+        super_at(ptab_mapa, ptab_stat, ptab_legenda, pruch);
     //Mega atrybuty
     } else if (*ptab_mapa > 96 && *ptab_mapa < 104 && *ptab_mapa != 101) {
-      ptab_legenda += 5;
-        if (*pruch < *ptab_legenda)
-            printf("Za malo punktow ruchu!\n");
-        else {
-            *pruch -= *ptab_legenda;
-            ptab_legenda -= 5;
-            switch (*ptab_mapa) {
-                case 'b':
-                    ptab_stat++;
-                    break;
-                case 'c':
-                    ptab_stat += 2;
-                    break;
-                case 'd':
-                    ptab_stat += 3;
-                    break;
-                case 'f':
-                    ptab_stat += 4;
-                    break;
-                case 'g':
-                    ptab_stat += 5;
-                    break;
-            }
-            for (i = 0; i < WIERSZ * KOLUMNA; i++) {
-                if (*ptab_mapa3 == 'O') {
-                    switch (*ptab_mapa) {
-                        case 'a':
-                            if (*ptab_mapa2 == 'i') {
-                                *ptab_stat += *ptab_legenda;
-                                *ptab_mapa2 = ' ';
-                            }
-                            break;
-                        case 'b':
-                            if (*ptab_mapa2 == 'e') {
-                                *ptab_stat += *ptab_legenda;
-                                *ptab_mapa2 = ' ';
-                            }
-                            break;
-                        case 'c':
-                            if (*ptab_mapa2 == 's') {
-                                *ptab_stat += *ptab_legenda;
-                                *ptab_mapa2 = ' ';
-                            }
-                            break;
-                        case 'd':
-                            if (*ptab_mapa2 == 'p') {
-                                *ptab_stat += *ptab_legenda;
-                                *ptab_mapa2 = ' ';
-                            }
-                            break;
-                        case 'f':
-                            if (*ptab_mapa2 == 'w') {
-                                *ptab_stat += *ptab_legenda;
-                                *ptab_mapa2 = ' ';
-                            }
-                            break;
-                        case 'g':
-                            if (*ptab_mapa2 == 'u') {
-                                *ptab_stat += *ptab_legenda;
-                                *ptab_mapa2 = ' ';
-                            }
-                            break;
-                        default:
-                            printf("Blad w switch nr 3 w funkcji atrybut!");
-                            break;
-                    }
-                }
-                ptab_mapa2 += 2;
-                ptab_mapa3 += 2;
-            }
-            *ptab_mapa = ' ';
-        }
-    }
+        mega_at(i, ptab_mapa, ptab_mapa2, ptab_mapa3, ptab_stat, ptab_legenda, pruch);
     //Hiper atrybut
-    else if (*ptab_mapa == '$') {
-        ptab_legenda += 7;
-        if (*pruch < *ptab_legenda) {
-            printf("Za malo punktow ruchu!\n");
-        } else {
-            *pruch -= *ptab_legenda;
-            ptab_legenda--;
-            for (i = 0; i < 6; i++) {
-                *ptab_stat += *ptab_legenda;
-                ptab_stat++;
-            }
-            *ptab_mapa = ' ';
-        }
-    }
+    } else if (*ptab_mapa == '$') {
+        hiper_at(i, ptab_stat, ptab_legenda, pruch);
     //Oko
-    else if (*ptab_mapa == '^') {
+    } else if (*ptab_mapa == '^') {
         ptab_legenda += 9;
         if (*pruch < *ptab_legenda) {
             printf("Za malo punktow ruchu!\n");
-        } else
-            *pruch -= *ptab_legenda;
+        } else *pruch -= *ptab_legenda;
     }
     //Super oko
     else if (*ptab_mapa == '#') {
         ptab_legenda += 11;
         if (*pruch < *ptab_legenda) {
             printf("Za malo punktow ruchu!\n");
-        } else
-            *pruch -= *ptab_legenda;
+        } else *pruch -= *ptab_legenda;
     }
     //Zacmienie
     else if (*ptab_mapa == '@') {
         ptab_legenda += 13;
         if (*pruch < *ptab_legenda) {
             printf("Za malo punktow ruchu!\n");
-        } else {
-            *pruch -= *ptab_legenda;
-            *ptab_mapa = ' ';
-        }
+        } else *pruch -= *ptab_legenda;
     }
     //Bonus do punktow ruchu
     else if (*ptab_mapa == '+') {
         ptab_legenda += 14;
         *pruch += *ptab_legenda;
-        *ptab_mapa = ' ';
     }
+
+    if (*ptab_mapa != '^' && *ptab_mapa != '#') *ptab_mapa = ' ';   //Dezaktywacja atrybutow poza okiem i superokiem
 
     //Odkrywanie elementow wokol wybranego
     if (*ptab_mapa == ' ') {
@@ -771,6 +617,170 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *p
             ptmp += 2;
         }
         *ptab_mapa = ' ';
+    }
+}
+
+void zwykly_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch) {
+    ptab_legenda++;
+    if (*pruch < *ptab_legenda)
+        printf("Za malo punktow ruchu!\n");
+    else {
+        *pruch -= *ptab_legenda;
+        ptab_legenda--;
+        switch (ptab_mapa) {
+            case 'i':
+                *ptab_stat += *ptab_legenda;
+                break;
+            case 'e':
+                ptab_stat++;
+                *ptab_stat += *ptab_legenda;
+                break;
+            case 's':
+                ptab_stat += 2;
+                *ptab_stat += *ptab_legenda;
+                break;
+            case 'p':
+                ptab_stat += 3;
+                *ptab_stat += *ptab_legenda;
+                break;
+            case 'w':
+                ptab_stat += 4;
+                *ptab_stat += *ptab_legenda;
+                break;
+            case 'u':
+                ptab_stat += 5;
+                *ptab_stat += *ptab_legenda;
+                break;
+            default:
+                printf("Blad w switch nr 1 w funkcji atrybut!");
+                break;
+        }
+    }
+}
+
+void super_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch) {
+    ptab_legenda += 3;
+    if (*pruch < *ptab_legenda)
+        printf("Za malo punktow ruchu!\n");
+    else {
+        *pruch -= *ptab_legenda;
+        ptab_legenda--;
+        switch (ptab_mapa) {
+            case 'I':
+                *ptab_stat += *ptab_legenda;
+                break;
+            case 'E':
+                ptab_stat++;
+                *ptab_stat += *ptab_legenda;
+                break;
+            case 'S':
+                ptab_stat += 2;
+                *ptab_stat += *ptab_legenda;
+                break;
+            case 'P':
+                ptab_stat += 3;
+                *ptab_stat += *ptab_legenda;
+                break;
+            case 'W':
+                ptab_stat += 4;
+                *ptab_stat += *ptab_legenda;
+                break;
+            case 'U':
+                ptab_stat += 5;
+                *ptab_stat += *ptab_legenda;
+                break;
+            default:
+                printf("Blad w switch nr 2 w funkcji atrybut!");
+                break;
+        }
+    }
+}
+
+void mega_at(int i, char ptab_mapa, char *ptab_mapa2, char *ptab_mapa3, int *ptab_stat, int *ptab_legenda, int *pruch) {
+    ptab_legenda += 5;
+    if (*pruch < *ptab_legenda)
+        printf("Za malo punktow ruchu!\n");
+    else {
+        *pruch -= *ptab_legenda;
+        ptab_legenda -= 5;
+        switch (ptab_mapa) {
+            case 'b':
+                ptab_stat++;
+                break;
+            case 'c':
+                ptab_stat += 2;
+                break;
+            case 'd':
+                ptab_stat += 3;
+                break;
+            case 'f':
+                ptab_stat += 4;
+                break;
+            case 'g':
+                ptab_stat += 5;
+                break;
+        }
+        for (i = 0; i < WIERSZ * KOLUMNA; i++) {
+            if (*ptab_mapa3 == 'O') {
+                switch (ptab_mapa) {
+                    case 'a':
+                        if (*ptab_mapa2 == 'i') {
+                            *ptab_stat += *ptab_legenda;
+                            *ptab_mapa2 = ' ';
+                        }
+                        break;
+                    case 'b':
+                        if (*ptab_mapa2 == 'e') {
+                            *ptab_stat += *ptab_legenda;
+                            *ptab_mapa2 = ' ';
+                        }
+                        break;
+                    case 'c':
+                        if (*ptab_mapa2 == 's') {
+                            *ptab_stat += *ptab_legenda;
+                            *ptab_mapa2 = ' ';
+                        }
+                        break;
+                    case 'd':
+                        if (*ptab_mapa2 == 'p') {
+                            *ptab_stat += *ptab_legenda;
+                            *ptab_mapa2 = ' ';
+                        }
+                        break;
+                    case 'f':
+                        if (*ptab_mapa2 == 'w') {
+                            *ptab_stat += *ptab_legenda;
+                            *ptab_mapa2 = ' ';
+                        }
+                        break;
+                    case 'g':
+                        if (*ptab_mapa2 == 'u') {
+                            *ptab_stat += *ptab_legenda;
+                            *ptab_mapa2 = ' ';
+                        }
+                        break;
+                    default:
+                        printf("Blad w switch nr 3 w funkcji atrybut!");
+                        break;
+                }
+            }
+            ptab_mapa2 += 2;
+            ptab_mapa3 += 2;
+        }
+    }
+}
+
+void hiper_at(int i, int *ptab_stat, int *ptab_legenda, int *pruch) {
+    ptab_legenda += 7;
+    if (*pruch < *ptab_legenda) {
+        printf("Za malo punktow ruchu!\n");
+    } else {
+        *pruch -= *ptab_legenda;
+        ptab_legenda--;
+        for (i = 0; i < 6; i++) {
+            *ptab_stat += *ptab_legenda;
+            ptab_stat++;
+        }
     }
 }
 
