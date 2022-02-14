@@ -12,8 +12,8 @@ int ekran_powitalny();
 
 void gra(int *pzwrot, int *ptab_stat);
 void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2);
-void ekran_gry(int i, int j, int k, int ruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2);
-void reakcja(int i, int j, int k, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3);
+void ekran_gry(int i, int j, int ruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2);
+void reakcja(int i, int j, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3);
 void instrukcja(int i, int *ptab_legenda);
 void atrybut(int i, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3, int *ptab_stat, int *ptab_legenda, int *pruch);
 void zwykly_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch);
@@ -28,14 +28,11 @@ void suwak(int linia);
 void tabulator(int tab);
 
 int main() {
-    /*
-     zwrot - wartosc zwracana przez funkcje
-    */
-    int zwrot;
+    int zwrot;  //Wartosc zwracana przez funkcje
 
     /*
-    Tablica z wartościami statystyk
-    Kolejnosc: Inteligencja, Empatia, Sprawnosc, Pamiec, Wyobraznia, Urok
+     * Tablica z wartościami statystyk
+     * Kolejnosc: Inteligencja, Empatia, Sprawnosc, Pamiec, Wyobraznia, Urok
      */
     int tab_stat[6] = {0, 0, 0, 0, 0, 0};
 
@@ -95,28 +92,24 @@ int ekran_powitalny() {
 }
 
 void gra(int *pzwrot, int *ptab_stat) {
-    /*
-     * i, j, k - zmienne obslugujace petle
-     * zuzyte - warunek przy sprawdzaniu zuzycia elementow
-     * ruch - mechanika punktow ruchu
-     */
-    int i = 0, j = 0, k = 0;
-    static int ruch = 30;
+    int i = 0, j = 0;    //Zmienne obslugujace petle
+    static int ruch = 30;   //Mechanika punktow ruchu
 
     //Tablica dla elementow wyswietlanych na mapie gry
     char tab_mapa[WIERSZ][KOLUMNA][GLEBOKOSC];
 
     do {
         //Inicjalizacja tablicy tab_mapa
-        if (*pzwrot == 1) inic_mapa(i, &tab_mapa[0][0][0], &tab_mapa[0][0][1]);
+        if (*pzwrot == 1)
+            inic_mapa(i, &tab_mapa[0][0][0], &tab_mapa[0][0][1]);
 
         //Ekran gry
-        ekran_gry(i, j, k, ruch, ptab_stat, &tab_mapa[0][0][0], &tab_mapa[0][0][1]);
+        ekran_gry(i, j, ruch, ptab_stat, &tab_mapa[0][0][0], &tab_mapa[0][0][1]);
 
         //Sekcja interaktywna
-        reakcja(i, j, k, pzwrot, &ruch, ptab_stat, &tab_mapa[0][0][0], &tab_mapa[0][0][0], &tab_mapa[0][0][1]);
+        reakcja(i, j, pzwrot, &ruch, ptab_stat, &tab_mapa[0][0][0], &tab_mapa[0][0][0], &tab_mapa[0][0][1]);
 
-        //Test mapy gry
+        //Test stanu gry
         if (*pzwrot == 2) test(i, j, pzwrot, &ruch, &tab_mapa[0][0][0]);
 
         suwak(40);
@@ -126,19 +119,12 @@ void gra(int *pzwrot, int *ptab_stat) {
 }
 
 void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2) {
-    /*
-    los - decyduje ktory atrybut ma zostac zainicjalizowany
-    odkryte - ogranicza liczbe odkrytych zwyklych atrybutow
-     */
-    int los, odkryte = 0;
+    int los;    //Decyduje ktory atrybut ma zostac zainicjalizowany
+    int odkryte = 0;    //Ogranicza liczbe odkrytych atrybutow
 
     for (i = 0; i < (WIERSZ * KOLUMNA); i++) {
         los = rand() % 24;
-
-        /*
-        if (i == 18) los = 19;
-        else los = rand() % 5 + 0;
-         */
+        //if (i == 18) los = 19;
 
         switch (los) {
             case 0:
@@ -215,10 +201,10 @@ void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2) {
                 break;
         }
         //Usunac do update'a
-        //*ptab_mapa2 = 'O';
+        //*ptab_mapa2 = 'O';    //Odslaniecie wszystkiego
         if (*ptab_mapa == ' ') *ptab_mapa2 = 'O';
-        //if (i == 0) *ptab_mapa2 = 'O';
-        //if (*ptab_mapa == '^') { *ptab_mapa2 = 'O';
+        //if (i == 0) *ptab_mapa2 = 'O';    //Odslaniecie lda wybranej iteracji
+        //if (*ptab_mapa == '^') *ptab_mapa2 = 'O';   //Odslaniecie kazdego atrybutu okreslonego typu
         else if (odkryte < 3 && (*ptab_mapa == 'i' || *ptab_mapa == 'e' || *ptab_mapa == 's' ||
                  *ptab_mapa == 'p' || *ptab_mapa == 'w' || *ptab_mapa == 'u')) {
             *ptab_mapa2 = 'O';
@@ -230,13 +216,12 @@ void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2) {
     }
 }
 
-void ekran_gry(int i, int j, int k, int ruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2) {
-    int pom = 1; //odpowiada za pomocnicze liczby wokol mapy gry
+void ekran_gry(int i, int j, int ruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2) {
+    int pom = 1;    //Odpowiada za pomocnicze liczby wokol mapy gry
 
     //Statystyki
-    printf("\tTwoje statystyki:\n");
+    printf("\tTwoje statystyki:\n\t");
     for (i = 0; i < 6; i++) {
-        printf("\t");
         switch (i) {
             case 0:
                 printf("Inteligencja %d", *ptab_stat);
@@ -257,48 +242,57 @@ void ekran_gry(int i, int j, int k, int ruch, int *ptab_stat, char *ptab_mapa, c
                 printf("Urok %d", *ptab_stat);
                 break;
             default:
+                printf("Blad w switchu ekran_gry nr 1");
                 break;
         }
+        printf("     ");
         ptab_stat++;
     }
-    printf("\n\tPozostale punkty ruchow: %d\n", ruch);
-    suwak(2);
+    printf("\n\tPozostale punkty ruchow: %d", ruch);
+    suwak(3);
 
     //Mapa gry
     for (i = 0; i < (WIERSZ + 4); i++) {
         printf("\t\t");
-        //Pomocnicze liczby w poziomie
-        if (!i || i == 1 || i == (WIERSZ + 3)) pom = 1;
-        if (!i || i == (WIERSZ + 3)) {
-            for (j = 0; j < (KOLUMNA); j++) {
-                if (!j) for (k = 0; k < 6; k++) printf(" ");
-                if (pom < 9) printf("%d   ", pom);
+        if (!i || i == 1 || i == (WIERSZ + 3)) pom = 1;     //Wyrowanie naliczania liczb pomocniczych
+        if (!i || i == (WIERSZ + 3)) {      //Pomocnicze liczby w poziomie
+            for (j = 0; j < KOLUMNA; j++) {
+                if (!j)
+                    printf("      ");
+                if (pom < 9)
+                    printf("%d   ", pom);
                 else printf("%d  ", pom);
                 pom++;
             }
-            //Rama mapy w poziomie
-        } else if (i == 1 || i == (WIERSZ + 2)) {
+        } else if (i == 1 || i == (WIERSZ + 2)) {       //Rama mapy w poziomie
             for (j = 0; j < (4 * KOLUMNA + 6); j++) {
-                if (j < 3) printf(" ");
+                if (j < 3)
+                    printf(" ");
                 else printf("-");
             }
         } else {
             for (j = 0; j < (KOLUMNA + 4); j++) {
                 //Pomocnicze liczby w pionie
                 if (!j) {
-                    if (pom < 10) printf(" %d ", pom);
-                    if (pom >= 10) printf("%d ", pom);
+                    if (pom < 10)
+                        printf(" %d ", pom);
+                    if (pom >= 10)
+                        printf("%d ", pom);
                 } else if (j == (KOLUMNA + 3)) {
                     printf("%d", pom);
                     pom++;
-                } else if (j == 1 || j == (KOLUMNA + 2)) printf("| "); //Rama mapy w pionie
-                    //Atrybuty
-                else {
-                    if (*ptab_mapa2 == 'Z') printf("[*] ");
-                    else if (*ptab_mapa == ' ' || *ptab_mapa > 96 && *ptab_mapa < 104 && *ptab_mapa != 'e' || *ptab_mapa == '#') {
+                } else if (j == 1 || j == (KOLUMNA + 2))    //Rama mapy w pionie
+                    printf("| ");
+                else {  //Atrybuty
+                    if (*ptab_mapa2 == 'Z')     //Wyswietlanie zaslonietych elementow
+                        printf("[*] ");
+                    else if (*ptab_mapa == ' ' || *ptab_mapa > 96 && *ptab_mapa < 104 && *ptab_mapa != 'e' || *ptab_mapa == '#') {      //Wyswietlanie elementow w prawidlowej postaci
                         switch (*ptab_mapa) {
                             case 32:
                                 printf("    ");
+                                break;
+                            case 35:
+                                printf("{^} ");
                                 break;
                             case 97:
                                 printf("{i} ");
@@ -318,13 +312,12 @@ void ekran_gry(int i, int j, int k, int ruch, int *ptab_stat, char *ptab_mapa, c
                             case 103:
                                 printf("{u} ");
                                 break;
-                            case 35:
-                                printf("{^} ");
-                                break;
                             default:
+                                printf("Blad w switchu ekran_gry nr 2");
                                 break;
                         }
-                    } else printf("[%c] ", *ptab_mapa);
+                    } else printf("[%c] ", *ptab_mapa);     //Wyswietlanie elementow w oryginalnej postaci
+
                     ptab_mapa += 2;
                     ptab_mapa2 += 2;
                 }
@@ -332,11 +325,11 @@ void ekran_gry(int i, int j, int k, int ruch, int *ptab_stat, char *ptab_mapa, c
         }
         printf("\n");
     }
-    printf("\n\tWybierz element (podaj numer wiersza, a potem kolumny: ""x x"").\n\tAby przejsc do instrukcji, wpisz: ""i"".\n\tJesli chcesz opusic gre, wcisnij Enter...\n");
+    printf("\n\tWybierz element (podaj numer wiersza, a potem kolumny: \"x x\").\n\tAby przejsc do instrukcji, wpisz: \"i\".\n\tJesli chcesz opusic gre, wcisnij Enter...\n");
 }
 
-void reakcja(int i, int j, int k, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3) {
-    char tekst = ' '; //tekst - przechowuje tekst wpisany przez gracza
+void reakcja(int i, int j, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3) {
+    char tekst;   //Tekst - przechowuje tekst wpisany przez gracza
 
     /*
      * wiersz, kolumna - polozenie elementu wybranego przez gracza
