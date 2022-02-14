@@ -10,11 +10,11 @@
 
 int ekran_powitalny();
 
-void gra(int linia, int tab, int *pzwrot, int *ptab_stat);
+void gra(int *pzwrot, int *ptab_stat);
 void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2);
-void ekran_gry(int i, int j, int k, int linia, int ruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2);
-void reakcja(int i, int j, int k, int linia, int tab, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3);
-void instrukcja(int i, int linia, int tab, int *ptab_legenda);
+void ekran_gry(int i, int j, int k, int ruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2);
+void reakcja(int i, int j, int k, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3);
+void instrukcja(int i, int *ptab_legenda);
 void atrybut(int i, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3, int *ptab_stat, int *ptab_legenda, int *pruch);
 void zwykly_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch);
 void super_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch);
@@ -30,10 +30,8 @@ void tabulator(int tab);
 int main() {
     /*
      zwrot - wartosc zwracana przez funkcje
-     linia - ilosc przesuwanych linijek w funkcji "suwak"
-     tab - ilosc wykonywanych tabulacji w funkcji "tabulator"
     */
-    int zwrot, linia = 3, tab = 3;
+    int zwrot;
 
     /*
     Tablica z wartościami statystyk
@@ -52,7 +50,7 @@ int main() {
 
     //Gra
     zwrot = 1;
-    gra(linia, tab, &zwrot, &tab_stat[0]);
+    gra(&zwrot, &tab_stat[0]);
 
     //Ekran koncowy
     ekran_koncowy(&tab_stat[0]);
@@ -61,7 +59,7 @@ int main() {
 }
 
 int ekran_powitalny() {
-    char bug;
+    char bug;   //Tekst wpisany przez gracza
 
     suwak(3);
     tabulator(3);
@@ -96,7 +94,7 @@ int ekran_powitalny() {
     } else return 1;
 }
 
-void gra(int linia, int tab, int *pzwrot, int *ptab_stat) {
+void gra(int *pzwrot, int *ptab_stat) {
     /*
      * i, j, k - zmienne obslugujace petle
      * zuzyte - warunek przy sprawdzaniu zuzycia elementow
@@ -113,16 +111,15 @@ void gra(int linia, int tab, int *pzwrot, int *ptab_stat) {
         if (*pzwrot == 1) inic_mapa(i, &tab_mapa[0][0][0], &tab_mapa[0][0][1]);
 
         //Ekran gry
-        ekran_gry(i, j, k, linia, ruch, ptab_stat, &tab_mapa[0][0][0], &tab_mapa[0][0][1]);
+        ekran_gry(i, j, k, ruch, ptab_stat, &tab_mapa[0][0][0], &tab_mapa[0][0][1]);
 
         //Sekcja interaktywna
-        reakcja(i, j, k, linia, tab, pzwrot, &ruch, ptab_stat, &tab_mapa[0][0][0], &tab_mapa[0][0][0], &tab_mapa[0][0][1]);
+        reakcja(i, j, k, pzwrot, &ruch, ptab_stat, &tab_mapa[0][0][0], &tab_mapa[0][0][0], &tab_mapa[0][0][1]);
 
         //Test mapy gry
         if (*pzwrot == 2) test(i, j, pzwrot, &ruch, &tab_mapa[0][0][0]);
 
-        linia = 40;
-        suwak(linia);
+        suwak(40);
 
     }
     while (*pzwrot > 0);
@@ -233,7 +230,7 @@ void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2) {
     }
 }
 
-void ekran_gry(int i, int j, int k, int linia, int ruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2) {
+void ekran_gry(int i, int j, int k, int ruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2) {
     int pom = 1; //odpowiada za pomocnicze liczby wokol mapy gry
 
     //Statystyki
@@ -265,8 +262,7 @@ void ekran_gry(int i, int j, int k, int linia, int ruch, int *ptab_stat, char *p
         ptab_stat++;
     }
     printf("\n\tPozostale punkty ruchow: %d\n", ruch);
-    linia = 2;
-    suwak(linia);
+    suwak(2);
 
     //Mapa gry
     for (i = 0; i < (WIERSZ + 4); i++) {
@@ -339,7 +335,7 @@ void ekran_gry(int i, int j, int k, int linia, int ruch, int *ptab_stat, char *p
     printf("\n\tWybierz element (podaj numer wiersza, a potem kolumny: ""x x"").\n\tAby przejsc do instrukcji, wpisz: ""i"".\n\tJesli chcesz opusic gre, wcisnij Enter...\n");
 }
 
-void reakcja(int i, int j, int k, int linia, int tab, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3) {
+void reakcja(int i, int j, int k, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3) {
     char tekst = ' '; //tekst - przechowuje tekst wpisany przez gracza
 
     /*
@@ -374,7 +370,7 @@ void reakcja(int i, int j, int k, int linia, int tab, int *pzwrot, int *pruch, i
         //Instrukcja
         else if (tekst == 'i' || tekst == 'I') {
             while (tekst != '\n') tekst = getchar();
-            instrukcja(i, linia, tab, &tab_legenda[0][0]);
+            instrukcja(i, &tab_legenda[0][0]);
             break;
         }
         //Wybor atrybutu
@@ -425,15 +421,14 @@ void reakcja(int i, int j, int k, int linia, int tab, int *pzwrot, int *pruch, i
     else while (tekst != '\n') tekst = getchar();
 }
 
-void instrukcja(int i, int linia, int tab, int *ptab_legenda) {
+void instrukcja(int i, int *ptab_legenda) {
     int *ptab_legenda2;
     ptab_legenda2 = ptab_legenda;
     ptab_legenda2++;
     char tekst;
 
-    linia = 40;
-    suwak(linia);
-    tabulator(tab);
+    suwak(40);
+    tabulator(3);
     printf("Instrukcja:\n");
     for (i = 0; i < 8; i++) {
         printf("\t");
@@ -491,14 +486,14 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *p
     //Zwykle atrybuty
     if (*ptab_mapa == 'i' || *ptab_mapa == 'e' || *ptab_mapa == 's' ||
         *ptab_mapa == 'p' || *ptab_mapa == 'w' || *ptab_mapa == 'u') {
-        zwykly_at(ptab_mapa, ptab_stat, ptab_legenda, pruch);
+        zwykly_at(*ptab_mapa, ptab_stat, ptab_legenda, pruch);
     //Super atrybuty
     } else if (*ptab_mapa == 'I' || *ptab_mapa == 'E' || *ptab_mapa == 'S' ||
                *ptab_mapa == 'P' || *ptab_mapa == 'W' || *ptab_mapa == 'U') {
-        super_at(ptab_mapa, ptab_stat, ptab_legenda, pruch);
+        super_at(*ptab_mapa, ptab_stat, ptab_legenda, pruch);
     //Mega atrybuty
     } else if (*ptab_mapa > 96 && *ptab_mapa < 104 && *ptab_mapa != 101) {
-        mega_at(i, ptab_mapa, ptab_mapa2, ptab_mapa3, ptab_stat, ptab_legenda, pruch);
+        mega_at(i, *ptab_mapa, ptab_mapa2, ptab_mapa3, ptab_stat, ptab_legenda, pruch);
     //Hiper atrybut
     } else if (*ptab_mapa == '$') {
         hiper_at(i, ptab_stat, ptab_legenda, pruch);
