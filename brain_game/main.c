@@ -14,7 +14,7 @@ void gra(int *pzwrot, int *ptab_stat);
 void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2);
 void ekran_gry(int i, int j, int ruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2);
 void reakcja(int i, int j, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3);
-void instrukcja(int i, int *ptab_legenda);
+void instrukcja(int i, int *ptab_legenda, int *ptab_legenda2);
 void atrybut(int i, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3, int *ptab_stat, int *ptab_legenda, int *pruch);
 void zwykly_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch);
 void super_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch);
@@ -329,41 +329,34 @@ void ekran_gry(int i, int j, int ruch, int *ptab_stat, char *ptab_mapa, char *pt
 }
 
 void reakcja(int i, int j, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3) {
-    char tekst;   //Tekst - przechowuje tekst wpisany przez gracza
+    char tekst;   //Przechowuje tekst wpisany przez gracza
+    int wiersz = 0, kolumna = 0;    //Polozenie elementu wybranego przez gracza
+    int spacja = 0;     //Liczba spacji wprowadzonych przez gracza
 
     /*
-     * wiersz, kolumna - polozenie elementu wybranego przez gracza
-     * odwiersz, odkolumna - przesuniecia indeksu elementu wybranego przez gracza, uzyte przy odkrywaniu nowych elementow na mapie
+     * Tablica dla legendy atrybutow
+     * Kolejnosc: zwykly atrybut, super atrybut, mega atrybut, hiper atrybut, oko, super oko, zacmienie, bonusowe pkt ruchu
+     * {koszt, bonus}
      */
-    int wiersz = 0, kolumna = 0, odwiersz, odkolumna, spacja = 0;
-
-    //Tablica dla legendy atrybutow
-    //Kolejnosc: zwykly atrybut, super atrybut, mega atrybut, hiper atrybut, oko, super oko, zacmienie, bonusowe pkt ruchu
-    //{bonus, koszt}
     int tab_legenda[][2] = {{1, 1},
-                            {5, 3},
-                            {0, 4},
                             {3, 5},
-                            {0, 3},
-                            {0, 7},
-                            {0, 5},
-                            {5, 0}};
+                            {4, 0},
+                            {5, 3},
+                            {3, 0},
+                            {7, 0},
+                            {5, 0},
+                            {0, 5}};
 
-    //Modul interaktywny (petla w razie pomylki)
-
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < 3; i++) {       //Petla w razie pomylki gracza - 3 proby
         printf("\t");
         tekst = getchar();
 
-        //Wyjscie z gry
-        if (tekst == '\n') {
+        if (tekst == '\n') {        //Wyjscie z gry
             *pruch = 0;
             break;
-        }
-        //Instrukcja
-        else if (tekst == 'i' || tekst == 'I') {
+        } else if (tekst == 'i' || tekst == 'I') {      //Instrukcja
             while (tekst != '\n') tekst = getchar();
-            instrukcja(i, &tab_legenda[0][0]);
+            instrukcja(i, &tab_legenda[0][0], &tab_legenda[0][1]);
             break;
         }
         //Wybor atrybutu
@@ -401,7 +394,7 @@ void reakcja(int i, int j, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_m
                 while (tekst != '\n') tekst = getchar();
             }
         }
-        else if (tekst == 'p') {
+        else if (tekst == 'p') {        //Wykorzystac w fun "atrybut" dla atryb "nowa mapa"
             *pzwrot = 1;
             break;
         }
@@ -414,17 +407,16 @@ void reakcja(int i, int j, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_m
     else while (tekst != '\n') tekst = getchar();
 }
 
-void instrukcja(int i, int *ptab_legenda) {
-    int *ptab_legenda2;
-    ptab_legenda2 = ptab_legenda;
-    ptab_legenda2++;
-    char tekst;
+void instrukcja(int i, int *ptab_legenda, int *ptab_legenda2) {
+    char tekst;     //Przechowuje tekst wpisany przez gracza
 
     suwak(40);
     tabulator(3);
     printf("Instrukcja:\n");
+
     for (i = 0; i < 8; i++) {
         printf("\t");
+
         switch (i) {
             case 0:
                 printf("[x]: ");
@@ -436,7 +428,7 @@ void instrukcja(int i, int *ptab_legenda) {
                 printf("{x}: ");
                 break;
             case 3:
-                printf("[$]: ");
+                printf("[$]: -%d pkt ruchu, +%d pkt wszystkich umiejetnosci\n", *ptab_legenda, *ptab_legenda2);
                 break;
             case 4:
                 printf("[^]: ");
@@ -451,19 +443,22 @@ void instrukcja(int i, int *ptab_legenda) {
                 printf("[+]: ");
                 break;
             default:
-                printf("[ ]: ");
+                printf("Blad switcha w funkcji instrukcja!");
                 break;
         }
-        if (i == 3)
-            printf("+%d pkt wszystkich umiejetnosci, -%d pkt ruchu\n", *ptab_legenda,
-                   *ptab_legenda2);
-        else {
+
+        if (i != 3) {
             if (*ptab_legenda && *ptab_legenda2)
-                printf("+%d pkt umiejetnosci, -%d pkt ruchu\n", *ptab_legenda, *ptab_legenda2);
-            else if (*ptab_legenda) printf("+%d pkt umiejetnosci\n", *ptab_legenda);
-            else printf("-%d pkt ruchu\n", *ptab_legenda2);
+                printf("-%d pkt ruchu, +%d pkt umiejetnosci\n", *ptab_legenda, *ptab_legenda2);
+            else if (*ptab_legenda)
+                printf("-%d pkt ruchu\n", *ptab_legenda);
+            else printf("+%d pkt umiejetnosci\n", *ptab_legenda2);
         }
+
+        ptab_legenda += 2;
+        ptab_legenda2 += 2;
     }
+
     printf("\n\tAby wrocic do gry, wcisnij Enter...");
     tekst = getchar();
     while (tekst != '\n') tekst = getchar();
@@ -492,28 +487,28 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *p
         hiper_at(i, ptab_stat, ptab_legenda, pruch);
     //Oko
     } else if (*ptab_mapa == '^') {
-        ptab_legenda += 9;
+        ptab_legenda += 8;
         if (*pruch < *ptab_legenda) {
             printf("Za malo punktow ruchu!\n");
         } else *pruch -= *ptab_legenda;
     }
     //Super oko
     else if (*ptab_mapa == '#') {
-        ptab_legenda += 11;
+        ptab_legenda += 10;
         if (*pruch < *ptab_legenda) {
             printf("Za malo punktow ruchu!\n");
         } else *pruch -= *ptab_legenda;
     }
     //Zacmienie
     else if (*ptab_mapa == '@') {
-        ptab_legenda += 13;
+        ptab_legenda += 12;
         if (*pruch < *ptab_legenda) {
             printf("Za malo punktow ruchu!\n");
         } else *pruch -= *ptab_legenda;
     }
     //Bonus do punktow ruchu
     else if (*ptab_mapa == '+') {
-        ptab_legenda += 14;
+        ptab_legenda += 15;
         *pruch += *ptab_legenda;
     }
 
@@ -609,12 +604,11 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *p
 }
 
 void zwykly_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch) {
-    ptab_legenda++;
     if (*pruch < *ptab_legenda)
         printf("Za malo punktow ruchu!\n");
     else {
         *pruch -= *ptab_legenda;
-        ptab_legenda--;
+        ptab_legenda++;
         switch (ptab_mapa) {
             case 'i':
                 *ptab_stat += *ptab_legenda;
@@ -640,19 +634,19 @@ void zwykly_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch) {
                 *ptab_stat += *ptab_legenda;
                 break;
             default:
-                printf("Blad w switch nr 1 w funkcji atrybut!");
+                printf("Blad switcha w funkcji zwykly_at!");
                 break;
         }
     }
 }
 
 void super_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch) {
-    ptab_legenda += 3;
+    ptab_legenda += 2;
     if (*pruch < *ptab_legenda)
         printf("Za malo punktow ruchu!\n");
     else {
         *pruch -= *ptab_legenda;
-        ptab_legenda--;
+        ptab_legenda++;
         switch (ptab_mapa) {
             case 'I':
                 *ptab_stat += *ptab_legenda;
@@ -685,12 +679,12 @@ void super_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch) {
 }
 
 void mega_at(int i, char ptab_mapa, char *ptab_mapa2, char *ptab_mapa3, int *ptab_stat, int *ptab_legenda, int *pruch) {
-    ptab_legenda += 5;
+    ptab_legenda += 4;
     if (*pruch < *ptab_legenda)
         printf("Za malo punktow ruchu!\n");
     else {
         *pruch -= *ptab_legenda;
-        ptab_legenda -= 5;
+        ptab_legenda -= 3;
         switch (ptab_mapa) {
             case 'b':
                 ptab_stat++;
@@ -759,12 +753,12 @@ void mega_at(int i, char ptab_mapa, char *ptab_mapa2, char *ptab_mapa3, int *pta
 }
 
 void hiper_at(int i, int *ptab_stat, int *ptab_legenda, int *pruch) {
-    ptab_legenda += 7;
+    ptab_legenda += 6;
     if (*pruch < *ptab_legenda) {
         printf("Za malo punktow ruchu!\n");
     } else {
         *pruch -= *ptab_legenda;
-        ptab_legenda--;
+        ptab_legenda++;
         for (i = 0; i < 6; i++) {
             *ptab_stat += *ptab_legenda;
             ptab_stat++;
