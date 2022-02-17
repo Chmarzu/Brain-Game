@@ -330,7 +330,7 @@ void ekran_gry(int i, int j, int ruch, int *ptab_stat, char *ptab_mapa, char *pt
 
 void reakcja(int i, int j, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3) {
     char tekst;   //Przechowuje tekst wpisany przez gracza
-    int wiersz = 0, kolumna = 0;    //Polozenie elementu wybranego przez gracza
+    int wiersz, kolumna = 0;    //Polozenie elementu wybranego przez gracza
     int spacja = 0;     //Liczba spacji wprowadzonych przez gracza
 
     /*
@@ -347,49 +347,46 @@ void reakcja(int i, int j, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_m
                             {5, 0},
                             {0, 5}};
 
-    for (i = 0; i < 3; i++) {       //Petla w razie pomylki gracza - 3 proby
+    for (i = 0; i < 3; i++) {   //Petla w razie pomylki gracza - 3 proby
         printf("\t");
         tekst = getchar();
 
-        if (tekst == '\n') {        //Wyjscie z gry
+        if (tekst == '\n') {    //Wyjscie z gry
             *pruch = 0;
             break;
         } else if (tekst == 'i' || tekst == 'I') {      //Instrukcja
             while (tekst != '\n') tekst = getchar();
             instrukcja(i, &tab_legenda[0][0], &tab_legenda[0][1]);
             break;
-        }
-        //Wybor atrybutu
-        else if (isdigit(tekst) && tekst != '0') {
-            wiersz = tekst - 48;
-            tekst = getchar();
+        } else if (isdigit(tekst) && tekst != '0') {    //Wybor atrybutu
+            wiersz = tekst - 48;    //Inicjalizacja dla zmiennej wiersz
             for (j = 0; j < 5; j++) {
+                tekst = getchar();
                 if (isdigit(tekst)) {
-                    if (j == 0) wiersz = (wiersz * 10) + (tekst - 48);
-                    else if (!kolumna && tekst != '0') kolumna = tekst - 48;
-                    else kolumna = (kolumna * 10) + (tekst - 48);
+                    if (j == 0) wiersz = (wiersz * 10) + (tekst - 48);      //Inicjalizacja dla zmiennej wiersz (dodanie cyfry jednosci)
+                    else if (!kolumna && tekst != '0') kolumna = tekst - 48;    //Inicjalizacja dla zmiennej kolumna
+                    else kolumna = (kolumna * 10) + (tekst - 48);       //Inicjalizacja dla zmiennej kolumna (dodanie cyfry jednosci)
                 }
-                else if (j == 0 || j == 1 && !spacja) {
-                    if (isspace(tekst))
+                else if (tekst == ' ') {      //Sprawdzenie wystapienia spacji
+                    if (j == 0 || j == 1 && !spacja)
                         spacja = 1;
                     else break;
                 } else break;
-                tekst = getchar();
             }
-            if (tekst == '\n') {
+            if (tekst == '\n' && wiersz && kolumna) {        //Weryfikacja przebiegu wczesniejszej inicjalizacji
                 ptab_mapa += 2 * ((wiersz - 1) * KOLUMNA + (kolumna - 1));
                 ptab_mapa2 = ptab_mapa;
                 ptab_mapa2++;
+
                 if (*ptab_mapa == ' ' || *ptab_mapa2 == 'Z' ||
                     wiersz > WIERSZ || kolumna > KOLUMNA)
                     printf("\tTen element jest niedostepny!\n");
                 else {
-                    i = 3;
                     ptab_mapa2 = ptab_mapa3 - 1;
                     atrybut(i, ptab_mapa, ptab_mapa2, ptab_mapa3, ptab_stat, &tab_legenda[0][0], pruch);
+                    break;
                 }
-            }
-            else {
+            } else {        //Reakcja na blad
                 printf("\tBledne wartosci!\n");
                 while (tekst != '\n') tekst = getchar();
             }
@@ -398,7 +395,7 @@ void reakcja(int i, int j, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_m
             *pzwrot = 1;
             break;
         }
-        else {
+        else {      //Reakcja na blad
             printf("\tBledne wartosci!\n");
             while (tekst != '\n') tekst = getchar();
         }
