@@ -110,7 +110,8 @@ void gra(int *pzwrot, int *ptab_stat) {
         reakcja(i, j, pzwrot, &ruch, ptab_stat, &tab_mapa[0][0][0], &tab_mapa[0][0][0], &tab_mapa[0][0][1]);
 
         //Test stanu gry
-        if (*pzwrot == 2) test(i, j, pzwrot, &ruch, &tab_mapa[0][0][0]);
+        if (*pzwrot == 2)
+            test(i, j, pzwrot, &ruch, &tab_mapa[0][0][0]);
 
         suwak(40);
 
@@ -242,7 +243,7 @@ void ekran_gry(int i, int j, int ruch, int *ptab_stat, char *ptab_mapa, char *pt
                 printf("Urok %d", *ptab_stat);
                 break;
             default:
-                printf("Blad w switchu ekran_gry nr 1");
+                printf("Blad switcha ekran_gry nr 1");
                 break;
         }
         printf("     ");
@@ -313,7 +314,7 @@ void ekran_gry(int i, int j, int ruch, int *ptab_stat, char *ptab_mapa, char *pt
                                 printf("{u} ");
                                 break;
                             default:
-                                printf("Blad w switchu ekran_gry nr 2");
+                                printf("Blad switcha ekran_gry nr 2");
                                 break;
                         }
                     } else printf("[%c] ", *ptab_mapa);     //Wyswietlanie elementow w oryginalnej postaci
@@ -566,7 +567,7 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *p
                                 *ptab_mapa = 'O';
                             break;
                         default:
-                            printf("Blad w switchu korekcyjnym nr 1!");
+                            printf("Blad switcha atrybut nr 2!");
                             break;
                     }
                 }
@@ -581,7 +582,7 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *p
                                 *ptab_mapa = 'O';
                             break;
                         default:
-                            printf("Blad w switchu korekcyjnym nr 2!");
+                            printf("Blad switcha atrybut nr 3!");
                             break;
                     }
                 } else if (lewo >= 2 && prawo >= 2) *ptab_mapa = 'O';
@@ -631,7 +632,7 @@ void zwykly_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch) {
                 *ptab_stat += *ptab_legenda;
                 break;
             default:
-                printf("Blad switcha w funkcji zwykly_at!");
+                printf("Blad switcha zwykly_at!");
                 break;
         }
     }
@@ -669,7 +670,7 @@ void super_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch) {
                 *ptab_stat += *ptab_legenda;
                 break;
             default:
-                printf("Blad w switch nr 2 w funkcji atrybut!");
+                printf("Blad switcha super_at!");
                 break;
         }
     }
@@ -697,6 +698,9 @@ void mega_at(int i, char ptab_mapa, char *ptab_mapa2, char *ptab_mapa3, int *pta
                 break;
             case 'g':
                 ptab_stat += 5;
+                break;
+            default:
+                printf("Blad switcha mega_at nr 1!");
                 break;
         }
         for (i = 0; i < WIERSZ * KOLUMNA; i++) {
@@ -739,7 +743,7 @@ void mega_at(int i, char ptab_mapa, char *ptab_mapa2, char *ptab_mapa3, int *pta
                         }
                         break;
                     default:
-                        printf("Blad w switch nr 3 w funkcji atrybut!");
+                        printf("Blad switcha mega_at nr 2!");
                         break;
                 }
             }
