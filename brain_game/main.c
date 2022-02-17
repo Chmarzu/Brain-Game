@@ -2,6 +2,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <time.h>
+#include <windows.h>
 
 //Wymiary tabeli tab_mapa
 #define WIERSZ 7
@@ -16,10 +17,11 @@ void ekran_gry(int i, int j, int ruch, int *ptab_stat, char *ptab_mapa, char *pt
 void reakcja(int i, int j, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3);
 void instrukcja(int i, int *ptab_legenda, int *ptab_legenda2);
 void atrybut(int i, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3, int *ptab_stat, int *ptab_legenda, int *pruch);
-void zwykly_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch);
-void super_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch);
-void mega_at(int i, char ptab_mapa, char *ptab_mapa2, char *ptab_mapa3, int *ptab_stat, int *ptab_legenda, int *pruch);
-void hiper_at(int i, int *ptab_stat, int *ptab_legenda, int *pruch);
+void zwykly_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned short *pbieda);
+void super_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned short *pbieda);
+void mega_at(int i, char ptab_mapa, char *ptab_mapa2, char *ptab_mapa3, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned short *pbieda);
+void hiper_at(int i, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned short *pbieda);
+void oko(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *ptmk);
 void test(int i, int j, int *pzwrot, int *pruch, char *ptab_mapa);
 
 void ekran_koncowy(int *ptab_stat);
@@ -93,7 +95,7 @@ int ekran_powitalny() {
 
 void gra(int *pzwrot, int *ptab_stat) {
     int i = 0, j = 0;    //Zmienne obslugujace petle
-    static int ruch = 30;   //Mechanika punktow ruchu
+    static int ruch = 1;   //Mechanika punktow ruchu
 
     //Tablica dla elementow wyswietlanych na mapie gry
     char tab_mapa[WIERSZ][KOLUMNA][GLEBOKOSC];
@@ -124,7 +126,8 @@ void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2) {
     int odkryte = 0;    //Ogranicza liczbe odkrytych atrybutow
 
     for (i = 0; i < (WIERSZ * KOLUMNA); i++) {
-        los = rand() % 24;
+        los = i;
+        //los = rand() % 24;
         //if (i == 18) los = 19;
 
         switch (los) {
@@ -202,15 +205,15 @@ void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2) {
                 break;
         }
         //Usunac do update'a
-        //*ptab_mapa2 = 'O';    //Odslaniecie wszystkiego
+        *ptab_mapa2 = 'O';    //Odslaniecie wszystkiego
         if (*ptab_mapa == ' ') *ptab_mapa2 = 'O';
         //if (i == 0) *ptab_mapa2 = 'O';    //Odslaniecie lda wybranej iteracji
         //if (*ptab_mapa == '^') *ptab_mapa2 = 'O';   //Odslaniecie kazdego atrybutu okreslonego typu
-        else if (odkryte < 3 && (*ptab_mapa == 'i' || *ptab_mapa == 'e' || *ptab_mapa == 's' ||
+        /*else if (odkryte < 3 && (*ptab_mapa == 'i' || *ptab_mapa == 'e' || *ptab_mapa == 's' ||
                  *ptab_mapa == 'p' || *ptab_mapa == 'w' || *ptab_mapa == 'u')) {
             *ptab_mapa2 = 'O';
             odkryte++;
-        } else *ptab_mapa2 = 'Z';
+        } else *ptab_mapa2 = 'Z';*/
 
         ptab_mapa += 2;
         ptab_mapa2 += 2;
@@ -463,8 +466,9 @@ void instrukcja(int i, int *ptab_legenda, int *ptab_legenda2) {
 }
 
 void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *ptab_stat, int *ptab_legenda, int *pruch) {
-    unsigned short lewo, prawo;
-    char *ptmp, *ptmk;
+    char *ptmp;     //Wskaznik dla pierwszego elementu tablicy (odkrywanie elementow)
+    char *ptmk;     //Wskaznik dla ostatniego elementu tablicy (odkrywanie elementow)
+    unsigned short bieda = 1;    //Informuje, czy liczba pkt ruchu jest wystarczajaca (odkrywanie elementow)
     ptmp = ptmk = ptab_mapa2;
     ptmk += 2 * WIERSZ * KOLUMNA;
 
@@ -472,142 +476,93 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *p
     //Zwykle atrybuty
     if (*ptab_mapa == 'i' || *ptab_mapa == 'e' || *ptab_mapa == 's' ||
         *ptab_mapa == 'p' || *ptab_mapa == 'w' || *ptab_mapa == 'u') {
-        zwykly_at(*ptab_mapa, ptab_stat, ptab_legenda, pruch);
+        zwykly_at(*ptab_mapa, ptab_stat, ptab_legenda, pruch, &bieda);
+
     //Super atrybuty
     } else if (*ptab_mapa == 'I' || *ptab_mapa == 'E' || *ptab_mapa == 'S' ||
                *ptab_mapa == 'P' || *ptab_mapa == 'W' || *ptab_mapa == 'U') {
-        super_at(*ptab_mapa, ptab_stat, ptab_legenda, pruch);
+        super_at(*ptab_mapa, ptab_stat, ptab_legenda, pruch, &bieda);
+
     //Mega atrybuty
     } else if (*ptab_mapa > 96 && *ptab_mapa < 104 && *ptab_mapa != 101) {
-        mega_at(i, *ptab_mapa, ptab_mapa2, ptab_mapa3, ptab_stat, ptab_legenda, pruch);
+        mega_at(i, *ptab_mapa, ptab_mapa2, ptab_mapa3, ptab_stat, ptab_legenda, pruch, &bieda);
+
     //Hiper atrybut
     } else if (*ptab_mapa == '$') {
-        hiper_at(i, ptab_stat, ptab_legenda, pruch);
+        hiper_at(i, ptab_stat, ptab_legenda, pruch, &bieda);
+
     //Oko
     } else if (*ptab_mapa == '^') {
-        ptab_legenda += 8;
+        ptab_legenda += 8;      //Utrata puntow ruchu z weryfikacja ich stanu
         if (*pruch < *ptab_legenda) {
             printf("Za malo punktow ruchu!\n");
-        } else *pruch -= *ptab_legenda;
-    }
+            bieda = 0;
+            Sleep(1000);
+        }
+        else *pruch -= *ptab_legenda;
+
     //Super oko
-    else if (*ptab_mapa == '#') {
-        ptab_legenda += 10;
+    } else if (*ptab_mapa == '#') {
+        ptab_legenda += 10;     //Utrata puntow ruchu z weryfikacja ich stanu
         if (*pruch < *ptab_legenda) {
             printf("Za malo punktow ruchu!\n");
-        } else *pruch -= *ptab_legenda;
-    }
+            bieda = 0;
+            Sleep(1000);
+        }
+        else *pruch -= *ptab_legenda;
+
     //Zacmienie
-    else if (*ptab_mapa == '@') {
-        ptab_legenda += 12;
+    } else if (*ptab_mapa == '@') {
+        ptab_legenda += 12;     //Utrata puntow ruchu z weryfikacja ich stanu
         if (*pruch < *ptab_legenda) {
             printf("Za malo punktow ruchu!\n");
-        } else *pruch -= *ptab_legenda;
-    }
+            bieda = 0;
+            Sleep(1000);
+        }
+        else *pruch -= *ptab_legenda;
+
     //Bonus do punktow ruchu
-    else if (*ptab_mapa == '+') {
-        ptab_legenda += 15;
+    } else if (*ptab_mapa == '+') {
+        ptab_legenda += 15;     //Zwiekszenie liczby puntow ruchu
         *pruch += *ptab_legenda;
     }
 
-    if (*ptab_mapa != '^' && *ptab_mapa != '#') *ptab_mapa = ' ';   //Dezaktywacja atrybutow poza okiem i superokiem
+    if (bieda) {    //Sprawdzenie, czy atrybut zostal obsluzony
+        if (*ptab_mapa != '^' && *ptab_mapa != '#') *ptab_mapa = ' ';   //Dezaktywacja atrybutow poza okiem i superokiem
 
-    //Odkrywanie elementow wokol wybranego
-    if (*ptab_mapa == ' ') {
-        for (i = 0; i < 8; i++) {
-            if (!i) ptab_mapa -= 2 * KOLUMNA + 1;
-            else if (i == 3 || i == 5) ptab_mapa += 2 * KOLUMNA - 4;
-            else if (i == 4) ptab_mapa += 4;
-            else ptab_mapa += 2;
-            if (*ptab_mapa != 'O' && ptab_mapa > ptmp && ptab_mapa < ptmk)
-                *ptab_mapa = 'O';
-        }
-    }
-    //Odkrywanie elementow dla oka
-    else if (*ptab_mapa == '^') {
-        ptab_mapa2 = ptab_mapa;
-        for (i = 0; i < 24; i++) {
-            if (!i) {
-                ptab_mapa++;
-                lewo = ((ptab_mapa2 - ptmp) / 2) % KOLUMNA;
-                prawo = ((ptmk - ptab_mapa2 - 1) / 2) % KOLUMNA;
+        if (*ptab_mapa == ' ') {    //Odkrywanie elementow wokol wybranego
+            for (i = 0; i < 8; i++) {
+                if (!i) ptab_mapa -= 2 * KOLUMNA + 1;
+                else if (i == 3 || i == 5) ptab_mapa += 2 * KOLUMNA - 4;
+                else if (i == 4) ptab_mapa += 4;
+                else ptab_mapa += 2;
+                if (*ptab_mapa != 'O' && ptab_mapa > ptmp && ptab_mapa < ptmk)
+                    *ptab_mapa = 'O';
             }
-            switch (i) {
-                case 0:
-                    ptab_mapa = ptab_mapa2 - (23 + (KOLUMNA - 5) * 4);
-                    break;
-                case 5:
-                    ptab_mapa = ptab_mapa2 - (13 + (KOLUMNA - 5) * 2);
-                    break;
-                case 10:
-                    ptab_mapa = ptab_mapa2 - 3;
-                    break;
-                case 12:
-                    ptab_mapa += 4;
-                    break;
-                case 14:
-                    ptab_mapa = ptab_mapa2 + (7 + (KOLUMNA - 5) * 2);
-                    break;
-                case 19:
-                    ptab_mapa = ptab_mapa2 + (17 + (KOLUMNA - 5) * 4);
-                    break;
-                default:
-                    ptab_mapa += 2;
-                    break;
+        } else if (*ptab_mapa == '^')   //Odkrywanie elementow dla oka
+            oko(i, ptab_mapa, ptab_mapa2, ptmp, ptmk);
+
+        else if (*ptab_mapa == '#') {     //Odkrywanie elementow dla super oka
+            ptmp++;
+            for (i = 0; i < WIERSZ * KOLUMNA; i++) {
+                if (*ptmp == 'Z') *ptmp = 'O';
+                ptmp += 2;
             }
-            if (*ptab_mapa != 'O' && ptab_mapa > ptmp && ptab_mapa < ptmk) {
-                if (lewo < 2) {
-                    switch (lewo) {
-                        case 0:
-                            if (i > 1 && i != 5 && i != 6 && i != 10 && i != 11 && i != 14 && i != 15 && i != 19 && i != 20)
-                                *ptab_mapa = 'O';
-                            break;
-                        case 1:
-                            if (i && i != 5 && i != 10 && i != 14 && i != 19)
-                                *ptab_mapa = 'O';
-                            break;
-                        default:
-                            printf("Blad switcha atrybut nr 2!");
-                            break;
-                    }
-                }
-                if (prawo < 2) {
-                    switch (prawo) {
-                        case 0:
-                            if (i != 3 && i != 4 && i != 8 && i != 9 && i != 12 && i != 13 && i != 17 && i != 18 && i != 22 && i != 23)
-                                *ptab_mapa = 'O';
-                            break;
-                        case 1:
-                            if (i != 4 && i != 9 && i != 13 && i != 18 && i != 23)
-                                *ptab_mapa = 'O';
-                            break;
-                        default:
-                            printf("Blad switcha atrybut nr 3!");
-                            break;
-                    }
-                } else if (lewo >= 2 && prawo >= 2) *ptab_mapa = 'O';
-            }
+            *ptab_mapa = ' ';
         }
-        *ptab_mapa2 = ' ';
-    }
-    //Odkrywanie elementow dla super oka
-    else {
-        ptmp++;
-        for (i = 0; i < WIERSZ * KOLUMNA; i++) {
-            if (*ptmp == 'Z') *ptmp = 'O';
-            ptmp += 2;
-        }
-        *ptab_mapa = ' ';
     }
 }
 
-void zwykly_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch) {
-    if (*pruch < *ptab_legenda)
+void zwykly_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned short *pbieda) {
+    if (*pruch < *ptab_legenda) {     //Utrata puntow ruchu z weryfikacja ich stanu
         printf("Za malo punktow ruchu!\n");
-    else {
+        *pbieda = 0;
+        Sleep(1000);
+    } else {
         *pruch -= *ptab_legenda;
         ptab_legenda++;
-        switch (ptab_mapa) {
+
+        switch (ptab_mapa) {        //Zmiana statystyk z weryfikacja kategorii
             case 'i':
                 *ptab_stat += *ptab_legenda;
                 break;
@@ -638,14 +593,17 @@ void zwykly_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch) {
     }
 }
 
-void super_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch) {
-    ptab_legenda += 2;
-    if (*pruch < *ptab_legenda)
+void super_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned short *pbieda) {
+    ptab_legenda += 2;      //Utrata puntow ruchu z weryfikacja ich stanu
+    if (*pruch < *ptab_legenda) {
         printf("Za malo punktow ruchu!\n");
-    else {
+        *pbieda = 0;
+        Sleep(1000);
+    } else {
         *pruch -= *ptab_legenda;
         ptab_legenda++;
-        switch (ptab_mapa) {
+
+        switch (ptab_mapa) {        //Zmiana statystyk z weryfikacja kategorii
             case 'I':
                 *ptab_stat += *ptab_legenda;
                 break;
@@ -676,14 +634,17 @@ void super_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch) {
     }
 }
 
-void mega_at(int i, char ptab_mapa, char *ptab_mapa2, char *ptab_mapa3, int *ptab_stat, int *ptab_legenda, int *pruch) {
-    ptab_legenda += 4;
-    if (*pruch < *ptab_legenda)
+void mega_at(int i, char ptab_mapa, char *ptab_mapa2, char *ptab_mapa3, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned short *pbieda) {
+    ptab_legenda += 4;      //Utrata puntow ruchu z weryfikacja ich stanu
+    if (*pruch < *ptab_legenda) {
         printf("Za malo punktow ruchu!\n");
-    else {
+        *pbieda = 0;
+        Sleep(1000);
+    } else {
         *pruch -= *ptab_legenda;
         ptab_legenda -= 3;
-        switch (ptab_mapa) {
+
+        switch (ptab_mapa) {        //Weryfikacja kategorii
             case 'b':
                 ptab_stat++;
                 break;
@@ -703,7 +664,8 @@ void mega_at(int i, char ptab_mapa, char *ptab_mapa2, char *ptab_mapa3, int *pta
                 printf("Blad switcha mega_at nr 1!");
                 break;
         }
-        for (i = 0; i < WIERSZ * KOLUMNA; i++) {
+
+        for (i = 0; i < WIERSZ * KOLUMNA; i++) {    //Przeszukanie tablicy za wlasciwymi elem. i zmiana statystyk
             if (*ptab_mapa3 == 'O') {
                 switch (ptab_mapa) {
                     case 'a':
@@ -753,18 +715,98 @@ void mega_at(int i, char ptab_mapa, char *ptab_mapa2, char *ptab_mapa3, int *pta
     }
 }
 
-void hiper_at(int i, int *ptab_stat, int *ptab_legenda, int *pruch) {
-    ptab_legenda += 6;
+void hiper_at(int i, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned short *pbieda) {
+    ptab_legenda += 6;      //Utrata puntow ruchu z weryfikacja ich stanu
     if (*pruch < *ptab_legenda) {
         printf("Za malo punktow ruchu!\n");
+        *pbieda = 0;
+        Sleep(1000);
     } else {
         *pruch -= *ptab_legenda;
         ptab_legenda++;
-        for (i = 0; i < 6; i++) {
+        for (i = 0; i < 6; i++) {       //Zmiana statystyk
             *ptab_stat += *ptab_legenda;
             ptab_stat++;
         }
     }
+}
+
+void oko(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *ptmk) {
+    unsigned short lewo;     //Liczba elementow stojacych na lewo od "oka"
+    unsigned short prawo;   //Liczba elementow stojacych na prawo od "oka"
+
+    ptab_mapa2 = ptab_mapa;
+    for (i = 0; i < 24; i++) {
+        if (!i) {       //Obliczenie bledu przesuniecia (za malo kolumn w otoczeniu)
+            ptab_mapa++;
+            lewo = ((ptab_mapa2 - ptmp) / 2) % KOLUMNA;
+            prawo = ((ptmk - ptab_mapa2 - 1) / 2) % KOLUMNA;
+        }
+
+        switch (i) {    //Ustawienie na wlasciwe elementy
+            case 0:
+                ptab_mapa = ptab_mapa2 - (23 + (KOLUMNA - 5) * 4);
+                break;
+            case 5:
+                ptab_mapa = ptab_mapa2 - (13 + (KOLUMNA - 5) * 2);
+                break;
+            case 10:
+                ptab_mapa = ptab_mapa2 - 3;
+                break;
+            case 12:
+                ptab_mapa += 4;
+                break;
+            case 14:
+                ptab_mapa = ptab_mapa2 + (7 + (KOLUMNA - 5) * 2);
+                break;
+            case 19:
+                ptab_mapa = ptab_mapa2 + (17 + (KOLUMNA - 5) * 4);
+                break;
+            default:
+                ptab_mapa += 2;
+                break;
+        }
+
+        //Odslanienie elementow z weryfikacja zajcia bledow
+        if (*ptab_mapa != 'O' && ptab_mapa > ptmp && ptab_mapa < ptmk) {
+            if (lewo < 2 || prawo < 2) {
+                if (lewo < 2) {
+                    switch (lewo) {
+                        case 0:
+                            if (i > 1 && i != 5 && i != 6 && i != 10 && i != 11 && i != 14 && i != 15 && i != 19 &&
+                                i != 20)
+                                *ptab_mapa = 'O';
+                            break;
+                        case 1:
+                            if (i && i != 5 && i != 10 && i != 14 && i != 19)
+                                *ptab_mapa = 'O';
+                            break;
+                        default:
+                            printf("Blad switcha atrybut nr 2!");
+                            break;
+                    }
+                }
+
+                if (prawo < 2) {
+                    switch (prawo) {
+                        case 0:
+                            if (i != 3 && i != 4 && i != 8 && i != 9 && i != 12 && i != 13 && i != 17 && i != 18 &&
+                                i != 22 && i != 23)
+                                *ptab_mapa = 'O';
+                            break;
+                        case 1:
+                            if (i != 4 && i != 9 && i != 13 && i != 18 && i != 23)
+                                *ptab_mapa = 'O';
+                            break;
+                        default:
+                            printf("Blad switcha atrybut nr 3!");
+                            break;
+                    }
+                }
+            } else *ptab_mapa = 'O';
+        }
+    }
+    *ptab_mapa2 = ' ';
 }
 
 void test(int i, int j, int *pzwrot, int *pruch, char *ptab_mapa) {
