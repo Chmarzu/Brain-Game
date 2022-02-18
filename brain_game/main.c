@@ -9,6 +9,8 @@
 #define KOLUMNA 23
 #define GLEBOKOSC 2
 
+#define RUCH 30     //Liczba punktow ruchu
+
 int ekran_powitalny();
 
 void gra(int *pzwrot, int *ptab_stat);
@@ -95,7 +97,7 @@ int ekran_powitalny() {
 
 void gra(int *pzwrot, int *ptab_stat) {
     int i = 0, j = 0;    //Zmienne obslugujace petle
-    static int ruch = 30;   //Mechanika punktow ruchu
+    static int ruch = RUCH;   //Mechanika punktow ruchu
 
     //Tablica dla elementow wyswietlanych na mapie gry
     char tab_mapa[WIERSZ][KOLUMNA][GLEBOKOSC];
@@ -126,7 +128,7 @@ void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2) {
     int odkryte = 0;    //Ogranicza liczbe odkrytych atrybutow
 
     for (i = 0; i < (WIERSZ * KOLUMNA); i++) {
-        los = rand() % 24;
+        los = rand() % 25;
         //if (i == 18) los = 19;
         //los = i;
 
@@ -201,6 +203,9 @@ void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2) {
                 *ptab_mapa = '+';
                 break;
             default:
+            case 23:
+                *ptab_mapa = '!';
+                break;
                 *ptab_mapa = ' ';
                 break;
         }
@@ -349,7 +354,8 @@ void reakcja(int i, int j, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_m
                             {3, 0},
                             {7, 0},
                             {5, 0},
-                            {0, 5}};
+                            {0, 5},
+                            {0, (RUCH / 2)}};
 
     for (i = 0; i < 3; i++) {   //Petla w razie pomylki gracza - 3 proby
         printf("\t");
@@ -394,18 +400,15 @@ void reakcja(int i, int j, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_m
                 printf("\tBledne wartosci!\n");
                 while (tekst != '\n') tekst = getchar();
             }
-        }
-        else if (tekst == 'p') {        //Wykorzystac w fun "atrybut" dla atryb "nowa mapa"
-            *pzwrot = 1;
-            break;
-        }
-        else {      //Reakcja na blad
+        } else {      //Reakcja na blad
             printf("\tBledne wartosci!\n");
             while (tekst != '\n') tekst = getchar();
         }
     }
-    if (tekst != 'p') *pzwrot = 2;
-    else while (tekst != '\n') tekst = getchar();
+
+    if (*ptab_mapa == '!')
+        *pzwrot = 1;
+    else *pzwrot = 2;
 }
 
 void instrukcja(int i, int *ptab_legenda, int *ptab_legenda2) {
@@ -415,7 +418,7 @@ void instrukcja(int i, int *ptab_legenda, int *ptab_legenda2) {
     tabulator(3);
     printf("Instrukcja:\n");
 
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 9; i++) {
         printf("\t");
 
         switch (i) {
@@ -442,6 +445,9 @@ void instrukcja(int i, int *ptab_legenda, int *ptab_legenda2) {
                 break;
             case 7:
                 printf("[+]: ");
+                break;
+            case 8:
+                printf("[!]: ");
                 break;
             default:
                 printf("Blad switcha w funkcji instrukcja!");
@@ -525,10 +531,15 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *p
     } else if (*ptab_mapa == '+') {
         ptab_legenda += 15;     //Zwiekszenie liczby puntow ruchu
         *pruch += *ptab_legenda;
+
+    //Nowa mapa
+    } else if (*ptab_mapa == '!') {
+        ptab_legenda += 17;     //Zwiekszenie liczby puntow ruchu
+        *pruch += *ptab_legenda;
     }
 
     if (bieda) {    //Sprawdzenie, czy atrybut zostal obsluzony
-        if (*ptab_mapa != '^' && *ptab_mapa != '#') *ptab_mapa = ' ';   //Dezaktywacja atrybutow poza okiem i superokiem
+        if (*ptab_mapa != '^' && *ptab_mapa != '#' && *ptab_mapa != '!') *ptab_mapa = ' ';   //Dezaktywacja atrybutow poza okiem i superokiem
 
         if (*ptab_mapa == ' ') {    //Odkrywanie elementow wokol wybranego
             for (i = 0; i < 8; i++) {
