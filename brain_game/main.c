@@ -5,7 +5,7 @@
 #include <windows.h>
 
 //Wymiary tabeli tab_mapa
-#define WIERSZ 7
+#define WIERSZ 5
 #define KOLUMNA 23
 #define GLEBOKOSC 2
 
@@ -22,7 +22,7 @@ void super_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch, uns
 void mega_at(int i, char ptab_mapa, char *ptab_mapa2, char *ptab_mapa3, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned short *pbieda);
 void hiper_at(int i, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned short *pbieda);
 void oko(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *ptmk);
-void test(int i, int j, int *pzwrot, int *pruch, char *ptab_mapa);
+void test(int i, int *pzwrot, int *pruch, char *ptab_mapa, char *ptab_mapa2);
 
 void ekran_koncowy(int *ptab_stat);
 
@@ -95,7 +95,7 @@ int ekran_powitalny() {
 
 void gra(int *pzwrot, int *ptab_stat) {
     int i = 0, j = 0;    //Zmienne obslugujace petle
-    static int ruch = 1;   //Mechanika punktow ruchu
+    static int ruch = 30;   //Mechanika punktow ruchu
 
     //Tablica dla elementow wyswietlanych na mapie gry
     char tab_mapa[WIERSZ][KOLUMNA][GLEBOKOSC];
@@ -113,7 +113,7 @@ void gra(int *pzwrot, int *ptab_stat) {
 
         //Test stanu gry
         if (*pzwrot == 2)
-            test(i, j, pzwrot, &ruch, &tab_mapa[0][0][0]);
+            test(i, pzwrot, &ruch, &tab_mapa[0][0][0], &tab_mapa[0][0][1]);
 
         suwak(40);
 
@@ -126,9 +126,9 @@ void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2) {
     int odkryte = 0;    //Ogranicza liczbe odkrytych atrybutow
 
     for (i = 0; i < (WIERSZ * KOLUMNA); i++) {
-        los = i;
-        //los = rand() % 24;
+        los = rand() % 24;
         //if (i == 18) los = 19;
+        //los = i;
 
         switch (los) {
             case 0:
@@ -205,15 +205,15 @@ void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2) {
                 break;
         }
         //Usunac do update'a
-        *ptab_mapa2 = 'O';    //Odslaniecie wszystkiego
+        //*ptab_mapa2 = 'O';    //Odslaniecie wszystkiego
         if (*ptab_mapa == ' ') *ptab_mapa2 = 'O';
         //if (i == 0) *ptab_mapa2 = 'O';    //Odslaniecie lda wybranej iteracji
         //if (*ptab_mapa == '^') *ptab_mapa2 = 'O';   //Odslaniecie kazdego atrybutu okreslonego typu
-        /*else if (odkryte < 3 && (*ptab_mapa == 'i' || *ptab_mapa == 'e' || *ptab_mapa == 's' ||
+        else if (odkryte < 3 && (*ptab_mapa == 'i' || *ptab_mapa == 'e' || *ptab_mapa == 's' ||
                  *ptab_mapa == 'p' || *ptab_mapa == 'w' || *ptab_mapa == 'u')) {
             *ptab_mapa2 = 'O';
             odkryte++;
-        } else *ptab_mapa2 = 'Z';*/
+        } else *ptab_mapa2 = 'Z';
 
         ptab_mapa += 2;
         ptab_mapa2 += 2;
@@ -356,7 +356,7 @@ void reakcja(int i, int j, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_m
         tekst = getchar();
 
         if (tekst == '\n') {    //Wyjscie z gry
-            *pruch = 0;
+            *pruch = -1;
             break;
         } else if (tekst == 'i' || tekst == 'I') {      //Instrukcja
             while (tekst != '\n') tekst = getchar();
@@ -809,29 +809,45 @@ void oko(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *ptmk) {
     *ptab_mapa2 = ' ';
 }
 
-void test(int i, int j, int *pzwrot, int *pruch, char *ptab_mapa) {
-    int zuzyte = 0;
-    char *ptab_mapa2; //dodatkowy wskaznik na tablice tab_mapa
-    ptab_mapa2 = ptab_mapa;
-    ptab_mapa2++;
+void test(int i, int *pzwrot, int *pruch, char *ptab_mapa, char *ptab_mapa2) {
+    int zuzyte = 0;     //Libcza zuzytych elementow
 
-    //Sprawdzenie liczby pkt ruchu
-    if (!*pruch) *pzwrot = 0;
+    if (*pruch <= 0) {      //Sprawdzenie liczby pkt ruchu
+        *pzwrot = 0;
 
-        //Sprawdzenie liczby zuzytych elementow
-    else {
-        for (i = 0; i < WIERSZ; i++) {
-            for (j = 0; j < KOLUMNA; j++) {
-                if (*ptab_mapa2 == 'Z')
-                    break;
-                else if (*ptab_mapa == ' ')
-                    zuzyte++;
-                ptab_mapa += 2;
-                ptab_mapa2 += 2;
-            }
+        if (!*pruch) {
+            suwak(40);
+            tabulator(3);
+            Sleep(500);
+            printf("Zuzyto wszystkie puknty ruchu.\n");
+            Sleep(500);
+            tabulator(3);
+            printf("Za chwile zostaniesz przeniesiony do ekranu koncowego");
+            Sleep(3000);
         }
-        if (zuzyte == (WIERSZ * KOLUMNA))
+
+    } else {      //Sprawdzenie liczby zuzytych elementow
+        for (i = 0; i < WIERSZ * KOLUMNA; i++) {
+            if (*ptab_mapa2 == 'Z')
+                break;
+            else if (*ptab_mapa == ' ')
+                zuzyte++;
+
+            ptab_mapa += 2;
+            ptab_mapa2 += 2;
+        }
+        if (zuzyte == (WIERSZ * KOLUMNA)) {
             *pzwrot = 0;
+
+            suwak(40);
+            tabulator(3);
+            Sleep(500);
+            printf("Zuzyto wszystkie elementy.\n");
+            Sleep(500);
+            tabulator(3);
+            printf("Za chwile zostaniesz przeniesiony do ekranu koncowego");
+            Sleep(3000);
+        }
     }
 }
 
