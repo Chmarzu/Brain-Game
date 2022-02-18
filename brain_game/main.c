@@ -202,10 +202,10 @@ void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2) {
             case 22:
                 *ptab_mapa = '+';
                 break;
-            default:
             case 23:
                 *ptab_mapa = '!';
                 break;
+            default:
                 *ptab_mapa = ' ';
                 break;
         }
