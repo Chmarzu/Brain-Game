@@ -5,7 +5,7 @@
 #include <windows.h>
 
 //Wymiary tabeli tab_mapa
-#define WIERSZ 5
+#define WIERSZ 7
 #define KOLUMNA 23
 #define GLEBOKOSC 2
 
@@ -19,11 +19,12 @@ void ekran_gry(int i, int j, int ruch, int *ptab_stat, char *ptab_mapa, char *pt
 void reakcja(int i, int j, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3);
 void instrukcja(int i, int *ptab_legenda, int *ptab_legenda2);
 void atrybut(int i, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3, int *ptab_stat, int *ptab_legenda, int *pruch);
-void los(int i, char *ptab_mapa);
+void los(int i, char *ptab_mapa, int *ptab_legenda, int *pruch, unsigned short *pbieda);
 void zwykly_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned short *pbieda);
 void super_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned short *pbieda);
 void mega_at(int i, char ptab_mapa, char *ptab_mapa2, char *ptab_mapa3, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned short *pbieda);
 void hiper_at(int i, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned short *pbieda);
+void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *ptmk, int *ptab_legenda, int *pruch, unsigned short *pbieda);
 void oko(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *ptmk);
 void test(int i, int *pzwrot, int *pruch, char *ptab_mapa, char *ptab_mapa2);
 
@@ -129,8 +130,8 @@ void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2) {
     int odkryte = 0;    //Ogranicza liczbe odkrytych atrybutow
 
     for (i = 0; i < (WIERSZ * KOLUMNA); i++) {
-        los = rand() % 26;
-        //if (i == 18) los = 19;
+        los = rand() % 27;
+        if (i == 150) los = 24;
         //los = i;
 
         switch (los) {
@@ -207,6 +208,9 @@ void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2) {
                 *ptab_mapa = '!';
                 break;
             case 24:
+                *ptab_mapa = '&';
+                break;
+            case 25:
                 *ptab_mapa = '?';
                 break;
             default:
@@ -215,9 +219,10 @@ void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2) {
         }
         //Usunac do update'a
         //*ptab_mapa2 = 'O';    //Odslaniecie wszystkiego
-        if (*ptab_mapa == ' ') *ptab_mapa2 = 'O';
-        //if (i == 0) *ptab_mapa2 = 'O';    //Odslaniecie lda wybranej iteracji
-        //if (*ptab_mapa == '?') *ptab_mapa2 = 'O';   //Odslaniecie kazdego atrybutu okreslonego typu
+        if (*ptab_mapa == ' ')
+            *ptab_mapa2 = 'O';
+        //else if (i == 0) *ptab_mapa2 = 'O';    //Odslaniecie lda wybranej iteracji
+        else if (*ptab_mapa == '&') *ptab_mapa2 = 'O';   //Odslaniecie kazdego atrybutu okreslonego typu
         else if (odkryte < 3 && (*ptab_mapa == 'i' || *ptab_mapa == 'e' || *ptab_mapa == 's' ||
                  *ptab_mapa == 'p' || *ptab_mapa == 'w' || *ptab_mapa == 'u')) {
             *ptab_mapa2 = 'O';
@@ -348,7 +353,7 @@ void reakcja(int i, int j, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_m
 
     /*
      * Tablica dla legendy atrybutow
-     * Kolejnosc: zwykly atrybut, super atrybut, mega atrybut, hiper atrybut, oko, super oko, zacmienie, bonusowe pkt ruchu, nowa mapa, losowy atrybut
+     * Kolejnosc: zwykly atrybut, super atrybut, mega atrybut, hiper atrybut, oko, super oko, zacmienie, bonusowe pkt ruchu, nowa mapa, reakcja lancuchowa, losowy atrybut
      * {koszt, bonus}
      */
     int tab_legenda[][2] = {{1, 1},
@@ -360,6 +365,7 @@ void reakcja(int i, int j, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_m
                             {5, 0},
                             {0, 5},
                             {0, (RUCH / 2)},
+                            {4, 0},
                             {0, 0}};
 
     for (i = 0; i < 3; i++) {   //Petla w razie pomylki gracza - 3 proby
@@ -423,7 +429,7 @@ void instrukcja(int i, int *ptab_legenda, int *ptab_legenda2) {
     tabulator(3);
     printf("Instrukcja:\n");
 
-    for (i = 0; i < 9; i++) {
+    for (i = 0; i < 11; i++) {
         printf("\t");
 
         switch (i) {
@@ -455,6 +461,9 @@ void instrukcja(int i, int *ptab_legenda, int *ptab_legenda2) {
                 printf("[!]: ");
                 break;
             case 9:
+                printf("[&]: ");
+                break;
+            case 10:
                 printf("[?]: koszt taki, jak wylosowanego typu atrybutu");
                 break;
             default:
@@ -462,7 +471,7 @@ void instrukcja(int i, int *ptab_legenda, int *ptab_legenda2) {
                 break;
         }
 
-        if (i != 3 && i != 9) {
+        if (i != 3 && i != 10) {
             if (*ptab_legenda && *ptab_legenda2)
                 printf("-%d pkt ruchu, +%d pkt umiejetnosci\n", *ptab_legenda, *ptab_legenda2);
             else if (*ptab_legenda)
@@ -488,14 +497,8 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *p
 
     //Zmiana statystyk i dezaktywacja elementu
     //Losowy atrybut
-    if (*ptab_mapa == '?') {
-        ptab_legenda += 10;     //Sprawdzenie punktow ruchu (ustawic na najwiekszy koszt)
-        if (*pruch < *ptab_legenda) {
-            printf("Za malo punktow ruchu!\n");
-            bieda = 0;
-            Sleep(1000);
-        } else los(i, ptab_mapa);
-    }
+    if (*ptab_mapa == '?')
+        los(i, ptab_mapa, ptab_legenda, pruch, &bieda);
 
     //Zwykle atrybuty
     if (*ptab_mapa == 'i' || *ptab_mapa == 'e' || *ptab_mapa == 's' ||
@@ -554,10 +557,15 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *p
     } else if (*ptab_mapa == '!') {
         ptab_legenda += 17;     //Zwiekszenie liczby puntow ruchu
         *pruch += *ptab_legenda;
+
+    //Reakcja lancuchowa
+    } else if (*ptab_mapa == '&') {
+        reakcja_lanc(i, ptab_mapa, ptab_mapa2, ptmp, ptmk, ptab_legenda, pruch, &bieda);
     }
 
     if (bieda) {    //Sprawdzenie, czy atrybut zostal obsluzony
-        if (*ptab_mapa != '^' && *ptab_mapa != '#' && *ptab_mapa != '!') *ptab_mapa = ' ';   //Dezaktywacja atrybutow poza okiem i superokiem
+        if (*ptab_mapa != '^' && *ptab_mapa != '#' && *ptab_mapa != '!' && *ptab_mapa != '&')
+            *ptab_mapa = ' ';   //Dezaktywacja atrybutow poza okiem, superokiem, nowa mapa i reakcja lancuchowa
 
         if (*ptab_mapa == ' ') {    //Odkrywanie elementow wokol wybranego
             for (i = 0; i < 8; i++) {
@@ -579,137 +587,147 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *p
             }
             *ptab_mapa = ' ';
         }
+        if (*ptab_mapa == '&')      //Spacjalna dezaktywacja reakcji lancuchowej
+            *ptab_mapa = ' ';
     }
 }
 
-void los(int i, char *ptab_mapa) {
+void los(int i, char *ptab_mapa, int *ptab_legenda, int *pruch, unsigned short *pbieda) {
     int los;    //Decyduje ktory atrybut ma zostac zainicjalizowany
     los = rand() % 24;
 
-    switch (los) {      //Losowanie efektu
-        case 0:
-            *ptab_mapa = 'i';
-            break;
-        case 1:
-            *ptab_mapa = 'e';
-            break;
-        case 2:
-            *ptab_mapa = 's';
-            break;
-        case 3:
-            *ptab_mapa = 'p';
-            break;
-        case 4:
-            *ptab_mapa = 'w';
-            break;
-        case 5:
-            *ptab_mapa = 'u';
-            break;
-        case 6:
-            *ptab_mapa = 'I';
-            break;
-        case 7:
-            *ptab_mapa = 'E';
-            break;
-        case 8:
-            *ptab_mapa = 'S';
-            break;
-        case 9:
-            *ptab_mapa = 'P';
-            break;
-        case 10:
-            *ptab_mapa = 'W';
-            break;
-        case 11:
-            *ptab_mapa = 'U';
-            break;
-        case 12:
-            *ptab_mapa = 'a';
-            break;
-        case 13:
-            *ptab_mapa = 'b';
-            break;
-        case 14:
-            *ptab_mapa = 'c';
-            break;
-        case 15:
-            *ptab_mapa = 'd';
-            break;
-        case 16:
-            *ptab_mapa = 'f';
-            break;
-        case 17:
-            *ptab_mapa = 'g';
-            break;
-        case 18:
-            *ptab_mapa = '$';
-            break;
-        case 19:
-            *ptab_mapa = '^';
-            break;
-        case 20:
-            *ptab_mapa = '#';
-            break;
-        case 21:
-            *ptab_mapa = '@';
-            break;
-        case 22:
-            *ptab_mapa = '+';
-            break;
-        case 23:
-            *ptab_mapa = '!';
-            break;
-        default:
-            printf("Blad switcha los nr 1!");
-            break;
-    }
-
-    //Komunikaty dla gracza
-    suwak(40);
-    tabulator(3);
-    printf("Rozpoczeto losowanie.\n");
-    Sleep(1000);
-    tabulator(3);
-    printf("Prosze czekac");
-    Sleep(2000);
-    for (i = 0; i < 3; i++) {
-        printf(".");
-        Sleep(2000);
-    }
-
-    printf("\n");
-    tabulator(3);
-    printf("Wylosowano: ");
-    if (*ptab_mapa > 96 && *ptab_mapa < 104 && *ptab_mapa != 'e' || *ptab_mapa == '#') {      //Wyswietlanie elementu w prawidlowej postaci
-        switch (*ptab_mapa) {
-            case 35:
-                printf("{^} ");
+    ptab_legenda += 10;     //Sprawdzenie punktow ruchu (ustawic na najwiekszy koszt)
+    if (*pruch < *ptab_legenda) {
+        printf("Za malo punktow ruchu!\n");
+        *pbieda = 0;
+        Sleep(1000);
+    } else {
+        switch (los) {      //Losowanie efektu
+            case 0:
+                *ptab_mapa = 'i';
                 break;
-            case 97:
-                printf("{i} ");
+            case 1:
+                *ptab_mapa = 'e';
                 break;
-            case 98:
-                printf("{e} ");
+            case 2:
+                *ptab_mapa = 's';
                 break;
-            case 99:
-                printf("{s} ");
+            case 3:
+                *ptab_mapa = 'p';
                 break;
-            case 100:
-                printf("{p} ");
+            case 4:
+                *ptab_mapa = 'w';
                 break;
-            case 102:
-                printf("{w} ");
+            case 5:
+                *ptab_mapa = 'u';
                 break;
-            case 103:
-                printf("{u} ");
+            case 6:
+                *ptab_mapa = 'I';
+                break;
+            case 7:
+                *ptab_mapa = 'E';
+                break;
+            case 8:
+                *ptab_mapa = 'S';
+                break;
+            case 9:
+                *ptab_mapa = 'P';
+                break;
+            case 10:
+                *ptab_mapa = 'W';
+                break;
+            case 11:
+                *ptab_mapa = 'U';
+                break;
+            case 12:
+                *ptab_mapa = 'a';
+                break;
+            case 13:
+                *ptab_mapa = 'b';
+                break;
+            case 14:
+                *ptab_mapa = 'c';
+                break;
+            case 15:
+                *ptab_mapa = 'd';
+                break;
+            case 16:
+                *ptab_mapa = 'f';
+                break;
+            case 17:
+                *ptab_mapa = 'g';
+                break;
+            case 18:
+                *ptab_mapa = '$';
+                break;
+            case 19:
+                *ptab_mapa = '^';
+                break;
+            case 20:
+                *ptab_mapa = '#';
+                break;
+            case 21:
+                *ptab_mapa = '@';
+                break;
+            case 22:
+                *ptab_mapa = '+';
+                break;
+            case 23:
+                *ptab_mapa = '!';
                 break;
             default:
-                printf("Blad switcha los nr 2");
+                printf("Blad switcha los nr 1!");
                 break;
         }
-    } else printf("[%c] ", *ptab_mapa);     //Wyswietlanie elementu w oryginalnej postaci
-    printf("!");
-    Sleep(5000);
+
+        //Komunikaty dla gracza
+        suwak(40);
+        tabulator(3);
+        printf("Rozpoczeto losowanie.\n");
+        Sleep(1000);
+        tabulator(3);
+        printf("Prosze czekac");
+        Sleep(2000);
+        for (i = 0; i < 3; i++) {
+            printf(".");
+            Sleep(2000);
+        }
+
+        printf("\n");
+        tabulator(3);
+        printf("Wylosowano: ");
+        if (*ptab_mapa > 96 && *ptab_mapa < 104 && *ptab_mapa != 'e' ||
+            *ptab_mapa == '#') {      //Wyswietlanie elementu w prawidlowej postaci
+            switch (*ptab_mapa) {
+                case 35:
+                    printf("{^} ");
+                    break;
+                case 97:
+                    printf("{i} ");
+                    break;
+                case 98:
+                    printf("{e} ");
+                    break;
+                case 99:
+                    printf("{s} ");
+                    break;
+                case 100:
+                    printf("{p} ");
+                    break;
+                case 102:
+                    printf("{w} ");
+                    break;
+                case 103:
+                    printf("{u} ");
+                    break;
+                default:
+                    printf("Blad switcha los nr 2");
+                    break;
+            }
+        } else printf("[%c] ", *ptab_mapa);     //Wyswietlanie elementu w oryginalnej postaci
+        printf("!");
+        Sleep(5000);
+    }
 }
 
 void zwykly_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned short *pbieda) {
@@ -890,6 +908,97 @@ void hiper_at(int i, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned sho
     }
 }
 
+void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *ptmk, int *ptab_legenda, int *pruch, unsigned short *pbieda) {
+    unsigned short lewo;     //Liczba elementow stojacych na lewo od atrybutu
+    unsigned short prawo;   //Liczba elementow stojacych na prawo od atrybutu
+    unsigned short gora;   //Liczba wierszy nad atrybutem
+    unsigned short dol;   //Liczba wierszy pod atrybutem
+    unsigned short los;
+    int j;
+
+    ptab_legenda += 18;     //Weryfikacja stanu puntow ruchu
+    if (*pruch < *ptab_legenda) {
+        printf("Za malo punktow ruchu!\n");
+        *pbieda = 0;
+        Sleep(1000);
+    } else {
+        *pruch -= *ptab_legenda;    //Utrata puntow ruchu
+
+        //Odleglosc atrybutu od brzegow tablicy
+        ptab_mapa++;
+        lewo = ((ptab_mapa - ptmp) / 2) % KOLUMNA;
+        prawo = ((ptmk - ptab_mapa - 1) / 2) % KOLUMNA;
+        gora = ((ptab_mapa - ptmp) / 2) / KOLUMNA;
+        dol = ((ptmk - ptab_mapa - 1) / 2) / KOLUMNA;
+
+        //Odkrywanie wybranych elementow wokol atrybutu
+        ptab_mapa2 = ptab_mapa;
+        i = 0;
+        while (!i) {        //Element sasiadujacy
+            los = 0;//rand() % 4;
+            switch (los) {
+                case 0:     //Osloniecie nad
+                    if (gora > 0) {
+                        ptab_mapa2 -= 2 * KOLUMNA;
+                        i = 1;
+                    }
+                    break;
+                case 1:     //Osloniecie na lewo
+                    if (lewo > 0) {
+                        ptab_mapa2 -= 2;
+                        i = 2;
+                    }
+                    break;
+                case 2:     //Osloniecie na prawo
+                    if (prawo > 0) {
+                        ptab_mapa2 += 2;
+                        i = 3;
+                    }
+                    break;
+                case 3:     //Osloniecie pod
+                    if (dol > 0) {
+                        ptab_mapa2 += 2 * KOLUMNA;
+                        i = 4;
+                    }
+                    break;
+                default:
+                    printf("Blad switcha reakcja_lanc nr 1!");
+                    break;
+            }
+        }
+        if (*ptab_mapa2 != 'O' && ptab_mapa2 > ptmp && ptab_mapa2 < ptmk)
+            *ptab_mapa2 = 'O';
+        for (j = 0; j < 6; ++j) {     //Kolejne elementy
+            switch (i) {
+                case 1:
+                    if (gora >= j + 1) {
+                        los = rand() % 3;
+                        switch (los) {
+                            case 0:
+                                ptab_mapa2 -= 2 * KOLUMNA;
+                                break;
+                            case 1:
+                                ptab_mapa2 -= 2;
+                                break;
+                            case 2:
+                                ptab_mapa2 += 2;
+                                break;
+                            default:
+                                printf("Blad switcha reakcja_lanc nr 3!");
+                                break;
+                        }
+                    } else j = 6;
+                    break;
+                default:
+                    printf("Blad switcha reakcja_lanc nr 2!");
+                    break;
+            }
+            if (*ptab_mapa2 != 'O' && ptab_mapa2 > ptmp && ptab_mapa2 < ptmk)
+                *ptab_mapa2 = 'O';
+        }
+    }
+}
+
 void oko(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *ptmk) {
     unsigned short lewo;     //Liczba elementow stojacych na lewo od "oka"
     unsigned short prawo;   //Liczba elementow stojacych na prawo od "oka"
@@ -898,8 +1007,8 @@ void oko(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *ptmk) {
     for (i = 0; i < 24; i++) {
         if (!i) {       //Obliczenie bledu przesuniecia (za malo kolumn w otoczeniu)
             ptab_mapa++;
-            lewo = ((ptab_mapa2 - ptmp) / 2) % KOLUMNA;
-            prawo = ((ptmk - ptab_mapa2 - 1) / 2) % KOLUMNA;
+            lewo = ((ptab_mapa - ptmp) / 2) % KOLUMNA;
+            prawo = ((ptmk - ptab_mapa - 1) / 2) % KOLUMNA;
         }
 
         switch (i) {    //Ustawienie na wlasciwe elementy
