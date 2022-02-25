@@ -131,7 +131,7 @@ void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2) {
 
     for (i = 0; i < (WIERSZ * KOLUMNA); i++) {
         los = rand() % 27;
-        if (i == 150) los = 24;
+        if (i == 30) los = 24;
         //los = i;
 
         switch (los) {
@@ -914,6 +914,7 @@ void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *pt
     unsigned short gora;   //Liczba wierszy nad atrybutem
     unsigned short dol;   //Liczba wierszy pod atrybutem
     unsigned short los;
+    unsigned short odkryte = 0;
     int j;
 
     ptab_legenda += 18;     //Weryfikacja stanu puntow ruchu
@@ -933,68 +934,158 @@ void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *pt
 
         //Odkrywanie wybranych elementow wokol atrybutu
         ptab_mapa2 = ptab_mapa;
-        i = 0;
-        while (!i) {        //Element sasiadujacy
-            los = 0;//rand() % 4;
-            switch (los) {
-                case 0:     //Osloniecie nad
-                    if (gora > 0) {
-                        ptab_mapa2 -= 2 * KOLUMNA;
-                        i = 1;
-                    }
-                    break;
-                case 1:     //Osloniecie na lewo
-                    if (lewo > 0) {
-                        ptab_mapa2 -= 2;
-                        i = 2;
-                    }
-                    break;
-                case 2:     //Osloniecie na prawo
-                    if (prawo > 0) {
-                        ptab_mapa2 += 2;
-                        i = 3;
-                    }
-                    break;
-                case 3:     //Osloniecie pod
-                    if (dol > 0) {
-                        ptab_mapa2 += 2 * KOLUMNA;
-                        i = 4;
-                    }
-                    break;
-                default:
-                    printf("Blad switcha reakcja_lanc nr 1!");
-                    break;
+
+        while (odkryte < 6) {
+            i = 0;
+            while (!i) {        //Element sasiadujacy (bazowy)
+                los = rand() % 4;
+
+                switch (los) {
+                    case 0:     //Osloniecie nad
+                        if (gora > 0) {
+                            ptab_mapa2 -= 2 * KOLUMNA;
+                            i = 1;
+                        }
+                        break;
+                    case 1:     //Osloniecie na lewo
+                        if (lewo > 0) {
+                            ptab_mapa2 -= 2;
+                            i = 2;
+                        }
+                        break;
+                    case 2:     //Osloniecie na prawo
+                        if (prawo > 0) {
+                            ptab_mapa2 += 2;
+                            i = 3;
+                        }
+                        break;
+                    case 3:     //Osloniecie pod
+                        if (dol > 0) {
+                            ptab_mapa2 += 2 * KOLUMNA;
+                            i = 4;
+                        }
+                        break;
+                    default:
+                        printf("Blad switcha reakcja_lanc nr 1!");
+                        break;
+                }
             }
-        }
-        if (*ptab_mapa2 != 'O' && ptab_mapa2 > ptmp && ptab_mapa2 < ptmk)
-            *ptab_mapa2 = 'O';
-        for (j = 0; j < 6; ++j) {     //Kolejne elementy
-            switch (i) {
-                case 1:
-                    if (gora >= j + 1) {
+
+            if (*ptab_mapa2 != 'O' && ptab_mapa2 > ptmp && ptab_mapa2 < ptmk)
+                *ptab_mapa2 = 'O';
+            odkryte++;
+
+            for (j = 0; j < 6; ++j) {     //Kolejne elementy
+                switch (i) {
+                    case 1:     //Baza - gora
                         los = rand() % 3;
+
                         switch (los) {
-                            case 0:
-                                ptab_mapa2 -= 2 * KOLUMNA;
+                            case 0:     //Osloniecie nad
+                                if (gora > j + 1)
+                                    ptab_mapa2 -= 2 * KOLUMNA;
+                                else j = 7;
                                 break;
-                            case 1:
-                                ptab_mapa2 -= 2;
+                            case 1:     //Osloniecie na lewo
+                                if (lewo > j)
+                                    ptab_mapa2 -= 2;
+                                else j = 7;
                                 break;
-                            case 2:
-                                ptab_mapa2 += 2;
+                            case 2:     //Osloniecie na prawo
+                                if (prawo > j)
+                                    ptab_mapa2 += 2;
+                                else j = 7;
                                 break;
                             default:
                                 printf("Blad switcha reakcja_lanc nr 3!");
                                 break;
                         }
-                    } else j = 6;
-                    break;
-                default:
-                    printf("Blad switcha reakcja_lanc nr 2!");
-                    break;
+
+                        break;
+                    case 2:     //Baza - lewo
+                        los = rand() % 3;
+
+                        switch (los) {
+                            case 0:     //Osloniecie na lewo
+                                if (lewo > j + 1)
+                                    ptab_mapa2 -= 2;
+                                else j = 7;
+                                break;
+                            case 1:     //Osloniecie nad
+                                if (gora > j)
+                                    ptab_mapa2 -= 2 * KOLUMNA;
+                                else j = 7;
+                                break;
+                            case 2:     //Osloniecie pod
+                                if (dol > j)
+                                    ptab_mapa2 += 2 * KOLUMNA;
+                                else j = 7;
+                                break;
+                            default:
+                                printf("Blad switcha reakcja_lanc nr 4!");
+                                break;
+                        }
+
+                        break;
+                    case 3:     //Baza - prawo
+                        los = rand() % 3;
+
+                        switch (los) {
+                            case 0:     //Osloniecie na prawo
+                                if (prawo > j + 1)
+                                    ptab_mapa2 += 2;
+                                else j = 7;
+                                break;
+                            case 1:     //Osloniecie nad
+                                if (gora > j)
+                                    ptab_mapa2 -= 2 * KOLUMNA;
+                                else j = 7;
+                                break;
+                            case 2:     //Osloniecie pod
+                                if (dol > j)
+                                    ptab_mapa2 += 2 * KOLUMNA;
+                                else j = 7;
+                                break;
+                            default:
+                                printf("Blad switcha reakcja_lanc nr 5!");
+                                break;
+                        }
+
+                        break;
+                    case 4:     //Baza - dol
+                        los = rand() % 3;
+
+                        switch (los) {
+                            case 0:     //Osloniecie pod
+                                if (dol > j + 1)
+                                    ptab_mapa2 += 2 * KOLUMNA;
+                                else j = 7;
+                                break;
+                            case 1:     //Osloniecie na lewo
+                                if (lewo > j)
+                                    ptab_mapa2 -= 2;
+                                else j = 7;
+                                break;
+                            case 2:     //Osloniecie na prawo
+                                if (prawo > j)
+                                    ptab_mapa2 += 2;
+                                else j = 7;
+                                break;
+                            default:
+                                printf("Blad switcha reakcja_lanc nr 6!");
+                                break;
+                        }
+
+                        break;
+                    default:
+                        printf("Blad switcha reakcja_lanc nr 2!");
+                        break;
+                }
+                if (*ptab_mapa2 != 'O' && ptab_mapa2 > ptmp && ptab_mapa2 < ptmk)
+                    *ptab_mapa2 = 'O';
+                if (j != 7)
+                    odkryte++;
             }
-            if (*ptab_mapa2 != 'O' && ptab_mapa2 > ptmp && ptab_mapa2 < ptmk)
-                *ptab_mapa2 = 'O';
         }
     }
 }
