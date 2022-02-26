@@ -46,25 +46,52 @@ int main() {
 
     srand(time(NULL));
 
-    //Ekran powitalny
-    zwrot = ekran_powitalny();
-    if (!zwrot) {
-        ekran_koncowy(&tab_stat[0]);
-        exit(0);
+    while (zwrot != 4) {
+        zwrot = menu_glowne();      //Menu glowne
+        switch (zwrot) {
+            case 1:     //Nowa gra
+                zwrot = 1;
+                gra(&zwrot, &tab_stat[0]);
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            case 4:     //Ekran koncowy
+                ekran_koncowy(&tab_stat[0]);
+                break;
+        }
     }
-
-    //Gra
-    zwrot = 1;
-    gra(&zwrot, &tab_stat[0]);
-
-    //Ekran koncowy
-    ekran_koncowy(&tab_stat[0]);
-
     return 0;
 }
 
 int menu_glowne() {
-
+    int tekst = 0;
+    char sprzatacz;
+    for (int i = 0; i < 5; ++i) {
+        tabulator(2);
+        switch (i) {
+            case 0:
+                printf("\"Brain Game\"\n\n");
+                break;
+            case 1:
+                printf("(1) Nowa gra\n");
+                break;
+            case 2:
+                printf("(2) Wczytaj gre\n");
+                break;
+            case 3:
+                printf("(3) Ustawienia\n");
+                break;
+            case 4:
+                printf("(4) Wyjdz z gry\n");
+                break;
+        }
+    }
+    scanf("%d", &tekst);
+    suwak(40);
+    while ((sprzatacz = getchar()) != '\n');
+    return tekst;
 }
 
 int ekran_powitalny() {
