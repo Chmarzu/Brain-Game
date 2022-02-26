@@ -130,8 +130,8 @@ void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2) {
     int odkryte = 0;    //Ogranicza liczbe odkrytych atrybutow
 
     for (i = 0; i < (WIERSZ * KOLUMNA); i++) {
-        los = rand() % 27;
-        if (i == 30) los = 24;
+        los = rand() % 6;
+        if (i == 150) los = 24;
         //los = i;
 
         switch (los) {
@@ -221,10 +221,10 @@ void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2) {
         //*ptab_mapa2 = 'O';    //Odslaniecie wszystkiego
         if (*ptab_mapa == ' ')
             *ptab_mapa2 = 'O';
-        //else if (i == 0) *ptab_mapa2 = 'O';    //Odslaniecie lda wybranej iteracji
+            //else if (i == 0) *ptab_mapa2 = 'O';    //Odslaniecie lda wybranej iteracji
         else if (*ptab_mapa == '&') *ptab_mapa2 = 'O';   //Odslaniecie kazdego atrybutu okreslonego typu
         else if (odkryte < 3 && (*ptab_mapa == 'i' || *ptab_mapa == 'e' || *ptab_mapa == 's' ||
-                 *ptab_mapa == 'p' || *ptab_mapa == 'w' || *ptab_mapa == 'u')) {
+                                 *ptab_mapa == 'p' || *ptab_mapa == 'w' || *ptab_mapa == 'u')) {
             *ptab_mapa2 = 'O';
             odkryte++;
         } else *ptab_mapa2 = 'Z';
@@ -505,22 +505,22 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *p
         *ptab_mapa == 'p' || *ptab_mapa == 'w' || *ptab_mapa == 'u') {
         zwykly_at(*ptab_mapa, ptab_stat, ptab_legenda, pruch, &bieda);
 
-    //Super atrybuty
+        //Super atrybuty
     } else if (*ptab_mapa == 'I' || *ptab_mapa == 'E' || *ptab_mapa == 'S' ||
                *ptab_mapa == 'P' || *ptab_mapa == 'W' || *ptab_mapa == 'U') {
         super_at(*ptab_mapa, ptab_stat, ptab_legenda, pruch, &bieda);
 
-    //Mega atrybuty
+        //Mega atrybuty
     } else if (*ptab_mapa > 96 && *ptab_mapa < 104 && *ptab_mapa != 101) {
         mega_at(i, *ptab_mapa, ptab_mapa2, ptab_mapa3, ptab_stat, ptab_legenda, pruch, &bieda);
 
-    //Hiper atrybut
+        //Hiper atrybut
     } else if (*ptab_mapa == '$') {
         hiper_at(i, ptab_stat, ptab_legenda, pruch, &bieda);
 
-    //Oko
+        //Oko
     } else if (*ptab_mapa == '^') {
-        ptab_legenda += 8;      //Utrata puntow ruchu z weryfikacja ich stanu
+        ptab_legenda += 8;      //Utrata punktow ruchu z weryfikacja ich stanu
         if (*pruch < *ptab_legenda) {
             printf("Za malo punktow ruchu!\n");
             bieda = 0;
@@ -528,9 +528,9 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *p
         }
         else *pruch -= *ptab_legenda;
 
-    //Super oko
+        //Super oko
     } else if (*ptab_mapa == '#') {
-        ptab_legenda += 10;     //Utrata puntow ruchu z weryfikacja ich stanu
+        ptab_legenda += 10;     //Utrata punktow ruchu z weryfikacja ich stanu
         if (*pruch < *ptab_legenda) {
             printf("Za malo punktow ruchu!\n");
             bieda = 0;
@@ -538,9 +538,9 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *p
         }
         else *pruch -= *ptab_legenda;
 
-    //Zacmienie
+        //Zacmienie
     } else if (*ptab_mapa == '@') {
-        ptab_legenda += 12;     //Utrata puntow ruchu z weryfikacja ich stanu
+        ptab_legenda += 12;     //Utrata punktow ruchu z weryfikacja ich stanu
         if (*pruch < *ptab_legenda) {
             printf("Za malo punktow ruchu!\n");
             bieda = 0;
@@ -548,17 +548,17 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *p
         }
         else *pruch -= *ptab_legenda;
 
-    //Bonus do punktow ruchu
+        //Bonus do punktow ruchu
     } else if (*ptab_mapa == '+') {
-        ptab_legenda += 15;     //Zwiekszenie liczby puntow ruchu
+        ptab_legenda += 15;     //Zwiekszenie liczby punktow ruchu
         *pruch += *ptab_legenda;
 
-    //Nowa mapa
+        //Nowa mapa
     } else if (*ptab_mapa == '!') {
-        ptab_legenda += 17;     //Zwiekszenie liczby puntow ruchu
+        ptab_legenda += 17;     //Zwiekszenie liczby punktow ruchu
         *pruch += *ptab_legenda;
 
-    //Reakcja lancuchowa
+        //Reakcja lancuchowa
     } else if (*ptab_mapa == '&') {
         reakcja_lanc(i, ptab_mapa, ptab_mapa2, ptmp, ptmk, ptab_legenda, pruch, &bieda);
     }
@@ -585,9 +585,8 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *p
                 if (*ptmp == 'Z') *ptmp = 'O';
                 ptmp += 2;
             }
-            *ptab_mapa = ' ';
         }
-        if (*ptab_mapa == '&')      //Spacjalna dezaktywacja reakcji lancuchowej
+        if (*ptab_mapa != ' ' && *ptab_mapa != '!')      //Spacjalna dezaktywacja pozostalych atrybutow poza nowa mapa
             *ptab_mapa = ' ';
     }
 }
@@ -684,7 +683,7 @@ void los(int i, char *ptab_mapa, int *ptab_legenda, int *pruch, unsigned short *
         suwak(40);
         tabulator(3);
         printf("Rozpoczeto losowanie.\n");
-        Sleep(1000);
+        Sleep(800);
         tabulator(3);
         printf("Prosze czekac");
         Sleep(2000);
@@ -731,7 +730,7 @@ void los(int i, char *ptab_mapa, int *ptab_legenda, int *pruch, unsigned short *
 }
 
 void zwykly_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned short *pbieda) {
-    if (*pruch < *ptab_legenda) {     //Utrata puntow ruchu z weryfikacja ich stanu
+    if (*pruch < *ptab_legenda) {     //Utrata punktow ruchu z weryfikacja ich stanu
         printf("Za malo punktow ruchu!\n");
         *pbieda = 0;
         Sleep(1000);
@@ -771,7 +770,7 @@ void zwykly_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch, un
 }
 
 void super_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned short *pbieda) {
-    ptab_legenda += 2;      //Utrata puntow ruchu z weryfikacja ich stanu
+    ptab_legenda += 2;      //Utrata punktow ruchu z weryfikacja ich stanu
     if (*pruch < *ptab_legenda) {
         printf("Za malo punktow ruchu!\n");
         *pbieda = 0;
@@ -812,7 +811,7 @@ void super_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch, uns
 }
 
 void mega_at(int i, char ptab_mapa, char *ptab_mapa2, char *ptab_mapa3, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned short *pbieda) {
-    ptab_legenda += 4;      //Utrata puntow ruchu z weryfikacja ich stanu
+    ptab_legenda += 4;      //Utrata punktow ruchu z weryfikacja ich stanu
     if (*pruch < *ptab_legenda) {
         printf("Za malo punktow ruchu!\n");
         *pbieda = 0;
@@ -893,7 +892,7 @@ void mega_at(int i, char ptab_mapa, char *ptab_mapa2, char *ptab_mapa3, int *pta
 }
 
 void hiper_at(int i, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned short *pbieda) {
-    ptab_legenda += 6;      //Utrata puntow ruchu z weryfikacja ich stanu
+    ptab_legenda += 6;      //Utrata punktow ruchu z weryfikacja ich stanu
     if (*pruch < *ptab_legenda) {
         printf("Za malo punktow ruchu!\n");
         *pbieda = 0;
@@ -913,17 +912,17 @@ void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *pt
     unsigned short prawo;   //Liczba elementow stojacych na prawo od atrybutu
     unsigned short gora;   //Liczba wierszy nad atrybutem
     unsigned short dol;   //Liczba wierszy pod atrybutem
-    unsigned short los;
-    unsigned short odkryte = 0;
-    int j;
+    unsigned short los;     //Wynik losowania
+    unsigned short odkryte = 0;     //Liczba odkrytych elementow
+    int j;      //Zmienna dla petli
 
-    ptab_legenda += 18;     //Weryfikacja stanu puntow ruchu
+    ptab_legenda += 18;     //Weryfikacja stanu punktow ruchu
     if (*pruch < *ptab_legenda) {
         printf("Za malo punktow ruchu!\n");
         *pbieda = 0;
         Sleep(1000);
     } else {
-        *pruch -= *ptab_legenda;    //Utrata puntow ruchu
+        *pruch -= *ptab_legenda;    //Utrata punktow ruchu
 
         //Odleglosc atrybutu od brzegow tablicy
         ptab_mapa++;
@@ -933,12 +932,12 @@ void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *pt
         dol = ((ptmk - ptab_mapa - 1) / 2) / KOLUMNA;
 
         //Odkrywanie wybranych elementow wokol atrybutu
-        ptab_mapa2 = ptab_mapa;
-
-        while (odkryte < 6) {
-            i = 0;
+        while (odkryte < 12) {
+            ptab_mapa2 = ptab_mapa;
+            if (i)
+                i = 0;
             while (!i) {        //Element sasiadujacy (bazowy)
-                los = rand() % 4;
+                los = 0;//rand() % 4;
 
                 switch (los) {
                     case 0:     //Osloniecie nad
@@ -975,7 +974,7 @@ void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *pt
                 *ptab_mapa2 = 'O';
             odkryte++;
 
-            for (j = 0; j < 6; ++j) {     //Kolejne elementy
+            for (j = 0; j < 11; j++) {     //Kolejne elementy
                 switch (i) {
                     case 1:     //Baza - gora
                         los = rand() % 3;
@@ -984,17 +983,17 @@ void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *pt
                             case 0:     //Osloniecie nad
                                 if (gora > j + 1)
                                     ptab_mapa2 -= 2 * KOLUMNA;
-                                else j = 7;
+                                else j = 20;
                                 break;
                             case 1:     //Osloniecie na lewo
                                 if (lewo > j)
                                     ptab_mapa2 -= 2;
-                                else j = 7;
+                                else j = 20;
                                 break;
                             case 2:     //Osloniecie na prawo
                                 if (prawo > j)
                                     ptab_mapa2 += 2;
-                                else j = 7;
+                                else j = 20;
                                 break;
                             default:
                                 printf("Blad switcha reakcja_lanc nr 3!");
@@ -1009,17 +1008,17 @@ void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *pt
                             case 0:     //Osloniecie na lewo
                                 if (lewo > j + 1)
                                     ptab_mapa2 -= 2;
-                                else j = 7;
+                                else j = 20;
                                 break;
                             case 1:     //Osloniecie nad
                                 if (gora > j)
                                     ptab_mapa2 -= 2 * KOLUMNA;
-                                else j = 7;
+                                else j = 20;
                                 break;
                             case 2:     //Osloniecie pod
                                 if (dol > j)
                                     ptab_mapa2 += 2 * KOLUMNA;
-                                else j = 7;
+                                else j = 20;
                                 break;
                             default:
                                 printf("Blad switcha reakcja_lanc nr 4!");
@@ -1034,17 +1033,17 @@ void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *pt
                             case 0:     //Osloniecie na prawo
                                 if (prawo > j + 1)
                                     ptab_mapa2 += 2;
-                                else j = 7;
+                                else j = 20;
                                 break;
                             case 1:     //Osloniecie nad
                                 if (gora > j)
                                     ptab_mapa2 -= 2 * KOLUMNA;
-                                else j = 7;
+                                else j = 20;
                                 break;
                             case 2:     //Osloniecie pod
                                 if (dol > j)
                                     ptab_mapa2 += 2 * KOLUMNA;
-                                else j = 7;
+                                else j = 20;
                                 break;
                             default:
                                 printf("Blad switcha reakcja_lanc nr 5!");
@@ -1059,17 +1058,17 @@ void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *pt
                             case 0:     //Osloniecie pod
                                 if (dol > j + 1)
                                     ptab_mapa2 += 2 * KOLUMNA;
-                                else j = 7;
+                                else j = 20;
                                 break;
                             case 1:     //Osloniecie na lewo
                                 if (lewo > j)
                                     ptab_mapa2 -= 2;
-                                else j = 7;
+                                else j = 20;
                                 break;
                             case 2:     //Osloniecie na prawo
                                 if (prawo > j)
                                     ptab_mapa2 += 2;
-                                else j = 7;
+                                else j = 20;
                                 break;
                             default:
                                 printf("Blad switcha reakcja_lanc nr 6!");
@@ -1083,8 +1082,10 @@ void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *pt
                 }
                 if (*ptab_mapa2 != 'O' && ptab_mapa2 > ptmp && ptab_mapa2 < ptmk)
                     *ptab_mapa2 = 'O';
-                if (j != 7)
+                if (j != 20)
                     odkryte++;
+                if (odkryte > 12)
+                    break;
             }
         }
     }
@@ -1165,7 +1166,6 @@ void oko(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *ptmk) {
             } else *ptab_mapa = 'O';
         }
     }
-    *ptab_mapa2 = ' ';
 }
 
 void test(int i, int *pzwrot, int *pruch, char *ptab_mapa, char *ptab_mapa2) {
@@ -1256,3 +1256,4 @@ void tabulator (int tab) {
     for (int i = 0; i < tab; i++)
         printf("\t");
 }
+
