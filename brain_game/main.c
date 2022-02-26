@@ -11,6 +11,8 @@
 
 #define RUCH 30     //Liczba punktow ruchu
 
+int menu_glowne();
+
 int ekran_powitalny();
 
 void gra(int *pzwrot, int *ptab_stat);
@@ -59,6 +61,10 @@ int main() {
     ekran_koncowy(&tab_stat[0]);
 
     return 0;
+}
+
+int menu_glowne() {
+
 }
 
 int ekran_powitalny() {
