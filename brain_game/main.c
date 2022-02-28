@@ -13,9 +13,9 @@
 
 int menu_glowne();
 
-int ekran_powitalny();
+void ekran_powitalny();
 
-void gra(int *pzwrot, int *ptab_stat);
+void gra(int *pzwrot);
 void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2);
 void ekran_gry(int i, int j, int ruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2);
 void reakcja(int i, int j, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3);
@@ -38,12 +38,6 @@ void tabulator(int tab);
 int main() {
     int zwrot;  //Wartosc zwracana przez funkcje
 
-    /*
-     * Tablica z wartościami statystyk
-     * Kolejnosc: Inteligencja, Empatia, Sprawnosc, Pamiec, Wyobraznia, Urok
-     */
-    int tab_stat[6] = {0, 0, 0, 0, 0, 0};
-
     srand(time(NULL));
 
     while (zwrot != 4) {
@@ -51,14 +45,20 @@ int main() {
         switch (zwrot) {
             case 1:     //Nowa gra
                 zwrot = 1;
-                gra(&zwrot, &tab_stat[0]);
+                gra(&zwrot);
                 break;
-            case 2:
+            case 2:     //Kontynuuj gre
                 break;
-            case 3:
+            case 3:     //Ustawienia
                 break;
-            case 4:     //Ekran koncowy
-                ekran_koncowy(&tab_stat[0]);
+            case 4:     //Zamkniecie gry
+                printf("Do nastepnego razu!");
+                Sleep(1000);
+                break;
+            default:
+                printf("Blad switcha main!");
+                Sleep(10000);
+                suwak(40);
                 break;
         }
     }
@@ -78,13 +78,18 @@ int menu_glowne() {
                 printf("(1) Nowa gra\n");
                 break;
             case 2:
-                printf("(2) Wczytaj gre\n");
+                printf("(2) Kontynuuj gre\n");
                 break;
             case 3:
                 printf("(3) Ustawienia\n");
                 break;
             case 4:
-                printf("(4) Wyjdz z gry\n");
+                printf("(4) Opusc gre\n");
+                break;
+            default:
+                printf("Blad switcha menu_glowne!");
+                Sleep(10000);
+                suwak(40);
                 break;
         }
     }
@@ -94,48 +99,31 @@ int menu_glowne() {
     return tekst;
 }
 
-int ekran_powitalny() {
-    char bug;   //Tekst wpisany przez gracza
-
+void ekran_powitalny() {
     suwak(3);
-    tabulator(3);
+    tabulator(4);
     printf("Witaj w Mapie Mozgu!\n");
+    Sleep(500);
     tabulator(3);
     printf("Gra ta jest inspirowana mini gra z Growing Up.");
-    suwak(3);
-    tabulator(3);
-    printf("Aby przejsc dalej, wcisnij Enter...");
-
-    bug = getchar();
+    Sleep(1000);
     suwak(40);
-
-    if (bug != '\n') {
-        while (bug != '\n')
-            bug = getchar();
-
-        tabulator(3);
-        printf("Nie ladnie psuc gre!\n");
-        tabulator(3);
-        printf("Masz ostatnia szanse.");
-        suwak(3);
-        tabulator(3);
-        printf("Aby przejsc dalej, wcisnij Enter...");
-
-        bug = getchar();
-        suwak(40);
-
-        if (bug == '\n')
-            return 1;
-        else return 0;
-    } else return 1;
 }
 
-void gra(int *pzwrot, int *ptab_stat) {
+void gra(int *pzwrot) {
     int i = 0, j = 0;    //Zmienne obslugujace petle
     static int ruch = RUCH;   //Mechanika punktow ruchu
 
+    /*
+     * Tablica z wartościami statystyk
+     * Kolejnosc: Inteligencja, Empatia, Sprawnosc, Pamiec, Wyobraznia, Urok
+     */
+    int tab_stat[6] = {0, 0, 0, 0, 0, 0};
+
     //Tablica dla elementow wyswietlanych na mapie gry
     char tab_mapa[WIERSZ][KOLUMNA][GLEBOKOSC];
+
+    ekran_powitalny();
 
     do {
         //Inicjalizacja tablicy tab_mapa
@@ -143,10 +131,10 @@ void gra(int *pzwrot, int *ptab_stat) {
             inic_mapa(i, &tab_mapa[0][0][0], &tab_mapa[0][0][1]);
 
         //Ekran gry
-        ekran_gry(i, j, ruch, ptab_stat, &tab_mapa[0][0][0], &tab_mapa[0][0][1]);
+        ekran_gry(i, j, ruch, &tab_stat[0], &tab_mapa[0][0][0], &tab_mapa[0][0][1]);
 
         //Sekcja interaktywna
-        reakcja(i, j, pzwrot, &ruch, ptab_stat, &tab_mapa[0][0][0], &tab_mapa[0][0][0], &tab_mapa[0][0][1]);
+        reakcja(i, j, pzwrot, &ruch, &tab_stat[0], &tab_mapa[0][0][0], &tab_mapa[0][0][0], &tab_mapa[0][0][1]);
 
         //Test stanu gry
         if (*pzwrot == 2)
@@ -154,8 +142,9 @@ void gra(int *pzwrot, int *ptab_stat) {
 
         suwak(40);
 
-    }
-    while (*pzwrot > 0);
+    } while (*pzwrot > 0);
+
+    ekran_koncowy(&tab_stat[0]);
 }
 
 void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2) {
@@ -1276,6 +1265,9 @@ void ekran_koncowy(int *ptab_stat) {
         printf("\t");
         ptab_stat++;
     }
+
+    Sleep(2000);
+    suwak(40);
 }
 
 //Funkcja "suwak" odpowiada za "czyszczenie ekranu" - przesuwanie tekstu tak, aby nie bylo widac wczesniejszych, niepotrzebnych komunikatow.
