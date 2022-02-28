@@ -5,8 +5,8 @@
 #include <windows.h>
 
 //Wymiary tabeli tab_mapa
-#define WIERSZ 7
-#define KOLUMNA 23
+#define WIERSZ 25
+#define KOLUMNA 25
 #define GLEBOKOSC 2
 
 #define RUCH 30     //Liczba punktow ruchu
@@ -131,7 +131,7 @@ void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2) {
 
     for (i = 0; i < (WIERSZ * KOLUMNA); i++) {
         los = rand() % 6;
-        if (i == 150) los = 24;
+        if (i == 312) los = 24;
         //los = i;
 
         switch (los) {
@@ -271,7 +271,7 @@ void ekran_gry(int i, int j, int ruch, int *ptab_stat, char *ptab_mapa, char *pt
 
     //Mapa gry
     for (i = 0; i < (WIERSZ + 4); i++) {
-        printf("\t\t");
+        //printf("\t\t");
         if (!i || i == 1 || i == (WIERSZ + 3)) pom = 1;     //Wyrowanie naliczania liczb pomocniczych
         if (!i || i == (WIERSZ + 3)) {      //Pomocnicze liczby w poziomie
             for (j = 0; j < KOLUMNA; j++) {
@@ -914,6 +914,7 @@ void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *pt
     unsigned short dol;   //Liczba wierszy pod atrybutem
     unsigned short los;     //Wynik losowania
     unsigned short odkryte = 0;     //Liczba odkrytych elementow
+    char *poprzednik;
     int j;      //Zmienna dla petli
 
     ptab_legenda += 18;     //Weryfikacja stanu punktow ruchu
@@ -937,7 +938,7 @@ void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *pt
             if (i)
                 i = 0;
             while (!i) {        //Element sasiadujacy (bazowy)
-                los = 0;//rand() % 4;
+                los = rand() % 4;
 
                 switch (los) {
                     case 0:     //Osloniecie nad
@@ -972,6 +973,7 @@ void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *pt
 
             if (*ptab_mapa2 != 'O' && ptab_mapa2 > ptmp && ptab_mapa2 < ptmk)
                 *ptab_mapa2 = 'O';
+            poprzednik = ptab_mapa2;
             odkryte++;
 
             for (j = 0; j < 11; j++) {     //Kolejne elementy
@@ -1080,10 +1082,14 @@ void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *pt
                         printf("Blad switcha reakcja_lanc nr 2!");
                         break;
                 }
-                if (*ptab_mapa2 != 'O' && ptab_mapa2 > ptmp && ptab_mapa2 < ptmk)
-                    *ptab_mapa2 = 'O';
-                if (j != 20)
-                    odkryte++;
+                if (j != 20) {
+                    if (poprzednik != ptab_mapa2) {
+                        poprzednik = ptab_mapa2;
+                        if (*ptab_mapa2 != 'O' && ptab_mapa2 > ptmp && ptab_mapa2 < ptmk)
+                            *ptab_mapa2 = 'O';
+                        odkryte++;
+                    } else j--;
+                }
                 if (odkryte > 12)
                     break;
             }
