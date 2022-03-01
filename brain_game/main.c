@@ -908,13 +908,17 @@ void hiper_at(int i, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned sho
 }
 
 void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *ptmk, int *ptab_legenda, int *pruch, unsigned short *pbieda) {
-    unsigned short lewo;     //Liczba elementow stojacych na lewo od atrybutu
-    unsigned short prawo;   //Liczba elementow stojacych na prawo od atrybutu
-    unsigned short gora;   //Liczba wierszy nad atrybutem
-    unsigned short dol;   //Liczba wierszy pod atrybutem
+    unsigned short lewo;        //Liczba elementow stojacych na lewo od atrybutu
+    unsigned short prawo;       //Liczba elementow stojacych na prawo od atrybutu
+    unsigned short gora;        //Liczba wierszy nad atrybutem
+    unsigned short dol;     //Liczba wierszy pod atrybutem
     unsigned short los;     //Wynik losowania
     unsigned short odkryte = 0;     //Liczba odkrytych elementow
-    char *poprzednik;
+    int tab_poprzed[20] = {0, 0, 0, 0, 0, 0, 0,
+                           0, 0, 0, 0, 0, 0, 0,
+                           0, 0, 0, 0, 0, 0};        //Tablica adresow wybranych elementow
+    int *poprzednik;        //Wskaznik na tablice tab_poprzed
+    unsigned short powtorka = 0;        //Powtorzenie elementu
     int j;      //Zmienna dla petli
 
     ptab_legenda += 18;     //Weryfikacja stanu punktow ruchu
@@ -973,7 +977,6 @@ void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *pt
 
             if (*ptab_mapa2 != 'O' && ptab_mapa2 > ptmp && ptab_mapa2 < ptmk)
                 *ptab_mapa2 = 'O';
-            poprzednik = ptab_mapa2;
             odkryte++;
 
             for (j = 0; j < 11; j++) {     //Kolejne elementy
@@ -1083,8 +1086,17 @@ void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *pt
                         break;
                 }
                 if (j != 20) {
-                    if (poprzednik != ptab_mapa2) {
-                        poprzednik = ptab_mapa2;
+                    poprzednik = &tab_poprzed[0];
+                    for (int k = 0; k < 20; ++k) {
+                        if (*poprzednik) {
+                            if (*poprzednik == ptab_mapa2) {
+                                powtorka = 1;
+                                break;
+                            }
+                        } else break;
+                    }
+                    if (!powtorka) {
+                        *poprzednik = ptab_mapa2;
                         if (*ptab_mapa2 != 'O' && ptab_mapa2 > ptmp && ptab_mapa2 < ptmk)
                             *ptab_mapa2 = 'O';
                         odkryte++;
@@ -1262,4 +1274,3 @@ void tabulator (int tab) {
     for (int i = 0; i < tab; i++)
         printf("\t");
 }
-
