@@ -11,11 +11,10 @@
 
 #define RUCH 30     //Liczba punktow ruchu
 
-int menu_glowne();
+int menu_glowne(FILE *pf);
 
+void gra(int *pzwrot, FILE *pf);
 void ekran_powitalny();
-
-void gra(int *pzwrot);
 void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2);
 void ekran_gry(int i, int j, int ruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2);
 void reakcja(int i, int j, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3);
@@ -29,25 +28,30 @@ void hiper_at(int i, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned sho
 void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *ptmk, int *ptab_legenda, int *pruch, unsigned short *pbieda);
 void oko(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *ptmk);
 void test(int i, int *pzwrot, int *pruch, char *ptab_mapa, char *ptab_mapa2);
-
 void ekran_koncowy(int *ptab_stat);
+
+void zapisz_gre(FILE *pf, int *pruch, int *ptab_stat, char *ptab_mapa, int i);
+void wczytaj_gre(FILE *pf, int *pruch, int *ptab_stat, char *ptab_mapa, int i);
 
 void suwak(int linia);
 void tabulator(int tab);
 
 int main() {
     int zwrot;  //Wartosc zwracana przez funkcje
+    FILE *f;        //Odpowiada za plik zapisu gry
 
     srand(time(NULL));
 
     while (zwrot != 4) {
-        zwrot = menu_glowne();      //Menu glowne
+        zwrot = menu_glowne(&f);      //Menu glowne
         switch (zwrot) {
             case 1:     //Nowa gra
-                zwrot = 1;
-                gra(&zwrot);
+                zwrot = 2;
+                gra(&zwrot, f);
                 break;
             case 2:     //Kontynuuj gre
+                zwrot = 1;
+                gra(&zwrot, f);
                 break;
             case 3:     //Ustawienia
                 break;
@@ -65,26 +69,41 @@ int main() {
     return 0;
 }
 
-int menu_glowne() {
-    int tekst = 0;
-    char sprzatacz;
-    for (int i = 0; i < 5; ++i) {
+int menu_glowne(FILE *pf) {
+    int tekst = 0;      //Opcja wybrana przez gracza
+    char sprzatacz;     //Czyszczenie pozostalego wprowadzonego tesktu
+    unsigned short save;    //Sprawdzenie wystepowania pliku zapisu: 0 - brak, 1 - istnieje
+    int i;      //Dla petli
+
+    pf = fopen("save.txt","r");
+    if (pf != NULL)
+        save = 1;
+    else save = 0;
+    fclose(pf);
+
+    for (i = 0; i < 5; i++) {
         tabulator(2);
         switch (i) {
             case 0:
                 printf("\"Brain Game\"\n\n");
                 break;
             case 1:
-                printf("(1) Nowa gra\n");
+                printf("(%d) Nowa gra\n", i);
                 break;
             case 2:
-                printf("(2) Kontynuuj gre\n");
+                if (save)
+                    printf("(%d) Kontynuuj gre\n", i);
+                else printf("\r");
                 break;
             case 3:
-                printf("(3) Ustawienia\n");
+                if (save)
+                    printf("(%d) Ustawienia\n", i);
+                else printf("(%d) Ustawienia\n", i - 1);
                 break;
             case 4:
-                printf("(4) Opusc gre\n");
+                if (save)
+                    printf("(%d) Opusc gre\n", i);
+                else printf("(%d) Opusc gre\n", i - 1);
                 break;
             default:
                 printf("Blad switcha menu_glowne!");
@@ -96,7 +115,10 @@ int menu_glowne() {
     scanf("%d", &tekst);
     suwak(40);
     while ((sprzatacz = getchar()) != '\n');
-    return tekst;
+    if (save || tekst == 1)
+        return tekst;
+    else
+        return tekst + 1;
 }
 
 void ekran_powitalny() {
@@ -110,7 +132,15 @@ void ekran_powitalny() {
     suwak(40);
 }
 
-void gra(int *pzwrot) {
+void gra(int *pzwrot, FILE *pf) {
+    /*
+     * Znaczenie wartosci zmiennej zwrot:
+     * 0 - koniec petli
+     * 1 - wczytaj zapis gry
+     * 2 - reinicjalizuj tablice tab_mapa
+     * 3 - kontynuuj petle bez zmian
+     */
+
     int i = 0, j = 0;    //Zmienne obslugujace petle
     static int ruch = RUCH;   //Mechanika punktow ruchu
 
@@ -127,7 +157,7 @@ void gra(int *pzwrot) {
 
     do {
         //Inicjalizacja tablicy tab_mapa
-        if (*pzwrot == 1)
+        if (*pzwrot == 2)
             inic_mapa(i, &tab_mapa[0][0][0], &tab_mapa[0][0][1]);
 
         //Ekran gry
@@ -137,12 +167,14 @@ void gra(int *pzwrot) {
         reakcja(i, j, pzwrot, &ruch, &tab_stat[0], &tab_mapa[0][0][0], &tab_mapa[0][0][0], &tab_mapa[0][0][1]);
 
         //Test stanu gry
-        if (*pzwrot == 2)
+        if (*pzwrot == 3)
             test(i, pzwrot, &ruch, &tab_mapa[0][0][0], &tab_mapa[0][0][1]);
 
         suwak(40);
 
     } while (*pzwrot > 0);
+
+    zapisz_gre(pf, &ruch, &tab_stat[0], &tab_mapa[0][0][0], i);
 
     ekran_koncowy(&tab_stat[0]);
 }
@@ -440,8 +472,8 @@ void reakcja(int i, int j, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_m
     }
 
     if (*ptab_mapa == '!')
-        *pzwrot = 1;
-    else *pzwrot = 2;
+        *pzwrot = 2;
+    else *pzwrot = 3;
 }
 
 void instrukcja(int i, int *ptab_legenda, int *ptab_legenda2) {
@@ -1268,6 +1300,31 @@ void ekran_koncowy(int *ptab_stat) {
 
     Sleep(2000);
     suwak(40);
+}
+
+void zapisz_gre(FILE *pf, int *pruch, int *ptab_stat, char *ptab_mapa, int i) {
+    char tab_pom[WIERSZ * KOLUMNA * GLEBOKOSC];   //Konwersja zmiennych na typ znakowy
+    char *ppom;
+
+    printf("\t\tCzy chcesz zapisac swoje postepy?\n");
+    *ppom = getchar();
+
+    if (strcmp(ppom, "t\n") != 0) {
+        pf = fopen("save.txt", "w");
+        for (i = 0; i < 3; i++) {
+            switch (i) {
+                case 0:
+                    *ppom = *pruch;
+                    fputchar(*pruch);
+                    break;
+            }
+        }
+        fclose(pf);
+    }
+}
+
+void wczytaj_gre(FILE *pf, int *pruch, int *ptab_stat, char *ptab_mapa, int i) {
+
 }
 
 //Funkcja "suwak" odpowiada za "czyszczenie ekranu" - przesuwanie tekstu tak, aby nie bylo widac wczesniejszych, niepotrzebnych komunikatow.
