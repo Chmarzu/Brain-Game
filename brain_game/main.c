@@ -1093,6 +1093,7 @@ void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *pt
                                 powtorka = 1;
                                 break;
                             }
+                            poprzednik++;
                         } else break;
                     }
                     if (!powtorka) {
