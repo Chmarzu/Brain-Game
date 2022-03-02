@@ -427,7 +427,7 @@ void reakcja(int i, int j, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_m
         tekst = getchar();
 
         if (tekst == '\n') {    //Wyjscie z gry
-            *pruch = -1;
+            *pzwrot = 0;
             break;
         } else if (tekst == 'i' || tekst == 'I') {      //Instrukcja
             while (tekst != '\n') tekst = getchar();
@@ -471,9 +471,11 @@ void reakcja(int i, int j, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_m
         }
     }
 
-    if (*ptab_mapa == '!')
-        *pzwrot = 2;
-    else *pzwrot = 3;
+    if(*pzwrot != 0) {
+        if (*ptab_mapa == '!')
+            *pzwrot = 2;
+        else *pzwrot = 3;
+    }
 }
 
 void instrukcja(int i, int *ptab_legenda, int *ptab_legenda2) {
@@ -1305,17 +1307,41 @@ void ekran_koncowy(int *ptab_stat) {
 void zapisz_gre(FILE *pf, int *pruch, int *ptab_stat, char *ptab_mapa, int i) {
     char tab_pom[WIERSZ * KOLUMNA * GLEBOKOSC];   //Konwersja zmiennych na typ znakowy
     char *ppom;
+    int licz;
+    ppom = &tab_pom[0];
 
     printf("\t\tCzy chcesz zapisac swoje postepy?\n");
-    *ppom = getchar();
+    while (*ppom != '\n') {
+        *ppom = getchar();
+        if (*ppom != '\n')
+            ppom++;
+    }
+    suwak(40);
 
-    if (strcmp(ppom, "t\n") != 0) {
+    if (strcmp (tab_pom, "t\n") == 0) {
         pf = fopen("save.txt", "w");
         for (i = 0; i < 3; i++) {
             switch (i) {
                 case 0:
-                    *ppom = *pruch;
-                    fputchar(*pruch);
+                    if (*pruch > 9) {
+                        for (i = 0; i < 2; ++i) {
+                            switch (i) {
+                                case 0:
+                                    licz = *pruch / 10;
+                                    *ppom = licz + 48;
+                                    fputc(*ppom, pf);
+                                    break;
+                                case 1:
+                                    licz = *pruch % 10;
+                                    *ppom = licz + 48;
+                                    fputc(*ppom, pf);
+                                    break;
+                            }
+                        }
+                    } else {
+                        *ppom = *pruch + 48;
+                        fputc(*ppom, pf);
+                    }
                     break;
             }
         }
