@@ -155,6 +155,9 @@ void gra(int *pzwrot, FILE *pf) {
 
     ekran_powitalny();
 
+    if (*pzwrot == 1)
+        wczytaj_gre(pf, &ruch, &tab_stat[0], &tab_mapa[0][0][0], i);
+
     do {
         //Inicjalizacja tablicy tab_mapa
         if (*pzwrot == 2)
@@ -1375,6 +1378,8 @@ void zapisz_gre(FILE *pf, int const *pruch, int *ptab_stat, char *ptab_mapa, int
                             fputc(*ppom, pf);
                         }
                         ptab_stat++;
+                        *ppom = ' ';
+                        fputc(*ppom, pf);
                     }
                     break;
                 case 2:
@@ -1393,7 +1398,19 @@ void zapisz_gre(FILE *pf, int const *pruch, int *ptab_stat, char *ptab_mapa, int
 }
 
 void wczytaj_gre(FILE *pf, int *pruch, int *ptab_stat, char *ptab_mapa, int i) {
+    char pom;
 
+    pf = fopen("save.txt", "w");
+
+    for (i = 0; i < 3; i++) {
+        while (pom != '\n') {
+            fputc(pom, pf);
+            if (pom != '\n')
+                *pruch = pom - 48;
+        }
+    }
+
+    fclose(pf);
 }
 
 //Funkcja "suwak" odpowiada za "czyszczenie ekranu" - przesuwanie tekstu tak, aby nie bylo widac wczesniejszych, niepotrzebnych komunikatow.
