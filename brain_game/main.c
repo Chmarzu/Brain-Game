@@ -30,7 +30,7 @@ void oko(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *ptmk);
 void test(int i, int *pzwrot, int *pruch, char *ptab_mapa, char *ptab_mapa2);
 void ekran_koncowy(int *ptab_stat);
 
-void zapisz_gre(FILE *pf, int *pruch, int *ptab_stat, char *ptab_mapa, int i);
+void zapisz_gre(FILE *pf, int const *pruch, int *ptab_stat, char *ptab_mapa, int i, int j);
 void wczytaj_gre(FILE *pf, int *pruch, int *ptab_stat, char *ptab_mapa, int i);
 
 void suwak(int linia);
@@ -43,7 +43,7 @@ int main() {
     srand(time(NULL));
 
     while (zwrot != 4) {
-        zwrot = menu_glowne(&f);      //Menu glowne
+        zwrot = menu_glowne(f);      //Menu glowne
         switch (zwrot) {
             case 1:     //Nowa gra
                 zwrot = 2;
@@ -174,7 +174,7 @@ void gra(int *pzwrot, FILE *pf) {
 
     } while (*pzwrot > 0);
 
-    zapisz_gre(pf, &ruch, &tab_stat[0], &tab_mapa[0][0][0], i);
+    if (*pzwrot < 0) zapisz_gre(pf, &ruch, &tab_stat[0], &tab_mapa[0][0][0], i, j);
 
     ekran_koncowy(&tab_stat[0]);
 }
@@ -427,7 +427,7 @@ void reakcja(int i, int j, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_m
         tekst = getchar();
 
         if (tekst == '\n') {    //Wyjscie z gry
-            *pzwrot = 0;
+            *pzwrot = -1;
             break;
         } else if (tekst == 'i' || tekst == 'I') {      //Instrukcja
             while (tekst != '\n') tekst = getchar();
@@ -471,7 +471,7 @@ void reakcja(int i, int j, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_m
         }
     }
 
-    if(*pzwrot != 0) {
+    if(*pzwrot > 0) {
         if (*ptab_mapa == '!')
             *pzwrot = 2;
         else *pzwrot = 3;
@@ -1304,13 +1304,13 @@ void ekran_koncowy(int *ptab_stat) {
     suwak(40);
 }
 
-void zapisz_gre(FILE *pf, int *pruch, int *ptab_stat, char *ptab_mapa, int i) {
-    char tab_pom[WIERSZ * KOLUMNA * GLEBOKOSC];   //Konwersja zmiennych na typ znakowy
+void zapisz_gre(FILE *pf, int const *pruch, int *ptab_stat, char *ptab_mapa, int i, int j) {
+    char tab_pom[WIERSZ * KOLUMNA * GLEBOKOSC];     //Konwersja zmiennych na typ znakowy
     char *ppom;
-    int licz;
+    int licz, k;
     ppom = &tab_pom[0];
 
-    printf("\t\tCzy chcesz zapisac swoje postepy?\n");
+    printf("\t\tCzy chcesz zapisac swoje postepy? (t/n)\n");
     while (*ppom != '\n') {
         *ppom = getchar();
         if (*ppom != '\n')
@@ -1318,13 +1318,15 @@ void zapisz_gre(FILE *pf, int *pruch, int *ptab_stat, char *ptab_mapa, int i) {
     }
     suwak(40);
 
-    if (strcmp (tab_pom, "t\n") == 0) {
+    if (strcmp(tab_pom, "t\n") == 0 || strcmp(tab_pom, "T\n") == 0 ||
+        strcmp(tab_pom, "y\n") == 0 || strcmp(tab_pom, "Y\n") == 0) {
         pf = fopen("save.txt", "w");
-        for (i = 0; i < 3; i++) {
-            switch (i) {
+
+        for (k = 0; k < 3; k++) {
+            switch (k) {
                 case 0:
-                    if (*pruch > 9) {
-                        for (i = 0; i < 2; ++i) {
+                    if (*pruch > 9) {       //Zapis liczby punktow ruchu
+                        for (i = 0; i < 2; i++) {
                             switch (i) {
                                 case 0:
                                     licz = *pruch / 10;
@@ -1336,6 +1338,10 @@ void zapisz_gre(FILE *pf, int *pruch, int *ptab_stat, char *ptab_mapa, int i) {
                                     *ppom = licz + 48;
                                     fputc(*ppom, pf);
                                     break;
+                                default:
+                                    printf("Blad switcha zapisz_gre nr 1");
+                                    Sleep(5000);
+                                    break;
                             }
                         }
                     } else {
@@ -1343,8 +1349,45 @@ void zapisz_gre(FILE *pf, int *pruch, int *ptab_stat, char *ptab_mapa, int i) {
                         fputc(*ppom, pf);
                     }
                     break;
+                case 1:
+                    for (i = 0; i < 6; i++) {       //Zapis statystyk
+                        if (*ptab_stat > 9) {
+                            for (j = 0; j < 2; j++) {
+                                switch (j) {
+                                    case 0:
+                                        licz = *ptab_stat / 10;
+                                        *ppom = licz + 48;
+                                        fputc(*ppom, pf);
+                                        break;
+                                    case 1:
+                                        licz = *ptab_stat % 10;
+                                        *ppom = licz + 48;
+                                        fputc(*ppom, pf);
+                                        break;
+                                    default:
+                                        printf("Blad switcha zapisz_gre nr 2");
+                                        Sleep(5000);
+                                        break;
+                                }
+                            }
+                        } else {
+                            *ppom = *ptab_stat + 48;
+                            fputc(*ppom, pf);
+                        }
+                        ptab_stat++;
+                    }
+                    break;
+                case 2:
+                    for (i = 0; i < WIERSZ * KOLUMNA * GLEBOKOSC; i++) {        //Zapis mapy gry
+                        fputc(*ptab_mapa, pf);
+                        ptab_mapa++;
+                    }
+                    break;
             }
+            *ppom = '\n';
+            fputc(*ppom, pf);
         }
+
         fclose(pf);
     }
 }
