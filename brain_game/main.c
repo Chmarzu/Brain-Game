@@ -914,12 +914,15 @@ void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *pt
     unsigned short dol;     //Liczba wierszy pod atrybutem
     unsigned short los;     //Wynik losowania
     unsigned short odkryte = 0;     //Liczba odkrytych elementow
-    int tab_poprzed[20] = {0, 0, 0, 0, 0, 0, 0,
-                           0, 0, 0, 0, 0, 0, 0,
-                           0, 0, 0, 0, 0, 0};        //Tablica adresow wybranych elementow
+    int tab_poprzed[20];        //Tablica adresow wybranych elementow
     int *poprzednik;        //Wskaznik na tablice tab_poprzed
     unsigned short powtorka = 0;        //Powtorzenie elementu
-    int j;      //Zmienna dla petli
+    int j, k;      //Zmienne dla petli
+
+    poprzednik = &tab_poprzed[0];       //Zapelnienie tablicy zerami
+    for (i = 0; i < 20; i++) {
+        *poprzednik = 0;
+    }
 
     ptab_legenda += 18;     //Weryfikacja stanu punktow ruchu
     if (*pruch < *ptab_legenda) {
@@ -941,6 +944,7 @@ void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *pt
             ptab_mapa2 = ptab_mapa;
             if (i)
                 i = 0;
+
             while (!i) {        //Element sasiadujacy (bazowy)
                 los = rand() % 4;
 
@@ -1087,7 +1091,7 @@ void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *pt
                 }
                 if (j != 20) {
                     poprzednik = &tab_poprzed[0];
-                    for (int k = 0; k < 20; ++k) {
+                    for (k = 0; k < 20; k++) {      //Weryfikacja wystapienia powtorki
                         if (*poprzednik) {
                             if (*poprzednik == ptab_mapa2) {
                                 powtorka = 1;
@@ -1096,8 +1100,12 @@ void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *pt
                             poprzednik++;
                         } else break;
                     }
-                    if (!powtorka) {
-                        *poprzednik = ptab_mapa2;
+                    if (!powtorka) {        //Brak powtorki
+                        if (k == 20) {
+                            printf("Brak mejsca w tablicy!");
+                            Sleep(5000);
+                        } else *poprzednik = ptab_mapa2;
+
                         if (*ptab_mapa2 != 'O' && ptab_mapa2 > ptmp && ptab_mapa2 < ptmk)
                             *ptab_mapa2 = 'O';
                         odkryte++;
