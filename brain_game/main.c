@@ -187,9 +187,35 @@ void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2) {
     int odkryte = 0;    //Ogranicza liczbe odkrytych atrybutow
 
     for (i = 0; i < (WIERSZ * KOLUMNA); i++) {
-        los = rand() % 27;
         //if (i == 150) los = 24;
         //los = i;
+
+        los = rand() % 3;
+        if (los) {
+            los = rand() % 100;
+            if (los < 40)
+                los = rand() % 6;
+            else if (los < 50)
+                los = rand() % 5 + 6;
+            else if (los < 65)
+                los = rand() % 5 + 6;
+            else if (los < 75)
+                los = 18;
+            else if (los < 80)
+                los = 19;
+            else if (los < 82)
+                los = 20;
+            else if (los < 85)
+                los = 21;
+            else if (los < 87)
+                los = 22;
+            else if (los < 90)
+                los = 23;
+            else if (los < 95)
+                los = 24;
+            else if (los < 100)
+                los = 25;
+        } else los = 26;
 
         switch (los) {
             case 0:
@@ -256,16 +282,16 @@ void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2) {
                 *ptab_mapa = '#';
                 break;
             case 21:
-                *ptab_mapa = '@';
+                *ptab_mapa = '&';
                 break;
             case 22:
-                *ptab_mapa = '+';
+                *ptab_mapa = '@';
                 break;
             case 23:
-                *ptab_mapa = '!';
+                *ptab_mapa = '+';
                 break;
             case 24:
-                *ptab_mapa = '&';
+                *ptab_mapa = '!';
                 break;
             case 25:
                 *ptab_mapa = '?';
@@ -275,7 +301,6 @@ void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2) {
                 break;
         }
         //Usunac do update'a
-        //*ptab_mapa2 = 'O';    //Odslaniecie wszystkiego
         if (*ptab_mapa == ' ')
             *ptab_mapa2 = 'O';
             //else if (i == 0) *ptab_mapa2 = 'O';    //Odslaniecie lda wybranej iteracji
@@ -285,6 +310,7 @@ void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2) {
             *ptab_mapa2 = 'O';
             odkryte++;
         } else *ptab_mapa2 = 'Z';
+        *ptab_mapa2 = 'O';    //Odslaniecie wszystkiego
 
         ptab_mapa += 2;
         ptab_mapa2 += 2;
@@ -328,7 +354,7 @@ void ekran_gry(int i, int j, int ruch, int *ptab_stat, char *ptab_mapa, char *pt
 
     //Mapa gry
     for (i = 0; i < (WIERSZ + 4); i++) {
-        printf("\t\t");
+        printf("\t");
         if (!i || i == 1 || i == (WIERSZ + 3)) pom = 1;     //Wyrowanie naliczania liczb pomocniczych
         if (!i || i == (WIERSZ + 3)) {      //Pomocnicze liczby w poziomie
             for (j = 0; j < KOLUMNA; j++) {
@@ -486,44 +512,46 @@ void instrukcja(int i, int *ptab_legenda, int *ptab_legenda2) {
 
     suwak(40);
     tabulator(3);
-    printf("Instrukcja:\n");
+    printf("Instrukcja:\n\n");
 
     for (i = 0; i < 11; i++) {
-        printf("\t");
-
         switch (i) {
             case 0:
-                printf("[x]: ");
+                printf("\tZwykly atrybut [x]: ");
                 break;
             case 1:
-                printf("[X]: ");
+                printf("\nBoostery:\n");
+                printf("\tSuper atrybut [X]: ");
                 break;
             case 2:
-                printf("{x}: ");
+                printf("\tMega atrybut {x}: ");
                 break;
             case 3:
-                printf("[$]: -%d pkt ruchu, +%d pkt wszystkich umiejetnosci\n", *ptab_legenda, *ptab_legenda2);
+                printf("\tHiper atrybut [$]: -%d pkt ruchu, +%d pkt wszystkich umiejetnosci\n", *ptab_legenda, *ptab_legenda2);
                 break;
             case 4:
-                printf("[^]: ");
+                printf("\nPoszerzacze zasiegu:\n");
+                printf("\tOko [^]: ");
                 break;
             case 5:
-                printf("{^}: ");
+                printf("\tSuper oko {^}: ");
                 break;
             case 6:
-                printf("[@]: ");
+                printf("\tReakcja lancuchowa [&]: ");
                 break;
             case 7:
-                printf("[+]: ");
+                printf("\nDebuffy:\n");
+                printf("\tZacmienie [@]: ");
                 break;
             case 8:
-                printf("[!]: ");
+                printf("\nInne:\n");
+                printf("\tBonus do pkt ruchu [+]: ");
                 break;
             case 9:
-                printf("[&]: ");
+                printf("\t Nowa mapa [!]: ");
                 break;
             case 10:
-                printf("[?]: koszt taki, jak wylosowanego typu atrybutu");
+                printf("\tLosowy atrybut [?]: koszt taki, jak wylosowanego typu atrybutu");
                 break;
             default:
                 printf("Blad switcha w funkcji instrukcja!");
@@ -542,7 +570,8 @@ void instrukcja(int i, int *ptab_legenda, int *ptab_legenda2) {
         ptab_legenda2 += 2;
     }
 
-    printf("\n\tAby wrocic do gry, wcisnij Enter...");
+    suwak(3);
+    printf("\tAby wrocic do gry, wcisnij Enter...");
     tekst = getchar();
     while (tekst != '\n') tekst = getchar();
 }
