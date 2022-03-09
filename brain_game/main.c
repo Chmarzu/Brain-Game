@@ -187,8 +187,8 @@ void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2) {
     int odkryte = 0;    //Ogranicza liczbe odkrytych atrybutow
 
     for (i = 0; i < (WIERSZ * KOLUMNA); i++) {
-        los = rand() % 6;
-        if (i == 150) los = 24;
+        los = rand() % 27;
+        //if (i == 150) los = 24;
         //los = i;
 
         switch (los) {
@@ -279,7 +279,7 @@ void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2) {
         if (*ptab_mapa == ' ')
             *ptab_mapa2 = 'O';
             //else if (i == 0) *ptab_mapa2 = 'O';    //Odslaniecie lda wybranej iteracji
-        else if (*ptab_mapa == '&') *ptab_mapa2 = 'O';   //Odslaniecie kazdego atrybutu okreslonego typu
+        //else if (*ptab_mapa == '&') *ptab_mapa2 = 'O';   //Odslaniecie kazdego atrybutu okreslonego typu
         else if (odkryte < 3 && (*ptab_mapa == 'i' || *ptab_mapa == 'e' || *ptab_mapa == 's' ||
                                  *ptab_mapa == 'p' || *ptab_mapa == 'w' || *ptab_mapa == 'u')) {
             *ptab_mapa2 = 'O';
