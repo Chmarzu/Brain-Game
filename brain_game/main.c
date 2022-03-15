@@ -189,29 +189,30 @@ void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2) {
     for (i = 0; i < (WIERSZ * KOLUMNA); i++) {
         //if (i == 150) los = 24;
         //los = i;
+        //los = rand() % 27;
 
         los = rand() % 3;
         if (los) {
             los = rand() % 100;
-            if (los < 40)
+            if (los < 50)
                 los = rand() % 6;
-            else if (los < 50)
+            else if (los < 60)
                 los = rand() % 5 + 6;
-            else if (los < 65)
+            else if (los < 63)
                 los = rand() % 5 + 6;
-            else if (los < 75)
+            else if (los < 67)
                 los = 18;
-            else if (los < 80)
+            else if (los < 74)
                 los = 19;
-            else if (los < 82)
+            else if (los < 77)
                 los = 20;
-            else if (los < 85)
+            else if (los < 80)
                 los = 21;
             else if (los < 87)
                 los = 22;
-            else if (los < 90)
+            else if (los < 94)
                 los = 23;
-            else if (los < 95)
+            else if (los < 96)
                 los = 24;
             else if (los < 100)
                 los = 25;
@@ -436,7 +437,7 @@ void reakcja(int i, int j, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_m
 
     /*
      * Tablica dla legendy atrybutow
-     * Kolejnosc: zwykly atrybut, super atrybut, mega atrybut, hiper atrybut, oko, super oko, zacmienie, bonusowe pkt ruchu, nowa mapa, reakcja lancuchowa, losowy atrybut
+     * Kolejnosc: zwykly atrybut, super atrybut, mega atrybut, hiper atrybut, oko, super oko, reakcja lancuchowa, zacmienie, bonusowe pkt ruchu, nowa mapa, losowy atrybut
      * {koszt, bonus}
      */
     int tab_legenda[][2] = {{1, 1},
@@ -445,10 +446,10 @@ void reakcja(int i, int j, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_m
                             {5, 3},
                             {3, 0},
                             {7, 0},
+                            {4, 0},
                             {5, 0},
                             {0, 5},
                             {0, (RUCH / 2)},
-                            {4, 0},
                             {0, 0}};
 
     for (i = 0; i < 3; i++) {   //Petla w razie pomylki gracza - 3 proby
@@ -548,7 +549,7 @@ void instrukcja(int i, int *ptab_legenda, int *ptab_legenda2) {
                 printf("\tBonus do pkt ruchu [+]: ");
                 break;
             case 9:
-                printf("\t Nowa mapa [!]: ");
+                printf("\tNowa mapa [!]: ");
                 break;
             case 10:
                 printf("\tLosowy atrybut [?]: koszt taki, jak wylosowanego typu atrybutu");
@@ -593,20 +594,20 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *p
         *ptab_mapa == 'p' || *ptab_mapa == 'w' || *ptab_mapa == 'u') {
         zwykly_at(*ptab_mapa, ptab_stat, ptab_legenda, pruch, &bieda);
 
-        //Super atrybuty
+    //Super atrybuty
     } else if (*ptab_mapa == 'I' || *ptab_mapa == 'E' || *ptab_mapa == 'S' ||
                *ptab_mapa == 'P' || *ptab_mapa == 'W' || *ptab_mapa == 'U') {
         super_at(*ptab_mapa, ptab_stat, ptab_legenda, pruch, &bieda);
 
-        //Mega atrybuty
+    //Mega atrybuty
     } else if (*ptab_mapa > 96 && *ptab_mapa < 104 && *ptab_mapa != 101) {
         mega_at(i, *ptab_mapa, ptab_mapa2, ptab_mapa3, ptab_stat, ptab_legenda, pruch, &bieda);
 
-        //Hiper atrybut
+    //Hiper atrybut
     } else if (*ptab_mapa == '$') {
         hiper_at(i, ptab_stat, ptab_legenda, pruch, &bieda);
 
-        //Oko
+    //Oko
     } else if (*ptab_mapa == '^') {
         ptab_legenda += 8;      //Utrata punktow ruchu z weryfikacja ich stanu
         if (*pruch < *ptab_legenda) {
@@ -616,7 +617,7 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *p
         }
         else *pruch -= *ptab_legenda;
 
-        //Super oko
+    //Super oko
     } else if (*ptab_mapa == '#') {
         ptab_legenda += 10;     //Utrata punktow ruchu z weryfikacja ich stanu
         if (*pruch < *ptab_legenda) {
@@ -626,9 +627,13 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *p
         }
         else *pruch -= *ptab_legenda;
 
-        //Zacmienie
+    //Reakcja lancuchowa
+    } else if (*ptab_mapa == '&') {
+        reakcja_lanc(i, ptab_mapa, ptab_mapa2, ptmp, ptmk, ptab_legenda, pruch, &bieda);
+
+    //Zacmienie
     } else if (*ptab_mapa == '@') {
-        ptab_legenda += 12;     //Utrata punktow ruchu z weryfikacja ich stanu
+        ptab_legenda += 14;     //Utrata punktow ruchu z weryfikacja ich stanu
         if (*pruch < *ptab_legenda) {
             printf("Za malo punktow ruchu!\n");
             bieda = 0;
@@ -636,19 +641,15 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *p
         }
         else *pruch -= *ptab_legenda;
 
-        //Bonus do punktow ruchu
+    //Bonus do punktow ruchu
     } else if (*ptab_mapa == '+') {
-        ptab_legenda += 15;     //Zwiekszenie liczby punktow ruchu
-        *pruch += *ptab_legenda;
-
-        //Nowa mapa
-    } else if (*ptab_mapa == '!') {
         ptab_legenda += 17;     //Zwiekszenie liczby punktow ruchu
         *pruch += *ptab_legenda;
 
-        //Reakcja lancuchowa
-    } else if (*ptab_mapa == '&') {
-        reakcja_lanc(i, ptab_mapa, ptab_mapa2, ptmp, ptmk, ptab_legenda, pruch, &bieda);
+    //Nowa mapa
+    } else if (*ptab_mapa == '!') {
+        ptab_legenda += 19;     //Zwiekszenie liczby punktow ruchu
+        *pruch += *ptab_legenda;
     }
 
     if (bieda) {    //Sprawdzenie, czy atrybut zostal obsluzony
@@ -1007,18 +1008,18 @@ void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *pt
     unsigned short powtorka = 0;        //Powtorzenie elementu
     int j, k;      //Zmienne dla petli
 
-    poprzednik = &tab_poprzed[0];       //Zapelnienie tablicy zerami
-    for (i = 0; i < 20; i++) {
-        *poprzednik = 0;
-    }
-
-    ptab_legenda += 18;     //Weryfikacja stanu punktow ruchu
+    ptab_legenda += 12;     //Weryfikacja stanu punktow ruchu
     if (*pruch < *ptab_legenda) {
         printf("Za malo punktow ruchu!\n");
         *pbieda = 0;
         Sleep(1000);
     } else {
         *pruch -= *ptab_legenda;    //Utrata punktow ruchu
+
+        poprzednik = &tab_poprzed[0];       //Zapelnienie tablicy zerami
+        for (i = 0; i < 20; i++) {
+            *poprzednik = 0;
+        }
 
         //Odleglosc atrybutu od brzegow tablicy
         ptab_mapa++;
