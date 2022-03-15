@@ -11,7 +11,7 @@
 
 #define RUCH 30     //Liczba punktow ruchu
 
-int menu_glowne(FILE *pf);
+int menu_glowne(boolean plang, FILE *pf);
 
 void gra(int *pzwrot, FILE *pf);
 void ekran_powitalny();
@@ -37,13 +37,21 @@ void suwak(int linia);
 void tabulator(int tab);
 
 int main() {
-    int zwrot;  //Wartosc zwracana przez funkcje
+    boolean lang;       //Language version: 0 - English, 1 - polski
+    int zwrot;      //Wartosc zwracana przez funkcje
     FILE *f;        //Odpowiada za plik zapisu gry
 
     srand(time(NULL));
 
+    f = fopen("lang.txt", "r");
+    if (f == NULL)
+        lang = 0;
+    else
+        lang = fgetchar();
+    fclose(f);
+
     while (zwrot != 4) {
-        zwrot = menu_glowne(f);      //Menu glowne
+        zwrot = menu_glowne(lang, f);      //Menu glowne
         switch (zwrot) {
             case 1:     //Nowa gra
                 zwrot = 2;
@@ -56,11 +64,14 @@ int main() {
             case 3:     //Ustawienia
                 break;
             case 4:     //Zamkniecie gry
-                printf("Do nastepnego razu!");
+                if (!lang)
+                    printf("See you next time!");
+                else
+                    printf("Do nastepnego razu!");
                 Sleep(1000);
                 break;
             default:
-                printf("Blad switcha main!");
+                printf("Switch error in fun main!");
                 Sleep(10000);
                 suwak(40);
                 break;
@@ -69,7 +80,7 @@ int main() {
     return 0;
 }
 
-int menu_glowne(FILE *pf) {
+int menu_glowne(boolean plang, FILE *pf) {
     int tekst = 0;      //Opcja wybrana przez gracza
     char sprzatacz;     //Czyszczenie pozostalego wprowadzonego tesktu
     unsigned short save;    //Sprawdzenie wystepowania pliku zapisu: 0 - brak, 1 - istnieje
@@ -85,25 +96,47 @@ int menu_glowne(FILE *pf) {
         tabulator(2);
         switch (i) {
             case 0:
-                printf("\"Brain Game\"\n\n");
+                printf("Brain Game\n\n");
                 break;
             case 1:
-                printf("(%d) Nowa gra\n", i);
+                if (!plang)
+                    printf("(%d) New Game\n", i);
+                else
+                printf("(%d) Nowa Gra\n", i);
                 break;
             case 2:
-                if (save)
-                    printf("(%d) Kontynuuj gre\n", i);
-                else printf("\r");
+                if (save) {
+                    if (!plang)
+                        printf("(%d) Load Game\n", i);
+                    else
+                        printf("(%d) Wczytaj Gre\n", i);
+                } else printf("\r");
                 break;
             case 3:
-                if (save)
-                    printf("(%d) Ustawienia\n", i);
-                else printf("(%d) Ustawienia\n", i - 1);
+                if (save) {
+                    if (!plang)
+                        printf("(%d) Settings\n", i);
+                    else
+                        printf("(%d) Ustawienia\n", i);
+                } else {
+                    if (!plang)
+                        printf("(%d) Settings\n", i + 1);
+                    else
+                        printf("(%d) Ustawienia\n", i - 1);
+                }
                 break;
             case 4:
-                if (save)
+                if (save) {
+                    if (!plang)
+                        printf("(%d) Quit\n", i);
+                    else
                     printf("(%d) Opusc gre\n", i);
-                else printf("(%d) Opusc gre\n", i - 1);
+                } else {
+                    if (!plang)
+                        printf("(%d) Quit\n", i + 1);
+                    else
+                    printf("(%d) Opusc gre\n", i - 1);
+                }
                 break;
             default:
                 printf("Blad switcha menu_glowne!");
