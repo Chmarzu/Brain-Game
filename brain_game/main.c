@@ -13,6 +13,8 @@
 
 int menu_glowne(boolean plang, FILE *pf);
 
+void settings(boolean *plang, FILE *pf);
+
 void gra(int *pzwrot, FILE *pf);
 void ekran_powitalny();
 void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2);
@@ -44,13 +46,13 @@ int main() {
     srand(time(NULL));
 
     f = fopen("lang.txt", "r");
-    if (f == NULL)
-        lang = 0;
-    else
-        lang = fgetchar();
+    if (f != NULL) {
+        lang = fgetc(f);
+        lang -= 48;
+    }
     fclose(f);
 
-    while (zwrot != 4) {
+    do {
         zwrot = menu_glowne(lang, f);      //Menu glowne
         switch (zwrot) {
             case 1:     //Nowa gra
@@ -62,6 +64,7 @@ int main() {
                 gra(&zwrot, f);
                 break;
             case 3:     //Ustawienia
+                settings(&lang, f);
                 break;
             case 4:     //Zamkniecie gry
                 if (!lang)
@@ -76,7 +79,8 @@ int main() {
                 suwak(40);
                 break;
         }
-    }
+        suwak(40);
+    } while (zwrot != 4);
     return 0;
 }
 
@@ -152,6 +156,36 @@ int menu_glowne(boolean plang, FILE *pf) {
         return tekst;
     else
         return tekst + 1;
+}
+
+void settings(boolean *plang, FILE *pf) {
+    unsigned char temp;      //Temporary variable used to perform file operations
+
+    tabulator(3);
+    if (!*plang) {
+        printf("Settings\n\n");
+        printf("\tLanguage\n");
+        printf("\t* English (0)\n");
+        printf("\t- polski (1)");
+        suwak(3);
+        printf("Press Enter to switch into Main Menu...\n");
+    } else {
+        printf("Ustawienia\n\n");
+        printf("\tJezyk\n");
+        printf("\t- English (0)\n");
+        printf("\t* polski (1)");
+        suwak(3);
+        printf("Wcisnij Enter, aby przejsc do Menu Glownego...\n");
+    }
+    scanf("%c", &temp);
+
+    if (temp != *plang && (temp == '0' || temp == '1')) {
+        *plang = temp - 48;
+
+        pf = fopen("lang.txt", "w");
+        fputc(temp, pf);
+        fclose(pf);
+    }
 }
 
 void ekran_powitalny() {
