@@ -19,8 +19,10 @@ void gra(int *pzwrot, FILE *pf);
 void ekran_powitalny();
 void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2);
 void ekran_gry(int i, int j, int ruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2);
+
 void reakcja(int i, int j, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3);
 void instrukcja(int i, int *ptab_legenda, int *ptab_legenda2);
+
 void atrybut(int i, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3, int *ptab_stat, int *ptab_legenda, int *pruch);
 void los(int i, char *ptab_mapa, int *ptab_legenda, int *pruch, unsigned short *pbieda);
 void zwykly_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned short *pbieda);
@@ -29,6 +31,7 @@ void mega_at(int i, char ptab_mapa, char *ptab_mapa2, char *ptab_mapa3, int *pta
 void hiper_at(int i, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned short *pbieda);
 void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *ptmk, int *ptab_legenda, int *pruch, unsigned short *pbieda);
 void oko(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *ptmk);
+
 void test(int i, int *pzwrot, int *pruch, char *ptab_mapa, char *ptab_mapa2);
 void ekran_koncowy(int *ptab_stat);
 
@@ -188,17 +191,6 @@ void settings(boolean *plang, FILE *pf) {
     }
 }
 
-void ekran_powitalny() {
-    suwak(3);
-    tabulator(4);
-    printf("Witaj w Mapie Mozgu!\n");
-    Sleep(500);
-    tabulator(3);
-    printf("Gra ta jest inspirowana mini gra z Growing Up.");
-    Sleep(1000);
-    suwak(40);
-}
-
 void gra(int *pzwrot, FILE *pf) {
     /*
      * Znaczenie wartosci zmiennej zwrot:
@@ -244,9 +236,21 @@ void gra(int *pzwrot, FILE *pf) {
 
     } while (*pzwrot > 0);
 
-    if (*pzwrot < 0) zapisz_gre(pf, &ruch, &tab_stat[0], &tab_mapa[0][0][0], i, j);
+    if (*pzwrot < 0)
+        zapisz_gre(pf, &ruch, &tab_stat[0], &tab_mapa[0][0][0], i, j);
 
     ekran_koncowy(&tab_stat[0]);
+}
+
+void ekran_powitalny() {
+    suwak(3);
+    tabulator(4);
+    printf("Witaj w Mapie Mozgu!\n");
+    Sleep(500);
+    tabulator(3);
+    printf("Gra ta jest inspirowana mini gra z Growing Up.");
+    Sleep(1000);
+    suwak(40);
 }
 
 void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2) {
