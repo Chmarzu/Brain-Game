@@ -11,9 +11,11 @@
 
 #define RUCH 30     //Liczba punktow ruchu
 
-int menu_glowne(boolean plang, FILE *pf);
+boolean lang;       //Language version: 0 - English, 1 - polski
 
-void settings(boolean *plang, FILE *pf);
+int menu_glowne(FILE *pf);
+
+void settings(FILE *pf);
 
 void gra(int *pzwrot, FILE *pf);
 void ekran_powitalny();
@@ -42,21 +44,18 @@ void suwak(int linia);
 void tabulator(int tab);
 
 int main() {
-    boolean lang;       //Language version: 0 - English, 1 - polski
     int zwrot;      //Wartosc zwracana przez funkcje
     FILE *f;        //Odpowiada za plik zapisu gry
 
     srand(time(NULL));
 
-    f = fopen("lang.txt", "r");
-    if (f != NULL) {
-        lang = fgetc(f);
-        lang -= 48;
-    }
+    f = fopen("lang.txt", "r");     //Language version control
+    if (f != NULL)
+        lang = fgetc(f) - 48;
     fclose(f);
 
     do {
-        zwrot = menu_glowne(lang, f);      //Menu glowne
+        zwrot = menu_glowne(f);      //Menu glowne
         switch (zwrot) {
             case 1:     //Nowa gra
                 zwrot = 2;
@@ -67,7 +66,7 @@ int main() {
                 gra(&zwrot, f);
                 break;
             case 3:     //Ustawienia
-                settings(&lang, f);
+                settings(f);
                 break;
             case 4:     //Zamkniecie gry
                 if (!lang)
@@ -87,7 +86,7 @@ int main() {
     return 0;
 }
 
-int menu_glowne(boolean plang, FILE *pf) {
+int menu_glowne(FILE *pf) {
     int tekst = 0;      //Opcja wybrana przez gracza
     char sprzatacz;     //Czyszczenie pozostalego wprowadzonego tesktu
     unsigned short save;    //Sprawdzenie wystepowania pliku zapisu: 0 - brak, 1 - istnieje
@@ -106,14 +105,14 @@ int menu_glowne(boolean plang, FILE *pf) {
                 printf("Brain Game\n\n");
                 break;
             case 1:
-                if (!plang)
+                if (!lang)
                     printf("(%d) New Game\n", i);
                 else
                 printf("(%d) Nowa Gra\n", i);
                 break;
             case 2:
                 if (save) {
-                    if (!plang)
+                    if (!lang)
                         printf("(%d) Load Game\n", i);
                     else
                         printf("(%d) Wczytaj Gre\n", i);
@@ -121,12 +120,12 @@ int menu_glowne(boolean plang, FILE *pf) {
                 break;
             case 3:
                 if (save) {
-                    if (!plang)
+                    if (!lang)
                         printf("(%d) Settings\n", i);
                     else
                         printf("(%d) Ustawienia\n", i);
                 } else {
-                    if (!plang)
+                    if (!lang)
                         printf("(%d) Settings\n", i + 1);
                     else
                         printf("(%d) Ustawienia\n", i - 1);
@@ -134,19 +133,19 @@ int menu_glowne(boolean plang, FILE *pf) {
                 break;
             case 4:
                 if (save) {
-                    if (!plang)
+                    if (!lang)
                         printf("(%d) Quit\n", i);
                     else
                     printf("(%d) Opusc gre\n", i);
                 } else {
-                    if (!plang)
+                    if (!lang)
                         printf("(%d) Quit\n", i + 1);
                     else
                     printf("(%d) Opusc gre\n", i - 1);
                 }
                 break;
             default:
-                printf("Blad switcha menu_glowne!");
+                printf("Switch error in fun main_menu!");
                 Sleep(10000);
                 suwak(40);
                 break;
@@ -161,11 +160,11 @@ int menu_glowne(boolean plang, FILE *pf) {
         return tekst + 1;
 }
 
-void settings(boolean *plang, FILE *pf) {
+void settings(FILE *pf) {
     unsigned char temp;      //Temporary variable used to perform file operations
 
     tabulator(3);
-    if (!*plang) {
+    if (!lang) {
         printf("Settings\n\n");
         printf("\tLanguage\n");
         printf("\t* English (0)\n");
@@ -182,8 +181,8 @@ void settings(boolean *plang, FILE *pf) {
     }
     scanf("%c", &temp);
 
-    if (temp != *plang && (temp == '0' || temp == '1')) {
-        *plang = temp - 48;
+    if (temp != lang && (temp == '0' || temp == '1')) {
+        lang = temp - 48;
 
         pf = fopen("lang.txt", "w");
         fputc(temp, pf);
@@ -245,10 +244,16 @@ void gra(int *pzwrot, FILE *pf) {
 void ekran_powitalny() {
     suwak(3);
     tabulator(4);
-    printf("Witaj w Mapie Mozgu!\n");
+    if (!lang)
+        printf("Welcome in Brain Game!\n");
+    else
+        printf("Witaj w Brain Game!\n");
     Sleep(500);
     tabulator(3);
-    printf("Gra ta jest inspirowana mini gra z Growing Up.");
+    if (!lang)
+        printf("This game was inspired by mini-game from game \"Growing Up\".");
+    else
+        printf("Gra ta jest inspirowana mini gra z \"Growing Up\".");
     Sleep(1000);
     suwak(40);
 }
@@ -393,35 +398,59 @@ void ekran_gry(int i, int j, int ruch, int *ptab_stat, char *ptab_mapa, char *pt
     int pom = 1;    //Odpowiada za pomocnicze liczby wokol mapy gry
 
     //Statystyki
-    printf("\tTwoje statystyki:\n\t");
+    if (!lang)
+        printf("\tYour statistics:\n\t");
+    else
+        printf("\tTwoje statystyki:\n\t");
     for (i = 0; i < 6; i++) {
         switch (i) {
             case 0:
-                printf("Inteligencja %d", *ptab_stat);
+                if (!lang)
+                    printf("Intelligence %d", *ptab_stat);
+                else
+                    printf("Inteligencja %d", *ptab_stat);
                 break;
             case 1:
-                printf("Empatia %d", *ptab_stat);
+                if (!lang)
+                    printf("Empathy %d", *ptab_stat);
+                else
+                    printf("Empatia %d", *ptab_stat);
                 break;
             case 2:
-                printf("Sprawnosc %d", *ptab_stat);
+                if (!lang)
+                    printf("Agility %d", *ptab_stat);
+                else
+                    printf("Sprawnosc %d", *ptab_stat);
                 break;
             case 3:
-                printf("Pamiec %d", *ptab_stat);
+                if (!lang)
+                    printf("Memory %d", *ptab_stat);
+                else
+                    printf("Pamiec %d", *ptab_stat);
                 break;
             case 4:
-                printf("Wyobraznia %d", *ptab_stat);
+                if (!lang)
+                    printf("Imagination %d", *ptab_stat);
+                else
+                    printf("Wyobraznia %d", *ptab_stat);
                 break;
             case 5:
-                printf("Urok %d", *ptab_stat);
+                if (!lang)
+                    printf("Charm %d", *ptab_stat);
+                else
+                    printf("Urok %d", *ptab_stat);
                 break;
             default:
-                printf("Blad switcha ekran_gry nr 1");
+                printf("Switch num 1 error in fun game_screen");
                 break;
         }
         printf("     ");
         ptab_stat++;
     }
-    printf("\n\tPozostale punkty ruchow: %d", ruch);
+    if (!lang)
+        printf("\n\tRemaining move points: %d", ruch);
+    else
+    printf("\n\tPozostale punkty ruchu: %d", ruch);
     suwak(3);
 
     //Mapa gry
