@@ -76,7 +76,7 @@ int main() {
                 Sleep(1000);
                 break;
             default:
-                printf("Switch error in fun main!");
+                printf("Switch error in func main!");
                 Sleep(10000);
                 suwak(40);
                 break;
@@ -145,7 +145,7 @@ int menu_glowne(FILE *pf) {
                 }
                 break;
             default:
-                printf("Switch error in fun main_menu!");
+                printf("Switch error in func main_menu!");
                 Sleep(10000);
                 suwak(40);
                 break;
@@ -170,7 +170,7 @@ void settings(FILE *pf) {
         printf("\t* English (0)\n");
         printf("\t- polski (1)");
         suwak(3);
-        printf("Press Enter to switch into Main Menu...\n");
+        printf("Press Enter to get into Main Menu...\n");
     } else {
         printf("Ustawienia\n\n");
         printf("\tJezyk\n");
@@ -249,11 +249,12 @@ void ekran_powitalny() {
     else
         printf("Witaj w Brain Game!\n");
     Sleep(500);
-    tabulator(3);
     if (!lang)
-        printf("This game was inspired by mini-game from game \"Growing Up\".");
-    else
+        printf("\t\tThis game was inspired by mini-game from game \"Growing Up\".");
+    else {
+        tabulator(3);
         printf("Gra ta jest inspirowana mini gra z \"Growing Up\".");
+    }
     Sleep(1000);
     suwak(40);
 }
@@ -387,7 +388,7 @@ void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2) {
             *ptab_mapa2 = 'O';
             odkryte++;
         } else *ptab_mapa2 = 'Z';
-        *ptab_mapa2 = 'O';    //Odslaniecie wszystkiego
+        //*ptab_mapa2 = 'O';    //Odslaniecie wszystkiego
 
         ptab_mapa += 2;
         ptab_mapa2 += 2;
@@ -441,7 +442,9 @@ void ekran_gry(int i, int j, int ruch, int *ptab_stat, char *ptab_mapa, char *pt
                     printf("Urok %d", *ptab_stat);
                 break;
             default:
-                printf("Switch num 1 error in fun game_screen");
+                printf("Switch num 1 error in func game_screen");
+                Sleep(10000);
+                suwak(40);
                 break;
         }
         printf("     ");
@@ -450,7 +453,7 @@ void ekran_gry(int i, int j, int ruch, int *ptab_stat, char *ptab_mapa, char *pt
     if (!lang)
         printf("\n\tRemaining move points: %d", ruch);
     else
-    printf("\n\tPozostale punkty ruchu: %d", ruch);
+        printf("\n\tPozostale punkty ruchu: %d", ruch);
     suwak(3);
 
     //Mapa gry
@@ -488,7 +491,8 @@ void ekran_gry(int i, int j, int ruch, int *ptab_stat, char *ptab_mapa, char *pt
                 else {  //Atrybuty
                     if (*ptab_mapa2 == 'Z')     //Wyswietlanie zaslonietych elementow
                         printf("[*] ");
-                    else if (*ptab_mapa == ' ' || *ptab_mapa > 96 && *ptab_mapa < 104 && *ptab_mapa != 'e' || *ptab_mapa == '#') {      //Wyswietlanie elementow w prawidlowej postaci
+                    else if (*ptab_mapa == ' ' || *ptab_mapa > 96 && *ptab_mapa < 104 && *ptab_mapa != 'e' ||
+                             *ptab_mapa == '#') {      //Wyswietlanie elementow w prawidlowej postaci
                         switch (*ptab_mapa) {
                             case 32:
                                 printf("    ");
@@ -515,7 +519,9 @@ void ekran_gry(int i, int j, int ruch, int *ptab_stat, char *ptab_mapa, char *pt
                                 printf("{u} ");
                                 break;
                             default:
-                                printf("Blad switcha ekran_gry nr 2");
+                                printf("Switch num 2 error in func game_screen");
+                                Sleep(10000);
+                                suwak(40);
                                 break;
                         }
                     } else printf("[%c] ", *ptab_mapa);     //Wyswietlanie elementow w oryginalnej postaci
@@ -527,7 +533,13 @@ void ekran_gry(int i, int j, int ruch, int *ptab_stat, char *ptab_mapa, char *pt
         }
         printf("\n");
     }
-    printf("\n\tWybierz element (podaj numer wiersza, a potem kolumny: \"x x\").\n\tAby przejsc do instrukcji, wpisz: \"i\".\n\tJesli chcesz opusic gre, wcisnij Enter...\n");
+    if (!lang) {
+        printf("\n\tChoose element (insert number of row, then column: \"x x\").");
+        printf("\n\tTo get into manual, insert: \"m\".\n\tPress Enter to get into Main Menu...\n");
+    } else {
+        printf("\n\tWybierz element (podaj numer wiersza, a potem kolumny: \"x x\").");
+        printf("\n\tAby przejsc do instrukcji, wpisz: \"i\".\n\tJesli chcesz opusic gre, wcisnij Enter...\n");
+    }
 }
 
 void reakcja(int i, int j, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3) {
@@ -559,7 +571,7 @@ void reakcja(int i, int j, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_m
         if (tekst == '\n') {    //Wyjscie z gry
             *pzwrot = -1;
             break;
-        } else if (tekst == 'i' || tekst == 'I') {      //Instrukcja
+        } else if (tekst == 'm' || tekst == 'M' || tekst == 'i' || tekst == 'I') {      //Instrukcja
             while (tekst != '\n') tekst = getchar();
             instrukcja(i, &tab_legenda[0][0], &tab_legenda[0][1]);
             break;
@@ -584,19 +596,28 @@ void reakcja(int i, int j, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_m
                 ptab_mapa2++;
 
                 if (*ptab_mapa == ' ' || *ptab_mapa2 == 'Z' ||
-                    wiersz > WIERSZ || kolumna > KOLUMNA)
-                    printf("\tTen element jest niedostepny!\n");
-                else {
+                    wiersz > WIERSZ || kolumna > KOLUMNA) {
+                    if (!lang)
+                        printf("\tThis element is inaccessible!\n");
+                    else
+                        printf("\tTen element jest niedostepny!\n");
+                } else {
                     ptab_mapa2 = ptab_mapa3 - 1;
                     atrybut(i, ptab_mapa, ptab_mapa2, ptab_mapa3, ptab_stat, &tab_legenda[0][0], pruch);
                     break;
                 }
             } else {        //Reakcja na blad
-                printf("\tBledne wartosci!\n");
+                if (!lang)
+                    printf("\tIncorrect values!\n");
+                else
+                    printf("\tBledne wartosci!\n");
                 while (tekst != '\n') tekst = getchar();
             }
         } else {      //Reakcja na blad
-            printf("\tBledne wartosci!\n");
+            if (!lang)
+                printf("\tIncorrect values!\n");
+            else
+                printf("\tBledne wartosci!\n");
             while (tekst != '\n') tekst = getchar();
         }
     }
@@ -613,58 +634,115 @@ void instrukcja(int i, int *ptab_legenda, int *ptab_legenda2) {
 
     suwak(40);
     tabulator(3);
-    printf("Instrukcja:\n\n");
+    if (!lang)
+        printf("Manunal:\n\n");
+    else
+        printf("Instrukcja:\n\n");
 
     for (i = 0; i < 11; i++) {
         switch (i) {
             case 0:
-                printf("\tZwykly atrybut [x]: ");
+                if (!lang)
+                    printf("\tNormal attribute [x]: ");
+                else
+                    printf("\tZwykly atrybut [x]: ");
                 break;
             case 1:
-                printf("\nBoostery:\n");
-                printf("\tSuper atrybut [X]: ");
+                if (!lang) {
+                    printf("\nBoosters:\n");
+                    printf("\tSuper attribute [X]: ");
+                } else {
+                    printf("\nBoostery:\n");
+                    printf("\tSuper atrybut [X]: ");
+                }
                 break;
             case 2:
-                printf("\tMega atrybut {x}: ");
+                if (!lang)
+                    printf("\tMega attribute {x}: ");
+                else
+                    printf("\tMega atrybut {x}: ");
                 break;
             case 3:
-                printf("\tHiper atrybut [$]: -%d pkt ruchu, +%d pkt wszystkich umiejetnosci\n", *ptab_legenda, *ptab_legenda2);
+                if (!lang)
+                    printf("\tHyper attribute [$]: -%d move points, +%d points to all categories\n", *ptab_legenda, *ptab_legenda2);
+                else
+                    printf("\tHiper atrybut [$]: -%d pkt ruchu, +%d pkt wszystkich umiejetnosci\n", *ptab_legenda, *ptab_legenda2);
                 break;
             case 4:
-                printf("\nPoszerzacze zasiegu:\n");
-                printf("\tOko [^]: ");
+                if (!lang) {
+                    printf("\nRange extenders:\n");
+                    printf("\tEye [^]: ");
+                } else {
+                    printf("\nPoszerzacze zasiegu:\n");
+                    printf("\tOko [^]: ");
+                }
                 break;
             case 5:
-                printf("\tSuper oko {^}: ");
+                if (!lang)
+                    printf("\tSuper eye {^}: ");
+                else
+                    printf("\tSuper oko {^}: ");
                 break;
             case 6:
-                printf("\tReakcja lancuchowa [&]: ");
+                if (!lang)
+                    printf("\tChain reaction [&]: ");
+                else
+                    printf("\tReakcja lancuchowa [&]: ");
                 break;
             case 7:
-                printf("\nDebuffy:\n");
-                printf("\tZacmienie [@]: ");
+                if (!lang) {
+                    printf("\nDebuffs:\n");
+                    printf("\tBlackout [@]: ");
+                } else {
+                    printf("\nDebuffy:\n");
+                    printf("\tZacmienie [@]: ");
+                }
                 break;
             case 8:
-                printf("\nInne:\n");
-                printf("\tBonus do pkt ruchu [+]: ");
+                if (!lang) {
+                    printf("\nOther:\n");
+                    printf("\tBonus to move points [+]: ");
+                } else {
+                    printf("\nInne:\n");
+                    printf("\tBonus do pkt ruchu [+]: ");
+                }
                 break;
             case 9:
-                printf("\tNowa mapa [!]: ");
+                if (!lang)
+                    printf("\tNew map [!]: ");
+                else
+                    printf("\tNowa mapa [!]: ");
                 break;
             case 10:
-                printf("\tLosowy atrybut [?]: koszt taki, jak wylosowanego typu atrybutu");
+                if (!lang)
+                    printf("\tRandom attribute [?]: cost equal to received attribute type");
+                else
+                    printf("\tLosowy atrybut [?]: koszt taki, jak wylosowanego typu atrybutu");
                 break;
             default:
-                printf("Blad switcha w funkcji instrukcja!");
+                printf("Switch error in func manual");
+                Sleep(10000);
+                suwak(40);
                 break;
         }
 
         if (i != 3 && i != 10) {
-            if (*ptab_legenda && *ptab_legenda2)
-                printf("-%d pkt ruchu, +%d pkt umiejetnosci\n", *ptab_legenda, *ptab_legenda2);
-            else if (*ptab_legenda)
-                printf("-%d pkt ruchu\n", *ptab_legenda);
-            else printf("+%d pkt umiejetnosci\n", *ptab_legenda2);
+            if (*ptab_legenda && *ptab_legenda2) {
+                if (!lang)
+                    printf("-%d move points, +%d points to accurate category\n", *ptab_legenda, *ptab_legenda2);
+                else
+                    printf("-%d pkt ruchu, +%d pkt umiejetnosci\n", *ptab_legenda, *ptab_legenda2);
+            } else if (*ptab_legenda) {
+                if (!lang)
+                    printf("-%d move points\n", *ptab_legenda);
+                else
+                    printf("-%d pkt ruchu\n", *ptab_legenda);
+            } else {
+                if (!lang)
+                    printf("+%d points to accurate category\n", *ptab_legenda2);
+                else
+                    printf("+%d pkt umiejetnosci\n", *ptab_legenda2);
+            }
         }
 
         ptab_legenda += 2;
@@ -672,7 +750,10 @@ void instrukcja(int i, int *ptab_legenda, int *ptab_legenda2) {
     }
 
     suwak(3);
-    printf("\tAby wrocic do gry, wcisnij Enter...");
+    if (!lang)
+        printf("Press Enter to get back into game...\n");
+    else
+        printf("\tAby wrocic do gry, wcisnij Enter...");
     tekst = getchar();
     while (tekst != '\n') tekst = getchar();
 }
@@ -1428,32 +1509,59 @@ void test(int i, int *pzwrot, int *pruch, char *ptab_mapa, char *ptab_mapa2) {
 
 void ekran_koncowy(int *ptab_stat) {
     tabulator(8);
-    printf("Gratulacje!\n");
+    if (!lang)
+        printf("Congratulations!\n");
+    else
+        printf("Gratulacje!\n");
     tabulator(7);
-    printf("Oto twoj koncowy wynik:\n\n");
+    if (!lang)
+        printf("Here is your final score:\n\n");
+    else
+        printf("Oto twoj koncowy wynik:\n\n");
     tabulator(3);
 
     for (int i = 0; i < 6; i++) {
         switch (i) {
             case 0:
-                printf("Inteligencja %d", *ptab_stat);
+                if (!lang)
+                    printf("Intelligence %d", *ptab_stat);
+                else
+                    printf("Inteligencja %d", *ptab_stat);
                 break;
             case 1:
-                printf("Empatia %d", *ptab_stat);
+                if (!lang)
+                    printf("Empathy %d", *ptab_stat);
+                else
+                    printf("Empatia %d", *ptab_stat);
                 break;
             case 2:
-                printf("Sprawnosc %d", *ptab_stat);
+                if (!lang)
+                    printf("Agility %d", *ptab_stat);
+                else
+                    printf("Sprawnosc %d", *ptab_stat);
                 break;
             case 3:
-                printf("Pamiec %d", *ptab_stat);
+                if (!lang)
+                    printf("Memory %d", *ptab_stat);
+                else
+                    printf("Pamiec %d", *ptab_stat);
                 break;
             case 4:
-                printf("Wyobraznia %d", *ptab_stat);
+                if (!lang)
+                    printf("Imagination %d", *ptab_stat);
+                else
+                    printf("Wyobraznia %d", *ptab_stat);
                 break;
             case 5:
-                printf("Urok %d", *ptab_stat);
+                if (!lang)
+                    printf("Charm %d", *ptab_stat);
+                else
+                    printf("Urok %d", *ptab_stat);
                 break;
             default:
+                printf("Switch error in func final_screen");
+                Sleep(10000);
+                suwak(40);
                 break;
         }
         printf("\t");
@@ -1470,10 +1578,16 @@ void zapisz_gre(FILE *pf, int const *pruch, int *ptab_stat, char *ptab_mapa, int
     int k;      //Zmienna dla petli
 
     //Komunikacja z graczem
-    printf("\t\tCzy chcesz zapisac swoje postepy? (t/n)\n");
+    if (!lang)
+        printf("\t\tDo you wish to save your progress? (y/n)\n");
+    else
+        printf("\t\tCzy chcesz zapisac swoje postepy? (t/n)\n");
     pom = getchar();
     if (pom != 't' && pom != 'T' && pom != 'y' && pom != 'Y') {
-        printf("\t\tCzy na pewno nie chcesz dokonac zapisu? (t/n)\n");
+        if (!lang)
+            printf("\t\tAre you sure? (y - save/n)\n");
+        else
+            printf("\t\tCzy na pewno nie chcesz dokonac zapisu? (t - zapis/n)\n");
         while (pom != '\n')
             pom = getchar();
         pom = getchar();
