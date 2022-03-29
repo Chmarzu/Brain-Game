@@ -535,7 +535,7 @@ void ekran_gry(int i, int j, int ruch, int *ptab_stat, char *ptab_mapa, char *pt
     }
     if (!lang) {
         printf("\n\tChoose element (insert number of row, then column: \"x x\").");
-        printf("\n\tTo get into manual, insert: \"m\".\n\tPress Enter to get into Main Menu...\n");
+        printf("\n\tTo get into manual, press: \"m\".\n\tPress Enter to get into Main Menu...\n");
     } else {
         printf("\n\tWybierz element (podaj numer wiersza, a potem kolumny: \"x x\").");
         printf("\n\tAby przejsc do instrukcji, wpisz: \"i\".\n\tJesli chcesz opusic gre, wcisnij Enter...\n");
@@ -792,7 +792,10 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *p
     } else if (*ptab_mapa == '^') {
         ptab_legenda += 8;      //Utrata punktow ruchu z weryfikacja ich stanu
         if (*pruch < *ptab_legenda) {
-            printf("Za malo punktow ruchu!\n");
+            if (!lang)
+                printf("Few move points!\n");
+            else
+                printf("Za malo punktow ruchu!\n");
             bieda = 0;
             Sleep(1000);
         }
@@ -802,7 +805,10 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *p
     } else if (*ptab_mapa == '#') {
         ptab_legenda += 10;     //Utrata punktow ruchu z weryfikacja ich stanu
         if (*pruch < *ptab_legenda) {
-            printf("Za malo punktow ruchu!\n");
+            if (!lang)
+                printf("Few move points!\n");
+            else
+                printf("Za malo punktow ruchu!\n");
             bieda = 0;
             Sleep(1000);
         }
@@ -816,7 +822,10 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *p
     } else if (*ptab_mapa == '@') {
         ptab_legenda += 14;     //Utrata punktow ruchu z weryfikacja ich stanu
         if (*pruch < *ptab_legenda) {
-            printf("Za malo punktow ruchu!\n");
+            if (!lang)
+                printf("Few move points!\n");
+            else
+                printf("Za malo punktow ruchu!\n");
             bieda = 0;
             Sleep(1000);
         }
@@ -867,7 +876,10 @@ void los(int i, char *ptab_mapa, int *ptab_legenda, int *pruch, unsigned short *
 
     ptab_legenda += 10;     //Sprawdzenie punktow ruchu (ustawic na najwiekszy koszt)
     if (*pruch < *ptab_legenda) {
-        printf("Za malo punktow ruchu!\n");
+        if (!lang)
+            printf("Few move points!\n");
+        else
+            printf("Za malo punktow ruchu!\n");
         *pbieda = 0;
         Sleep(1000);
     } else {
@@ -952,10 +964,16 @@ void los(int i, char *ptab_mapa, int *ptab_legenda, int *pruch, unsigned short *
         //Komunikaty dla gracza
         suwak(40);
         tabulator(3);
-        printf("Rozpoczeto losowanie.\n");
+        if (!lang)
+            printf("Calibrating.\n");
+        else
+            printf("Rozpoczeto losowanie.\n");
         Sleep(800);
         tabulator(3);
-        printf("Prosze czekac");
+        if (!lang)
+            printf("Please stand by\n");
+        else
+            printf("Prosze czekac");
         Sleep(2000);
         for (i = 0; i < 3; i++) {
             printf(".");
@@ -964,7 +982,10 @@ void los(int i, char *ptab_mapa, int *ptab_legenda, int *pruch, unsigned short *
 
         printf("\n");
         tabulator(3);
-        printf("Wylosowano: ");
+        if (!lang)
+            printf("Drawn:");
+        else
+            printf("Wylosowano: ");
         if (*ptab_mapa > 96 && *ptab_mapa < 104 && *ptab_mapa != 'e' ||
             *ptab_mapa == '#') {      //Wyswietlanie elementu w prawidlowej postaci
             switch (*ptab_mapa) {
@@ -1001,7 +1022,10 @@ void los(int i, char *ptab_mapa, int *ptab_legenda, int *pruch, unsigned short *
 
 void zwykly_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned short *pbieda) {
     if (*pruch < *ptab_legenda) {     //Utrata punktow ruchu z weryfikacja ich stanu
-        printf("Za malo punktow ruchu!\n");
+        if (!lang)
+            printf("Few move points!\n");
+        else
+            printf("Za malo punktow ruchu!\n");
         *pbieda = 0;
         Sleep(1000);
     } else {
@@ -1042,7 +1066,10 @@ void zwykly_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch, un
 void super_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned short *pbieda) {
     ptab_legenda += 2;      //Utrata punktow ruchu z weryfikacja ich stanu
     if (*pruch < *ptab_legenda) {
-        printf("Za malo punktow ruchu!\n");
+        if (!lang)
+            printf("Few move points!\n");
+        else
+            printf("Za malo punktow ruchu!\n");
         *pbieda = 0;
         Sleep(1000);
     } else {
@@ -1083,7 +1110,10 @@ void super_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch, uns
 void mega_at(int i, char ptab_mapa, char *ptab_mapa2, char *ptab_mapa3, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned short *pbieda) {
     ptab_legenda += 4;      //Utrata punktow ruchu z weryfikacja ich stanu
     if (*pruch < *ptab_legenda) {
-        printf("Za malo punktow ruchu!\n");
+        if (!lang)
+            printf("Few move points!\n");
+        else
+            printf("Za malo punktow ruchu!\n");
         *pbieda = 0;
         Sleep(1000);
     } else {
@@ -1164,7 +1194,10 @@ void mega_at(int i, char ptab_mapa, char *ptab_mapa2, char *ptab_mapa3, int *pta
 void hiper_at(int i, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned short *pbieda) {
     ptab_legenda += 6;      //Utrata punktow ruchu z weryfikacja ich stanu
     if (*pruch < *ptab_legenda) {
-        printf("Za malo punktow ruchu!\n");
+        if (!lang)
+            printf("Few move points!\n");
+        else
+            printf("Za malo punktow ruchu!\n");
         *pbieda = 0;
         Sleep(1000);
     } else {
@@ -1191,7 +1224,10 @@ void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *pt
 
     ptab_legenda += 12;     //Weryfikacja stanu punktow ruchu
     if (*pruch < *ptab_legenda) {
-        printf("Za malo punktow ruchu!\n");
+        if (!lang)
+            printf("Few move points!\n");
+        else
+            printf("Za malo punktow ruchu!\n");
         *pbieda = 0;
         Sleep(1000);
     } else {
@@ -1372,7 +1408,10 @@ void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *pt
                     }
                     if (!powtorka) {        //Brak powtorki
                         if (k == 20) {
-                            printf("Brak mejsca w tablicy!");
+                            if (!lang)
+                                printf("Few space in array!\n");
+                            else
+                                printf("Brak mejsca w tablicy!");
                             Sleep(5000);
                         } else *poprzednik = ptab_mapa2;
 
@@ -1475,10 +1514,16 @@ void test(int i, int *pzwrot, int *pruch, char *ptab_mapa, char *ptab_mapa2) {
             suwak(40);
             tabulator(3);
             Sleep(500);
-            printf("Zuzyto wszystkie puknty ruchu.\n");
+            if (!lang)
+                printf("You have no move points left.\n");
+            else
+                printf("Zuzyto wszystkie puknty ruchu.\n");
             Sleep(500);
             tabulator(3);
-            printf("Za chwile zostaniesz przeniesiony do ekranu koncowego");
+            if (!lang)
+                printf("Soon you will be redirected to End Screen");
+            else
+                printf("Za chwile zostaniesz przeniesiony do Ekranu Koncowego");
             Sleep(3000);
         }
 
@@ -1498,10 +1543,16 @@ void test(int i, int *pzwrot, int *pruch, char *ptab_mapa, char *ptab_mapa2) {
             suwak(40);
             tabulator(3);
             Sleep(500);
-            printf("Zuzyto wszystkie elementy.\n");
+            if (!lang)
+                printf("You have no move points left.\n");
+            else
+                printf("Zuzyto wszystkie elementy.\n");
             Sleep(500);
             tabulator(3);
-            printf("Za chwile zostaniesz przeniesiony do ekranu koncowego");
+            if (!lang)
+                printf("Soon you will be redirected to End Screen");
+            else
+                printf("Za chwile zostaniesz przeniesiony do ekranu koncowego");
             Sleep(3000);
         }
     }
@@ -1585,7 +1636,7 @@ void zapisz_gre(FILE *pf, int const *pruch, int *ptab_stat, char *ptab_mapa, int
     pom = getchar();
     if (pom != 't' && pom != 'T' && pom != 'y' && pom != 'Y') {
         if (!lang)
-            printf("\t\tAre you sure? (y - save/n)\n");
+            printf("\t\tAre you certain, that you don't? (y - save/n)\n");
         else
             printf("\t\tCzy na pewno nie chcesz dokonac zapisu? (t - zapis/n)\n");
         while (pom != '\n')
