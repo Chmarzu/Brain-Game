@@ -5,42 +5,42 @@
 #include <windows.h>
 
 //Wymiary tabeli tab_mapa
-#define WIERSZ 7
-#define KOLUMNA 23
-#define GLEBOKOSC 2
+#define ROW 7
+#define COLUMN 23
+#define DEPTH 2
 
-#define RUCH 30     //Liczba punktow ruchu
+#define MOVE 30     //Liczba punktow ruchu
 
 boolean lang;       //Language version: 0 - English, 1 - polski
 
-int menu_glowne(FILE *pf);
+int main_menu(FILE *pf);
 
 void settings(FILE *pf);
 
-void gra(int *pzwrot, FILE *pf);
-void ekran_powitalny();
-void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2);
-void ekran_gry(int i, int j, int ruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2);
+void game(int *pzwrot, FILE *pf);
+void greeting_screen();
+void init(int i, char *ptab_mapa, char *ptab_mapa2);
+void game_screen(int i, int j, int ruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2);
 
-void reakcja(int i, int j, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3);
-void instrukcja(int i, int *ptab_legenda, int *ptab_legenda2);
+void reaction(int i, int j, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3);
+void manual(int i, int *ptab_legenda, int *ptab_legenda2);
 
-void atrybut(int i, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3, int *ptab_stat, int *ptab_legenda, int *pruch);
-void los(int i, char *ptab_mapa, int *ptab_legenda, int *pruch, unsigned short *pbieda);
-void zwykly_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned short *pbieda);
-void super_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned short *pbieda);
-void mega_at(int i, char ptab_mapa, char *ptab_mapa2, char *ptab_mapa3, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned short *pbieda);
-void hiper_at(int i, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned short *pbieda);
-void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *ptmk, int *ptab_legenda, int *pruch, unsigned short *pbieda);
-void oko(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *ptmk);
+void attribute(int i, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3, int *ptab_stat, int *ptab_legenda, int *pruch);
+void random_att(int i, char *ptab_mapa, int *ptab_legenda, int *pruch, unsigned short *pbieda);
+void normal_att(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned short *pbieda);
+void super_att(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned short *pbieda);
+void mega_att(int i, char ptab_mapa, char *ptab_mapa2, char *ptab_mapa3, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned short *pbieda);
+void hiper_att(int i, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned short *pbieda);
+void chain_reaction(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *ptmk, int *ptab_legenda, int *pruch, unsigned short *pbieda);
+void eye(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *ptmk);
 
 void test(int i, int *pzwrot, int *pruch, char *ptab_mapa, char *ptab_mapa2);
-void ekran_koncowy(int *ptab_stat);
+void end_screen(int *ptab_stat);
 
-void zapisz_gre(FILE *pf, int const *pruch, int *ptab_stat, char *ptab_mapa, int i, int j);
-void wczytaj_gre(FILE *pf, int *pruch, int *ptab_stat, char *ptab_mapa, int i, int j);
+void save(FILE *pf, int const *pruch, int *ptab_stat, char *ptab_mapa, int i, int j);
+void load(FILE *pf, int *pruch, int *ptab_stat, char *ptab_mapa, int i, int j);
 
-void suwak(int linia);
+void screen_cleaner(int linia);
 void tabulator(int tab);
 
 int main() {
@@ -55,15 +55,15 @@ int main() {
     fclose(f);
 
     do {
-        zwrot = menu_glowne(f);      //Menu glowne
+        zwrot = main_menu(f);      //Menu glowne
         switch (zwrot) {
-            case 1:     //Nowa gra
+            case 1:     //Nowa game
                 zwrot = 2;
-                gra(&zwrot, f);
+                game(&zwrot, f);
                 break;
             case 2:     //Kontynuuj gre
                 zwrot = 1;
-                gra(&zwrot, f);
+                game(&zwrot, f);
                 break;
             case 3:     //Ustawienia
                 settings(f);
@@ -78,16 +78,16 @@ int main() {
             default:
                 printf("Switch error in func main!");
                 Sleep(10000);
-                suwak(40);
+                screen_cleaner(40);
                 break;
         }
-        suwak(40);
+        screen_cleaner(40);
     } while (zwrot != 4);
     return 0;
 }
 
-int menu_glowne(FILE *pf) {
-    int tekst = 0;      //Opcja wybrana przez gracza
+int main_menu(FILE *pf) {
+    int tekst = 0;      //Opcja wybrana przez gamecza
     char sprzatacz;     //Czyszczenie pozostalego wprowadzonego tesktu
     unsigned short save;    //Sprawdzenie wystepowania pliku zapisu: 0 - brak, 1 - istnieje
     int i;      //Dla petli
@@ -108,7 +108,7 @@ int menu_glowne(FILE *pf) {
                 if (!lang)
                     printf("(%d) New Game\n", i);
                 else
-                printf("(%d) Nowa Gra\n", i);
+                    printf("(%d) Nowa Gra\n", i);
                 break;
             case 2:
                 if (save) {
@@ -136,23 +136,23 @@ int menu_glowne(FILE *pf) {
                     if (!lang)
                         printf("(%d) Quit\n", i);
                     else
-                    printf("(%d) Opusc gre\n", i);
+                        printf("(%d) Opusc gre\n", i);
                 } else {
                     if (!lang)
                         printf("(%d) Quit\n", i + 1);
                     else
-                    printf("(%d) Opusc gre\n", i - 1);
+                        printf("(%d) Opusc gre\n", i - 1);
                 }
                 break;
             default:
                 printf("Switch error in func main_menu!");
                 Sleep(10000);
-                suwak(40);
+                screen_cleaner(40);
                 break;
         }
     }
     scanf("%d", &tekst);
-    suwak(40);
+    screen_cleaner(40);
     while ((sprzatacz = getchar()) != '\n');
     if (save || tekst == 1)
         return tekst;
@@ -169,14 +169,14 @@ void settings(FILE *pf) {
         printf("\tLanguage\n");
         printf("\t* English (0)\n");
         printf("\t- polski (1)");
-        suwak(3);
+        screen_cleaner(3);
         printf("Press Enter to get into Main Menu...\n");
     } else {
         printf("Ustawienia\n\n");
         printf("\tJezyk\n");
         printf("\t- English (0)\n");
         printf("\t* polski (1)");
-        suwak(3);
+        screen_cleaner(3);
         printf("Wcisnij Enter, aby przejsc do Menu Glownego...\n");
     }
     scanf("%c", &temp);
@@ -190,7 +190,7 @@ void settings(FILE *pf) {
     }
 }
 
-void gra(int *pzwrot, FILE *pf) {
+void game(int *pzwrot, FILE *pf) {
     /*
      * Znaczenie wartosci zmiennej zwrot:
      * 0 - koniec petli
@@ -200,7 +200,7 @@ void gra(int *pzwrot, FILE *pf) {
      */
 
     int i = 0, j = 0;    //Zmienne obslugujace petle
-    static int ruch = RUCH;   //Mechanika punktow ruchu
+    static int ruch = MOVE;   //Mechanika punktow ruchu
 
     /*
      * Tablica z wartościami statystyk
@@ -209,40 +209,40 @@ void gra(int *pzwrot, FILE *pf) {
     int tab_stat[6] = {0, 0, 0, 0, 0, 0};
 
     //Tablica dla elementow wyswietlanych na mapie gry
-    char tab_mapa[WIERSZ][KOLUMNA][GLEBOKOSC];
+    char tab_mapa[ROW][COLUMN][DEPTH];
 
-    ekran_powitalny();
+    greeting_screen();
 
     if (*pzwrot == 1)
-        wczytaj_gre(pf, &ruch, &tab_stat[0], &tab_mapa[0][0][0], i, j);
+        load(pf, &ruch, &tab_stat[0], &tab_mapa[0][0][0], i, j);
 
     do {
         //Inicjalizacja tablicy tab_mapa
         if (*pzwrot == 2)
-            inic_mapa(i, &tab_mapa[0][0][0], &tab_mapa[0][0][1]);
+            init(i, &tab_mapa[0][0][0], &tab_mapa[0][0][1]);
 
         //Ekran gry
-        ekran_gry(i, j, ruch, &tab_stat[0], &tab_mapa[0][0][0], &tab_mapa[0][0][1]);
+        game_screen(i, j, ruch, &tab_stat[0], &tab_mapa[0][0][0], &tab_mapa[0][0][1]);
 
         //Sekcja interaktywna
-        reakcja(i, j, pzwrot, &ruch, &tab_stat[0], &tab_mapa[0][0][0], &tab_mapa[0][0][0], &tab_mapa[0][0][1]);
+        reaction(i, j, pzwrot, &ruch, &tab_stat[0], &tab_mapa[0][0][0], &tab_mapa[0][0][0], &tab_mapa[0][0][1]);
 
         //Test stanu gry
         if (*pzwrot == 3)
             test(i, pzwrot, &ruch, &tab_mapa[0][0][0], &tab_mapa[0][0][1]);
 
-        suwak(40);
+        screen_cleaner(40);
 
     } while (*pzwrot > 0);
 
     if (*pzwrot < 0)
-        zapisz_gre(pf, &ruch, &tab_stat[0], &tab_mapa[0][0][0], i, j);
+        save(pf, &ruch, &tab_stat[0], &tab_mapa[0][0][0], i, j);
 
-    ekran_koncowy(&tab_stat[0]);
+    end_screen(&tab_stat[0]);
 }
 
-void ekran_powitalny() {
-    suwak(3);
+void greeting_screen() {
+    screen_cleaner(3);
     tabulator(4);
     if (!lang)
         printf("Welcome in Brain Game!\n");
@@ -253,49 +253,49 @@ void ekran_powitalny() {
         printf("\t\tThis game was inspired by mini-game from game \"Growing Up\".");
     else {
         tabulator(3);
-        printf("Gra ta jest inspirowana mini gra z \"Growing Up\".");
+        printf("Gra ta jest inspirowana mini game z \"Growing Up\".");
     }
     Sleep(1000);
-    suwak(40);
+    screen_cleaner(40);
 }
 
-void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2) {
-    int los;    //Decyduje ktory atrybut ma zostac zainicjalizowany
-    int odkryte = 0;    //Ogranicza liczbe odkrytych atrybutow
+void init(int i, char *ptab_mapa, char *ptab_mapa2) {
+    int random;    //Decyduje ktory atrybut ma zostac zainicjalizowany
+    int odkryte = 0;    //Ogamenicza liczbe odkrytych atrybutow
 
-    for (i = 0; i < (WIERSZ * KOLUMNA); i++) {
-        //if (i == 150) los = 24;
-        //los = i;
-        //los = rand() % 27;
+    for (i = 0; i < (ROW * COLUMN); i++) {
+        //if (i == 150) random = 24;
+        //random = i;
+        //random = rand() % 27;
 
-        los = rand() % 3;
-        if (los) {
-            los = rand() % 100;
-            if (los < 50)
-                los = rand() % 6;
-            else if (los < 60)
-                los = rand() % 5 + 6;
-            else if (los < 63)
-                los = rand() % 5 + 6;
-            else if (los < 67)
-                los = 18;
-            else if (los < 74)
-                los = 19;
-            else if (los < 77)
-                los = 20;
-            else if (los < 80)
-                los = 21;
-            else if (los < 87)
-                los = 22;
-            else if (los < 94)
-                los = 23;
-            else if (los < 96)
-                los = 24;
-            else if (los < 100)
-                los = 25;
-        } else los = 26;
+        random = rand() % 3;
+        if (random) {
+            random = rand() % 100;
+            if (random < 50)
+                random = rand() % 6;
+            else if (random < 60)
+                random = rand() % 5 + 6;
+            else if (random < 63)
+                random = rand() % 5 + 6;
+            else if (random < 67)
+                random = 18;
+            else if (random < 74)
+                random = 19;
+            else if (random < 77)
+                random = 20;
+            else if (random < 80)
+                random = 21;
+            else if (random < 87)
+                random = 22;
+            else if (random < 94)
+                random = 23;
+            else if (random < 96)
+                random = 24;
+            else if (random < 100)
+                random = 25;
+        } else random = 26;
 
-        switch (los) {
+        switch (random) {
             case 0:
                 *ptab_mapa = 'i';
                 break;
@@ -382,7 +382,7 @@ void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2) {
         if (*ptab_mapa == ' ')
             *ptab_mapa2 = 'O';
             //else if (i == 0) *ptab_mapa2 = 'O';    //Odslaniecie lda wybranej iteracji
-        //else if (*ptab_mapa == '&') *ptab_mapa2 = 'O';   //Odslaniecie kazdego atrybutu okreslonego typu
+            //else if (*ptab_mapa == '&') *ptab_mapa2 = 'O';   //Odslaniecie kazdego atrybutu okreslonego typu
         else if (odkryte < 3 && (*ptab_mapa == 'i' || *ptab_mapa == 'e' || *ptab_mapa == 's' ||
                                  *ptab_mapa == 'p' || *ptab_mapa == 'w' || *ptab_mapa == 'u')) {
             *ptab_mapa2 = 'O';
@@ -395,7 +395,7 @@ void inic_mapa(int i, char *ptab_mapa, char *ptab_mapa2) {
     }
 }
 
-void ekran_gry(int i, int j, int ruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2) {
+void game_screen(int i, int j, int ruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2) {
     int pom = 1;    //Odpowiada za pomocnicze liczby wokol mapy gry
 
     //Statystyki
@@ -444,7 +444,7 @@ void ekran_gry(int i, int j, int ruch, int *ptab_stat, char *ptab_mapa, char *pt
             default:
                 printf("Switch num 1 error in func game_screen");
                 Sleep(10000);
-                suwak(40);
+                screen_cleaner(40);
                 break;
         }
         printf("     ");
@@ -454,14 +454,14 @@ void ekran_gry(int i, int j, int ruch, int *ptab_stat, char *ptab_mapa, char *pt
         printf("\n\tRemaining move points: %d", ruch);
     else
         printf("\n\tPozostale punkty ruchu: %d", ruch);
-    suwak(3);
+    screen_cleaner(3);
 
     //Mapa gry
-    for (i = 0; i < (WIERSZ + 4); i++) {
+    for (i = 0; i < (ROW + 4); i++) {
         printf("\t");
-        if (!i || i == 1 || i == (WIERSZ + 3)) pom = 1;     //Wyrowanie naliczania liczb pomocniczych
-        if (!i || i == (WIERSZ + 3)) {      //Pomocnicze liczby w poziomie
-            for (j = 0; j < KOLUMNA; j++) {
+        if (!i || i == 1 || i == (ROW + 3)) pom = 1;     //Wyrowanie naliczania liczb pomocniczych
+        if (!i || i == (ROW + 3)) {      //Pomocnicze liczby w poziomie
+            for (j = 0; j < COLUMN; j++) {
                 if (!j)
                     printf("      ");
                 if (pom < 9)
@@ -469,24 +469,24 @@ void ekran_gry(int i, int j, int ruch, int *ptab_stat, char *ptab_mapa, char *pt
                 else printf("%d  ", pom);
                 pom++;
             }
-        } else if (i == 1 || i == (WIERSZ + 2)) {       //Rama mapy w poziomie
-            for (j = 0; j < (4 * KOLUMNA + 6); j++) {
+        } else if (i == 1 || i == (ROW + 2)) {       //Rama mapy w poziomie
+            for (j = 0; j < (4 * COLUMN + 6); j++) {
                 if (j < 3)
                     printf(" ");
                 else printf("-");
             }
         } else {
-            for (j = 0; j < (KOLUMNA + 4); j++) {
+            for (j = 0; j < (COLUMN + 4); j++) {
                 //Pomocnicze liczby w pionie
                 if (!j) {
                     if (pom < 10)
                         printf(" %d ", pom);
                     if (pom >= 10)
                         printf("%d ", pom);
-                } else if (j == (KOLUMNA + 3)) {
+                } else if (j == (COLUMN + 3)) {
                     printf("%d", pom);
                     pom++;
-                } else if (j == 1 || j == (KOLUMNA + 2))    //Rama mapy w pionie
+                } else if (j == 1 || j == (COLUMN + 2))    //Rama mapy w pionie
                     printf("| ");
                 else {  //Atrybuty
                     if (*ptab_mapa2 == 'Z')     //Wyswietlanie zaslonietych elementow
@@ -521,7 +521,7 @@ void ekran_gry(int i, int j, int ruch, int *ptab_stat, char *ptab_mapa, char *pt
                             default:
                                 printf("Switch num 2 error in func game_screen");
                                 Sleep(10000);
-                                suwak(40);
+                                screen_cleaner(40);
                                 break;
                         }
                     } else printf("[%c] ", *ptab_mapa);     //Wyswietlanie elementow w oryginalnej postaci
@@ -542,14 +542,14 @@ void ekran_gry(int i, int j, int ruch, int *ptab_stat, char *ptab_mapa, char *pt
     }
 }
 
-void reakcja(int i, int j, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3) {
-    char tekst;   //Przechowuje tekst wpisany przez gracza
-    int wiersz, kolumna = 0;    //Polozenie elementu wybranego przez gracza
-    int spacja = 0;     //Liczba spacji wprowadzonych przez gracza
+void reaction(int i, int j, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3) {
+    char tekst;   //Przechowuje tekst wpisany przez gamecza
+    int wiersz, kolumna = 0;    //Polozenie elementu wybranego przez gamecza
+    int spacja = 0;     //Liczba spacji wprowadzonych przez gamecza
 
     /*
      * Tablica dla legendy atrybutow
-     * Kolejnosc: zwykly atrybut, super atrybut, mega atrybut, hiper atrybut, oko, super oko, reakcja lancuchowa, zacmienie, bonusowe pkt ruchu, nowa mapa, losowy atrybut
+     * Kolejnosc: zwykly atrybut, super atrybut, mega atrybut, hiper atrybut, oko, super oko, reaction lancuchowa, zacmienie, bonusowe pkt ruchu, nowa mapa, losowy atrybut
      * {koszt, bonus}
      */
     int tab_legenda[][2] = {{1, 1},
@@ -561,10 +561,10 @@ void reakcja(int i, int j, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_m
                             {4, 0},
                             {5, 0},
                             {0, 5},
-                            {0, (RUCH / 2)},
+                            {0, (MOVE / 2)},
                             {0, 0}};
 
-    for (i = 0; i < 3; i++) {   //Petla w razie pomylki gracza - 3 proby
+    for (i = 0; i < 3; i++) {   //Petla w razie pomylki gamecza - 3 proby
         printf("\t");
         tekst = getchar();
 
@@ -573,7 +573,7 @@ void reakcja(int i, int j, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_m
             break;
         } else if (tekst == 'm' || tekst == 'M' || tekst == 'i' || tekst == 'I') {      //Instrukcja
             while (tekst != '\n') tekst = getchar();
-            instrukcja(i, &tab_legenda[0][0], &tab_legenda[0][1]);
+            manual(i, &tab_legenda[0][0], &tab_legenda[0][1]);
             break;
         } else if (isdigit(tekst) && tekst != '0') {    //Wybor atrybutu
             wiersz = tekst - 48;    //Inicjalizacja dla zmiennej wiersz
@@ -591,19 +591,19 @@ void reakcja(int i, int j, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_m
                 } else break;
             }
             if (tekst == '\n' && wiersz && kolumna) {        //Weryfikacja przebiegu wczesniejszej inicjalizacji
-                ptab_mapa += 2 * ((wiersz - 1) * KOLUMNA + (kolumna - 1));
+                ptab_mapa += 2 * ((wiersz - 1) * COLUMN + (kolumna - 1));
                 ptab_mapa2 = ptab_mapa;
                 ptab_mapa2++;
 
                 if (*ptab_mapa == ' ' || *ptab_mapa2 == 'Z' ||
-                    wiersz > WIERSZ || kolumna > KOLUMNA) {
+                    wiersz > ROW || kolumna > COLUMN) {
                     if (!lang)
                         printf("\tThis element is inaccessible!\n");
                     else
                         printf("\tTen element jest niedostepny!\n");
                 } else {
                     ptab_mapa2 = ptab_mapa3 - 1;
-                    atrybut(i, ptab_mapa, ptab_mapa2, ptab_mapa3, ptab_stat, &tab_legenda[0][0], pruch);
+                    attribute(i, ptab_mapa, ptab_mapa2, ptab_mapa3, ptab_stat, &tab_legenda[0][0], pruch);
                     break;
                 }
             } else {        //Reakcja na blad
@@ -629,10 +629,10 @@ void reakcja(int i, int j, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_m
     }
 }
 
-void instrukcja(int i, int *ptab_legenda, int *ptab_legenda2) {
-    char tekst;     //Przechowuje tekst wpisany przez gracza
+void manual(int i, int *ptab_legenda, int *ptab_legenda2) {
+    char tekst;     //Przechowuje tekst wpisany przez gamecza
 
-    suwak(40);
+    screen_cleaner(40);
     tabulator(3);
     if (!lang)
         printf("Manunal:\n\n");
@@ -722,7 +722,7 @@ void instrukcja(int i, int *ptab_legenda, int *ptab_legenda2) {
             default:
                 printf("Switch error in func manual");
                 Sleep(10000);
-                suwak(40);
+                screen_cleaner(40);
                 break;
         }
 
@@ -749,7 +749,7 @@ void instrukcja(int i, int *ptab_legenda, int *ptab_legenda2) {
         ptab_legenda2 += 2;
     }
 
-    suwak(3);
+    screen_cleaner(3);
     if (!lang)
         printf("Press Enter to get back into game...\n");
     else
@@ -758,37 +758,37 @@ void instrukcja(int i, int *ptab_legenda, int *ptab_legenda2) {
     while (tekst != '\n') tekst = getchar();
 }
 
-void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *ptab_stat, int *ptab_legenda, int *pruch) {
+void attribute(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *ptab_stat, int *ptab_legenda, int *pruch) {
     char *ptmp;     //Wskaznik dla pierwszego elementu tablicy (odkrywanie elementow)
     char *ptmk;     //Wskaznik dla ostatniego elementu tablicy (odkrywanie elementow)
     unsigned short bieda = 1;    //Informuje, czy liczba pkt ruchu jest wystarczajaca (odkrywanie elementow)
     ptmp = ptmk = ptab_mapa2;
-    ptmk += 2 * WIERSZ * KOLUMNA;
+    ptmk += 2 * ROW * COLUMN;
 
     //Zmiana statystyk i dezaktywacja elementu
-    //Losowy atrybut
+    //Losowy attribute
     if (*ptab_mapa == '?')
-        los(i, ptab_mapa, ptab_legenda, pruch, &bieda);
+        random_att(i, ptab_mapa, ptab_legenda, pruch, &bieda);
 
     //Zwykle atrybuty
     if (*ptab_mapa == 'i' || *ptab_mapa == 'e' || *ptab_mapa == 's' ||
         *ptab_mapa == 'p' || *ptab_mapa == 'w' || *ptab_mapa == 'u') {
-        zwykly_at(*ptab_mapa, ptab_stat, ptab_legenda, pruch, &bieda);
+        normal_att(*ptab_mapa, ptab_stat, ptab_legenda, pruch, &bieda);
 
-    //Super atrybuty
+        //Super atrybuty
     } else if (*ptab_mapa == 'I' || *ptab_mapa == 'E' || *ptab_mapa == 'S' ||
                *ptab_mapa == 'P' || *ptab_mapa == 'W' || *ptab_mapa == 'U') {
-        super_at(*ptab_mapa, ptab_stat, ptab_legenda, pruch, &bieda);
+        super_att(*ptab_mapa, ptab_stat, ptab_legenda, pruch, &bieda);
 
-    //Mega atrybuty
+        //Mega atrybuty
     } else if (*ptab_mapa > 96 && *ptab_mapa < 104 && *ptab_mapa != 101) {
-        mega_at(i, *ptab_mapa, ptab_mapa2, ptab_mapa3, ptab_stat, ptab_legenda, pruch, &bieda);
+        mega_att(i, *ptab_mapa, ptab_mapa2, ptab_mapa3, ptab_stat, ptab_legenda, pruch, &bieda);
 
-    //Hiper atrybut
+        //Hiper atrybut
     } else if (*ptab_mapa == '$') {
-        hiper_at(i, ptab_stat, ptab_legenda, pruch, &bieda);
+        hiper_att(i, ptab_stat, ptab_legenda, pruch, &bieda);
 
-    //Oko
+        //Oko
     } else if (*ptab_mapa == '^') {
         ptab_legenda += 8;      //Utrata punktow ruchu z weryfikacja ich stanu
         if (*pruch < *ptab_legenda) {
@@ -801,7 +801,7 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *p
         }
         else *pruch -= *ptab_legenda;
 
-    //Super oko
+        //Super oko
     } else if (*ptab_mapa == '#') {
         ptab_legenda += 10;     //Utrata punktow ruchu z weryfikacja ich stanu
         if (*pruch < *ptab_legenda) {
@@ -814,11 +814,11 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *p
         }
         else *pruch -= *ptab_legenda;
 
-    //Reakcja lancuchowa
+        //Reakcja lancuchowa
     } else if (*ptab_mapa == '&') {
-        reakcja_lanc(i, ptab_mapa, ptab_mapa2, ptmp, ptmk, ptab_legenda, pruch, &bieda);
+        chain_reaction(i, ptab_mapa, ptab_mapa2, ptmp, ptmk, ptab_legenda, pruch, &bieda);
 
-    //Zacmienie
+        //Zacmienie
     } else if (*ptab_mapa == '@') {
         ptab_legenda += 14;     //Utrata punktow ruchu z weryfikacja ich stanu
         if (*pruch < *ptab_legenda) {
@@ -831,12 +831,12 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *p
         }
         else *pruch -= *ptab_legenda;
 
-    //Bonus do punktow ruchu
+        //Bonus do punktow ruchu
     } else if (*ptab_mapa == '+') {
         ptab_legenda += 17;     //Zwiekszenie liczby punktow ruchu
         *pruch += *ptab_legenda;
 
-    //Nowa mapa
+        //Nowa mapa
     } else if (*ptab_mapa == '!') {
         ptab_legenda += 19;     //Zwiekszenie liczby punktow ruchu
         *pruch += *ptab_legenda;
@@ -848,19 +848,19 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *p
 
         if (*ptab_mapa == ' ') {    //Odkrywanie elementow wokol wybranego
             for (i = 0; i < 8; i++) {
-                if (!i) ptab_mapa -= 2 * KOLUMNA + 1;
-                else if (i == 3 || i == 5) ptab_mapa += 2 * KOLUMNA - 4;
+                if (!i) ptab_mapa -= 2 * COLUMN + 1;
+                else if (i == 3 || i == 5) ptab_mapa += 2 * COLUMN - 4;
                 else if (i == 4) ptab_mapa += 4;
                 else ptab_mapa += 2;
                 if (*ptab_mapa != 'O' && ptab_mapa > ptmp && ptab_mapa < ptmk)
                     *ptab_mapa = 'O';
             }
         } else if (*ptab_mapa == '^')   //Odkrywanie elementow dla oka
-            oko(i, ptab_mapa, ptab_mapa2, ptmp, ptmk);
+            eye(i, ptab_mapa, ptab_mapa2, ptmp, ptmk);
 
         else if (*ptab_mapa == '#') {     //Odkrywanie elementow dla super oka
             ptmp++;
-            for (i = 0; i < WIERSZ * KOLUMNA; i++) {
+            for (i = 0; i < ROW * COLUMN; i++) {
                 if (*ptmp == 'Z') *ptmp = 'O';
                 ptmp += 2;
             }
@@ -870,9 +870,9 @@ void atrybut(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *p
     }
 }
 
-void los(int i, char *ptab_mapa, int *ptab_legenda, int *pruch, unsigned short *pbieda) {
-    int los;    //Decyduje ktory atrybut ma zostac zainicjalizowany
-    los = rand() % 24;
+void random_att(int i, char *ptab_mapa, int *ptab_legenda, int *pruch, unsigned short *pbieda) {
+    int random;    //Decyduje ktory attribute ma zostac zainicjalizowany
+    random = rand() % 24;
 
     ptab_legenda += 10;     //Sprawdzenie punktow ruchu (ustawic na najwiekszy koszt)
     if (*pruch < *ptab_legenda) {
@@ -883,7 +883,7 @@ void los(int i, char *ptab_mapa, int *ptab_legenda, int *pruch, unsigned short *
         *pbieda = 0;
         Sleep(1000);
     } else {
-        switch (los) {      //Losowanie efektu
+        switch (random) {      //Losowanie efektu
             case 0:
                 *ptab_mapa = 'i';
                 break;
@@ -961,8 +961,8 @@ void los(int i, char *ptab_mapa, int *ptab_legenda, int *pruch, unsigned short *
                 break;
         }
 
-        //Komunikaty dla gracza
-        suwak(40);
+        //Komunikaty dla gamecza
+        screen_cleaner(40);
         tabulator(3);
         if (!lang)
             printf("Calibrating.\n");
@@ -971,7 +971,7 @@ void los(int i, char *ptab_mapa, int *ptab_legenda, int *pruch, unsigned short *
         Sleep(800);
         tabulator(3);
         if (!lang)
-            printf("Please stand by\n");
+            printf("Please stand by");
         else
             printf("Prosze czekac");
         Sleep(2000);
@@ -1020,7 +1020,7 @@ void los(int i, char *ptab_mapa, int *ptab_legenda, int *pruch, unsigned short *
     }
 }
 
-void zwykly_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned short *pbieda) {
+void normal_att(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned short *pbieda) {
     if (*pruch < *ptab_legenda) {     //Utrata punktow ruchu z weryfikacja ich stanu
         if (!lang)
             printf("Few move points!\n");
@@ -1063,7 +1063,7 @@ void zwykly_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch, un
     }
 }
 
-void super_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned short *pbieda) {
+void super_att(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned short *pbieda) {
     ptab_legenda += 2;      //Utrata punktow ruchu z weryfikacja ich stanu
     if (*pruch < *ptab_legenda) {
         if (!lang)
@@ -1107,7 +1107,7 @@ void super_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch, uns
     }
 }
 
-void mega_at(int i, char ptab_mapa, char *ptab_mapa2, char *ptab_mapa3, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned short *pbieda) {
+void mega_att(int i, char ptab_mapa, char *ptab_mapa2, char *ptab_mapa3, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned short *pbieda) {
     ptab_legenda += 4;      //Utrata punktow ruchu z weryfikacja ich stanu
     if (*pruch < *ptab_legenda) {
         if (!lang)
@@ -1137,11 +1137,11 @@ void mega_at(int i, char ptab_mapa, char *ptab_mapa2, char *ptab_mapa3, int *pta
                 ptab_stat += 5;
                 break;
             default:
-                printf("Switch num 1 error in func mega_at!");
+                printf("Switch num 1 error in func mega_att!");
                 break;
         }
 
-        for (i = 0; i < WIERSZ * KOLUMNA; i++) {    //Przeszukanie tablicy za wlasciwymi elem. i zmiana statystyk
+        for (i = 0; i < ROW * COLUMN; i++) {    //Przeszukanie tablicy za wlasciwymi elem. i zmiana statystyk
             if (*ptab_mapa3 == 'O') {
                 switch (ptab_mapa) {
                     case 'a':
@@ -1191,7 +1191,7 @@ void mega_at(int i, char ptab_mapa, char *ptab_mapa2, char *ptab_mapa3, int *pta
     }
 }
 
-void hiper_at(int i, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned short *pbieda) {
+void hiper_att(int i, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned short *pbieda) {
     ptab_legenda += 6;      //Utrata punktow ruchu z weryfikacja ich stanu
     if (*pruch < *ptab_legenda) {
         if (!lang)
@@ -1210,12 +1210,12 @@ void hiper_at(int i, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned sho
     }
 }
 
-void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *ptmk, int *ptab_legenda, int *pruch, unsigned short *pbieda) {
+void chain_reaction(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *ptmk, int *ptab_legenda, int *pruch, unsigned short *pbieda) {
     unsigned short lewo;        //Liczba elementow stojacych na lewo od atrybutu
     unsigned short prawo;       //Liczba elementow stojacych na prawo od atrybutu
     unsigned short gora;        //Liczba wierszy nad atrybutem
     unsigned short dol;     //Liczba wierszy pod atrybutem
-    unsigned short los;     //Wynik losowania
+    unsigned short random;     //Wynik losowania
     unsigned short odkryte = 0;     //Liczba odkrytych elementow
     int tab_poprzed[20];        //Tablica adresow wybranych elementow
     int *poprzednik;        //Wskaznik na tablice tab_poprzed
@@ -1240,10 +1240,10 @@ void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *pt
 
         //Odleglosc atrybutu od brzegow tablicy
         ptab_mapa++;
-        lewo = ((ptab_mapa - ptmp) / 2) % KOLUMNA;
-        prawo = ((ptmk - ptab_mapa - 1) / 2) % KOLUMNA;
-        gora = ((ptab_mapa - ptmp) / 2) / KOLUMNA;
-        dol = ((ptmk - ptab_mapa - 1) / 2) / KOLUMNA;
+        lewo = ((ptab_mapa - ptmp) / 2) % COLUMN;
+        prawo = ((ptmk - ptab_mapa - 1) / 2) % COLUMN;
+        gora = ((ptab_mapa - ptmp) / 2) / COLUMN;
+        dol = ((ptmk - ptab_mapa - 1) / 2) / COLUMN;
 
         //Odkrywanie wybranych elementow wokol atrybutu
         while (odkryte < 12) {
@@ -1252,12 +1252,12 @@ void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *pt
                 i = 0;
 
             while (!i) {        //Element sasiadujacy (bazowy)
-                los = rand() % 4;
+                random = rand() % 4;
 
-                switch (los) {
+                switch (random) {
                     case 0:     //Osloniecie nad
                         if (gora > 0) {
-                            ptab_mapa2 -= 2 * KOLUMNA;
+                            ptab_mapa2 -= 2 * COLUMN;
                             i = 1;
                         }
                         break;
@@ -1275,7 +1275,7 @@ void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *pt
                         break;
                     case 3:     //Osloniecie pod
                         if (dol > 0) {
-                            ptab_mapa2 += 2 * KOLUMNA;
+                            ptab_mapa2 += 2 * COLUMN;
                             i = 4;
                         }
                         break;
@@ -1292,12 +1292,12 @@ void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *pt
             for (j = 0; j < 11; j++) {     //Kolejne elementy
                 switch (i) {
                     case 1:     //Baza - gora
-                        los = rand() % 3;
+                        random = rand() % 3;
 
-                        switch (los) {
+                        switch (random) {
                             case 0:     //Osloniecie nad
                                 if (gora > j + 1)
-                                    ptab_mapa2 -= 2 * KOLUMNA;
+                                    ptab_mapa2 -= 2 * COLUMN;
                                 else j = 20;
                                 break;
                             case 1:     //Osloniecie na lewo
@@ -1317,9 +1317,9 @@ void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *pt
 
                         break;
                     case 2:     //Baza - lewo
-                        los = rand() % 3;
+                        random = rand() % 3;
 
-                        switch (los) {
+                        switch (random) {
                             case 0:     //Osloniecie na lewo
                                 if (lewo > j + 1)
                                     ptab_mapa2 -= 2;
@@ -1327,12 +1327,12 @@ void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *pt
                                 break;
                             case 1:     //Osloniecie nad
                                 if (gora > j)
-                                    ptab_mapa2 -= 2 * KOLUMNA;
+                                    ptab_mapa2 -= 2 * COLUMN;
                                 else j = 20;
                                 break;
                             case 2:     //Osloniecie pod
                                 if (dol > j)
-                                    ptab_mapa2 += 2 * KOLUMNA;
+                                    ptab_mapa2 += 2 * COLUMN;
                                 else j = 20;
                                 break;
                             default:
@@ -1342,9 +1342,9 @@ void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *pt
 
                         break;
                     case 3:     //Baza - prawo
-                        los = rand() % 3;
+                        random = rand() % 3;
 
-                        switch (los) {
+                        switch (random) {
                             case 0:     //Osloniecie na prawo
                                 if (prawo > j + 1)
                                     ptab_mapa2 += 2;
@@ -1352,12 +1352,12 @@ void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *pt
                                 break;
                             case 1:     //Osloniecie nad
                                 if (gora > j)
-                                    ptab_mapa2 -= 2 * KOLUMNA;
+                                    ptab_mapa2 -= 2 * COLUMN;
                                 else j = 20;
                                 break;
                             case 2:     //Osloniecie pod
                                 if (dol > j)
-                                    ptab_mapa2 += 2 * KOLUMNA;
+                                    ptab_mapa2 += 2 * COLUMN;
                                 else j = 20;
                                 break;
                             default:
@@ -1367,12 +1367,12 @@ void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *pt
 
                         break;
                     case 4:     //Baza - dol
-                        los = rand() % 3;
+                        random = rand() % 3;
 
-                        switch (los) {
+                        switch (random) {
                             case 0:     //Osloniecie pod
                                 if (dol > j + 1)
-                                    ptab_mapa2 += 2 * KOLUMNA;
+                                    ptab_mapa2 += 2 * COLUMN;
                                 else j = 20;
                                 break;
                             case 1:     //Osloniecie na lewo
@@ -1427,7 +1427,7 @@ void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *pt
     }
 }
 
-void oko(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *ptmk) {
+void eye(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *ptmk) {
     unsigned short lewo;     //Liczba elementow stojacych na lewo od "oka"
     unsigned short prawo;   //Liczba elementow stojacych na prawo od "oka"
 
@@ -1435,16 +1435,16 @@ void oko(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *ptmk) {
     for (i = 0; i < 24; i++) {
         if (!i) {       //Obliczenie bledu przesuniecia (za malo kolumn w otoczeniu)
             ptab_mapa++;
-            lewo = ((ptab_mapa - ptmp) / 2) % KOLUMNA;
-            prawo = ((ptmk - ptab_mapa - 1) / 2) % KOLUMNA;
+            lewo = ((ptab_mapa - ptmp) / 2) % COLUMN;
+            prawo = ((ptmk - ptab_mapa - 1) / 2) % COLUMN;
         }
 
         switch (i) {    //Ustawienie na wlasciwe elementy
             case 0:
-                ptab_mapa = ptab_mapa2 - (23 + (KOLUMNA - 5) * 4);
+                ptab_mapa = ptab_mapa2 - (23 + (COLUMN - 5) * 4);
                 break;
             case 5:
-                ptab_mapa = ptab_mapa2 - (13 + (KOLUMNA - 5) * 2);
+                ptab_mapa = ptab_mapa2 - (13 + (COLUMN - 5) * 2);
                 break;
             case 10:
                 ptab_mapa = ptab_mapa2 - 3;
@@ -1453,10 +1453,10 @@ void oko(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *ptmk) {
                 ptab_mapa += 4;
                 break;
             case 14:
-                ptab_mapa = ptab_mapa2 + (7 + (KOLUMNA - 5) * 2);
+                ptab_mapa = ptab_mapa2 + (7 + (COLUMN - 5) * 2);
                 break;
             case 19:
-                ptab_mapa = ptab_mapa2 + (17 + (KOLUMNA - 5) * 4);
+                ptab_mapa = ptab_mapa2 + (17 + (COLUMN - 5) * 4);
                 break;
             default:
                 ptab_mapa += 2;
@@ -1511,7 +1511,7 @@ void test(int i, int *pzwrot, int *pruch, char *ptab_mapa, char *ptab_mapa2) {
         *pzwrot = 0;
 
         if (!*pruch) {
-            suwak(40);
+            screen_cleaner(40);
             tabulator(3);
             Sleep(500);
             if (!lang)
@@ -1528,7 +1528,7 @@ void test(int i, int *pzwrot, int *pruch, char *ptab_mapa, char *ptab_mapa2) {
         }
 
     } else {      //Sprawdzenie liczby zuzytych elementow
-        for (i = 0; i < WIERSZ * KOLUMNA; i++) {
+        for (i = 0; i < ROW * COLUMN; i++) {
             if (*ptab_mapa2 == 'Z')
                 break;
             else if (*ptab_mapa == ' ')
@@ -1537,10 +1537,10 @@ void test(int i, int *pzwrot, int *pruch, char *ptab_mapa, char *ptab_mapa2) {
             ptab_mapa += 2;
             ptab_mapa2 += 2;
         }
-        if (zuzyte == (WIERSZ * KOLUMNA)) {
+        if (zuzyte == (ROW * COLUMN)) {
             *pzwrot = 0;
 
-            suwak(40);
+            screen_cleaner(40);
             tabulator(3);
             Sleep(500);
             if (!lang)
@@ -1558,10 +1558,10 @@ void test(int i, int *pzwrot, int *pruch, char *ptab_mapa, char *ptab_mapa2) {
     }
 }
 
-void ekran_koncowy(int *ptab_stat) {
+void end_screen(int *ptab_stat) {
     tabulator(8);
     if (!lang)
-        printf("Congratulations!\n");
+        printf("Congametulations!\n");
     else
         printf("Gratulacje!\n");
     tabulator(7);
@@ -1612,7 +1612,7 @@ void ekran_koncowy(int *ptab_stat) {
             default:
                 printf("Switch error in func end_screen");
                 Sleep(10000);
-                suwak(40);
+                screen_cleaner(40);
                 break;
         }
         printf("\t");
@@ -1620,15 +1620,15 @@ void ekran_koncowy(int *ptab_stat) {
     }
 
     Sleep(2000);
-    suwak(40);
+    screen_cleaner(40);
 }
 
-void zapisz_gre(FILE *pf, int const *pruch, int *ptab_stat, char *ptab_mapa, int i, int j) {
+void save(FILE *pf, int const *pruch, int *ptab_stat, char *ptab_mapa, int i, int j) {
     char pom;     //Konwersja zmiennych na typ znakowy
     int licz;       //Pomocnicza zmienna
     int k;      //Zmienna dla petli
 
-    //Komunikacja z graczem
+    //Komunikacja z gameczem
     if (!lang)
         printf("\t\tDo you wish to save your progress? (y/n)\n");
     else
@@ -1644,7 +1644,7 @@ void zapisz_gre(FILE *pf, int const *pruch, int *ptab_stat, char *ptab_mapa, int
         pom = getchar();
     }
 
-    suwak(40);
+    screen_cleaner(40);
 
     if (pom == 't' || pom == 'T' || pom == 'y' || pom == 'Y') {     //Zapis danych do pliku
         pf = fopen("save.txt", "w");
@@ -1668,7 +1668,7 @@ void zapisz_gre(FILE *pf, int const *pruch, int *ptab_stat, char *ptab_mapa, int
                                 default:
                                     printf("Switch error num 2 in func save");
                                     Sleep(10000);
-                                    suwak(40);
+                                    screen_cleaner(40);
                                     break;
                             }
                         }
@@ -1695,7 +1695,7 @@ void zapisz_gre(FILE *pf, int const *pruch, int *ptab_stat, char *ptab_mapa, int
                                     default:
                                         printf("Switch error num 3 in func save");
                                         Sleep(10000);
-                                        suwak(40);
+                                        screen_cleaner(40);
                                         break;
                                 }
                             }
@@ -1710,7 +1710,7 @@ void zapisz_gre(FILE *pf, int const *pruch, int *ptab_stat, char *ptab_mapa, int
                     }
                     break;
                 case 2:     //Zapis mapy gry
-                    for (j = 0; j < WIERSZ * KOLUMNA * GLEBOKOSC; j++) {
+                    for (j = 0; j < ROW * COLUMN * DEPTH; j++) {
                         fputc(*ptab_mapa, pf);
                         ptab_mapa++;
                     }
@@ -1718,7 +1718,7 @@ void zapisz_gre(FILE *pf, int const *pruch, int *ptab_stat, char *ptab_mapa, int
                 default:
                     printf("Switch error num 1 in func save");
                     Sleep(10000);
-                    suwak(40);
+                    screen_cleaner(40);
                     break;
             }
 
@@ -1729,7 +1729,7 @@ void zapisz_gre(FILE *pf, int const *pruch, int *ptab_stat, char *ptab_mapa, int
     }
 }
 
-void wczytaj_gre(FILE *pf, int *pruch, int *ptab_stat, char *ptab_mapa, int i, int j) {
+void load(FILE *pf, int *pruch, int *ptab_stat, char *ptab_mapa, int i, int j) {
     char tab_pom[25];        //Konwersja zmiennych na typ znakowy
     char *ppom;
     int licz;       //Pomocnicza zmienna
@@ -1764,7 +1764,7 @@ void wczytaj_gre(FILE *pf, int *pruch, int *ptab_stat, char *ptab_mapa, int i, i
                             default:
                                 printf("Switch error num 2 in func load");
                                 Sleep(10000);
-                                suwak(40);
+                                screen_cleaner(40);
                                 break;
                         }
 
@@ -1787,7 +1787,7 @@ void wczytaj_gre(FILE *pf, int *pruch, int *ptab_stat, char *ptab_mapa, int i, i
                 }
                 break;
             case 2:     //Wczytywanie mapy gry
-                for (j = 0; j < WIERSZ * KOLUMNA * GLEBOKOSC; j++) {
+                for (j = 0; j < ROW * COLUMN * DEPTH; j++) {
                     *ptab_mapa = fgetc(pf);
                     ptab_mapa++;
                 }
@@ -1795,7 +1795,7 @@ void wczytaj_gre(FILE *pf, int *pruch, int *ptab_stat, char *ptab_mapa, int i, i
             default:
                 printf("Switch error num 1 in func load");
                 Sleep(10000);
-                suwak(40);
+                screen_cleaner(40);
                 break;
         }
     }
@@ -1803,8 +1803,8 @@ void wczytaj_gre(FILE *pf, int *pruch, int *ptab_stat, char *ptab_mapa, int i, i
     fclose(pf);
 }
 
-//Funkcja "suwak" odpowiada za "czyszczenie ekranu" - przesuwanie tekstu tak, aby nie bylo widac wczesniejszych, niepotrzebnych komunikatow.
-void suwak (int linia) {
+//Funkcja "screen_cleaner" odpowiada za "czyszczenie ekranu" - przesuwanie tekstu tak, aby nie bylo widac wczesniejszych, niepotrzebnych komunikatow.
+void screen_cleaner (int linia) {
     for (int i = 0; i < linia; i++)
         printf("\n");
 }
@@ -1814,4 +1814,3 @@ void tabulator (int tab) {
     for (int i = 0; i < tab; i++)
         printf("\t");
 }
-
