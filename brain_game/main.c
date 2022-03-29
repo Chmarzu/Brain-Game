@@ -957,7 +957,7 @@ void los(int i, char *ptab_mapa, int *ptab_legenda, int *pruch, unsigned short *
                 *ptab_mapa = '!';
                 break;
             default:
-                printf("Blad switcha los nr 1!");
+                printf("Switch num 1 error in func random!");
                 break;
         }
 
@@ -1011,7 +1011,7 @@ void los(int i, char *ptab_mapa, int *ptab_legenda, int *pruch, unsigned short *
                     printf("{u} ");
                     break;
                 default:
-                    printf("Blad switcha los nr 2");
+                    printf("Switch num 2 error in func main!");
                     break;
             }
         } else printf("[%c] ", *ptab_mapa);     //Wyswietlanie elementu w oryginalnej postaci
@@ -1057,7 +1057,7 @@ void zwykly_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch, un
                 *ptab_stat += *ptab_legenda;
                 break;
             default:
-                printf("Blad switcha zwykly_at!");
+                printf("Switch error in func normal_att!");
                 break;
         }
     }
@@ -1101,7 +1101,7 @@ void super_at(char ptab_mapa, int *ptab_stat, int *ptab_legenda, int *pruch, uns
                 *ptab_stat += *ptab_legenda;
                 break;
             default:
-                printf("Blad switcha super_at!");
+                printf("Switch error in func super_att!");
                 break;
         }
     }
@@ -1137,7 +1137,7 @@ void mega_at(int i, char ptab_mapa, char *ptab_mapa2, char *ptab_mapa3, int *pta
                 ptab_stat += 5;
                 break;
             default:
-                printf("Blad switcha mega_at nr 1!");
+                printf("Switch num 1 error in func mega_at!");
                 break;
         }
 
@@ -1181,7 +1181,7 @@ void mega_at(int i, char ptab_mapa, char *ptab_mapa2, char *ptab_mapa3, int *pta
                         }
                         break;
                     default:
-                        printf("Blad switcha mega_at nr 2!");
+                        printf("Switch num 2 error in func mega_att!");
                         break;
                 }
             }
@@ -1280,7 +1280,7 @@ void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *pt
                         }
                         break;
                     default:
-                        printf("Blad switcha reakcja_lanc nr 1!");
+                        printf("Switch num 1 error in func chain_reaction!");
                         break;
                 }
             }
@@ -1311,7 +1311,7 @@ void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *pt
                                 else j = 20;
                                 break;
                             default:
-                                printf("Blad switcha reakcja_lanc nr 3!");
+                                printf("Switch num 3 error in func chain_reaction!");
                                 break;
                         }
 
@@ -1336,7 +1336,7 @@ void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *pt
                                 else j = 20;
                                 break;
                             default:
-                                printf("Blad switcha reakcja_lanc nr 4!");
+                                printf("Switch num 4 error in func chain_reaction!!");
                                 break;
                         }
 
@@ -1361,7 +1361,7 @@ void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *pt
                                 else j = 20;
                                 break;
                             default:
-                                printf("Blad switcha reakcja_lanc nr 5!");
+                                printf("Switch num 5 error in func chain_reaction!!");
                                 break;
                         }
 
@@ -1386,13 +1386,13 @@ void reakcja_lanc(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *pt
                                 else j = 20;
                                 break;
                             default:
-                                printf("Blad switcha reakcja_lanc nr 6!");
+                                printf("Switch num 6 error in func chain_reaction!");
                                 break;
                         }
 
                         break;
                     default:
-                        printf("Blad switcha reakcja_lanc nr 2!");
+                        printf("Switch num 2 error in func chain_reaction!!");
                         break;
                 }
                 if (j != 20) {
@@ -1478,7 +1478,7 @@ void oko(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *ptmk) {
                                 *ptab_mapa = 'O';
                             break;
                         default:
-                            printf("Blad switcha atrybut nr 2!");
+                            printf("Switch num 2 error in func eye!");
                             break;
                     }
                 }
@@ -1495,7 +1495,7 @@ void oko(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *ptmk) {
                                 *ptab_mapa = 'O';
                             break;
                         default:
-                            printf("Blad switcha atrybut nr 3!");
+                            printf("Switch num 3 error in func eye!");
                             break;
                     }
                 }
@@ -1566,7 +1566,7 @@ void ekran_koncowy(int *ptab_stat) {
         printf("Gratulacje!\n");
     tabulator(7);
     if (!lang)
-        printf("Here is your final score:\n\n");
+        printf("   Here is your final score:\n\n");
     else
         printf("Oto twoj koncowy wynik:\n\n");
     tabulator(3);
@@ -1610,7 +1610,7 @@ void ekran_koncowy(int *ptab_stat) {
                     printf("Urok %d", *ptab_stat);
                 break;
             default:
-                printf("Switch error in func final_screen");
+                printf("Switch error in func end_screen");
                 Sleep(10000);
                 suwak(40);
                 break;
@@ -1666,8 +1666,9 @@ void zapisz_gre(FILE *pf, int const *pruch, int *ptab_stat, char *ptab_mapa, int
                                     fputc(pom, pf);
                                     break;
                                 default:
-                                    printf("\n\nBlad switcha zapisz_gre nr 2");
-                                    Sleep(5000);
+                                    printf("Switch error num 2 in func save");
+                                    Sleep(10000);
+                                    suwak(40);
                                     break;
                             }
                         }
@@ -1692,8 +1693,9 @@ void zapisz_gre(FILE *pf, int const *pruch, int *ptab_stat, char *ptab_mapa, int
                                         fputc(pom, pf);
                                         break;
                                     default:
-                                        printf("\n\nBlad switcha zapisz_gre nr 3");
-                                        Sleep(5000);
+                                        printf("Switch error num 3 in func save");
+                                        Sleep(10000);
+                                        suwak(40);
                                         break;
                                 }
                             }
@@ -1714,8 +1716,9 @@ void zapisz_gre(FILE *pf, int const *pruch, int *ptab_stat, char *ptab_mapa, int
                     }
                     break;
                 default:
-                    printf("\n\nBlad switcha zapisz_gre nr 1");
-                    Sleep(5000);
+                    printf("Switch error num 1 in func save");
+                    Sleep(10000);
+                    suwak(40);
                     break;
             }
 
@@ -1759,8 +1762,9 @@ void wczytaj_gre(FILE *pf, int *pruch, int *ptab_stat, char *ptab_mapa, int i, i
                                 *pruch = *pruch * 10 + *ppom - 48;
                                 break;
                             default:
-                                printf("\n\nBlad switcha wczytaj_gre nr 2");
-                                Sleep(5000);
+                                printf("Switch error num 2 in func load");
+                                Sleep(10000);
+                                suwak(40);
                                 break;
                         }
 
@@ -1789,8 +1793,9 @@ void wczytaj_gre(FILE *pf, int *pruch, int *ptab_stat, char *ptab_mapa, int i, i
                 }
                 break;
             default:
-                printf("\n\nBlad switcha wczytaj_gre nr 1");
-                Sleep(5000);
+                printf("Switch error num 1 in func load");
+                Sleep(10000);
+                suwak(40);
                 break;
         }
     }
