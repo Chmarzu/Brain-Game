@@ -4,12 +4,12 @@
 #include <time.h>
 #include <windows.h>
 
-//Wymiary tabeli tab_mapa
+//Dimensions of table map
 #define ROW 7
 #define COLUMN 23
 #define DEPTH 2
 
-#define MOVE 30     //Liczba punktow ruchu
+#define MOVE 30     //Amount of move points
 
 boolean lang;       //Language version: 0 - English, 1 - polski
 
@@ -17,12 +17,12 @@ int main_menu(FILE *pf);
 
 void settings(FILE *pf);
 
-void game(int *pzwrot, FILE *pf);
+void game(int *pcontroller, FILE *pf);
 void greeting_screen();
 void init(int i, char *ptab_mapa, char *ptab_mapa2);
 void game_screen(int i, int j, int ruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2);
 
-void reaction(int i, int j, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3);
+void reaction(int i, int j, int *pcontroller, int *pruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3);
 void manual(int i, int *ptab_legenda, int *ptab_legenda2);
 
 void attribute(int i, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3, int *ptab_stat, int *ptab_legenda, int *pruch);
@@ -34,7 +34,7 @@ void hiper_att(int i, int *ptab_stat, int *ptab_legenda, int *pruch, unsigned sh
 void chain_reaction(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *ptmk, int *ptab_legenda, int *pruch, unsigned short *pbieda);
 void eye(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *ptmk);
 
-void test(int i, int *pzwrot, int *pruch, char *ptab_mapa, char *ptab_mapa2);
+void test(int i, int *pcontroller, int *pruch, char *ptab_mapa, char *ptab_mapa2);
 void end_screen(int *ptab_stat);
 
 void save(FILE *pf, int const *pruch, int *ptab_stat, char *ptab_mapa, int i, int j);
@@ -44,8 +44,8 @@ void screen_cleaner(int linia);
 void tabulator(int tab);
 
 int main() {
-    int zwrot;      //Wartosc zwracana przez funkcje
-    FILE *f;        //Odpowiada za plik zapisu gry
+    int controller;      //Value controlling work of the game
+    FILE *f;        //File operations
 
     srand(time(NULL));
 
@@ -55,20 +55,20 @@ int main() {
     fclose(f);
 
     do {
-        zwrot = main_menu(f);      //Menu glowne
-        switch (zwrot) {
-            case 1:     //Nowa game
-                zwrot = 2;
-                game(&zwrot, f);
+        controller = main_menu(f);      //Main Menu
+        switch (controller) {
+            case 1:     //New game
+                controller = 2;
+                game(&controller, f);
                 break;
-            case 2:     //Kontynuuj gre
-                zwrot = 1;
-                game(&zwrot, f);
+            case 2:     //Load Game
+                controller = 1;
+                game(&controller, f);
                 break;
-            case 3:     //Ustawienia
+            case 3:     //Settings
                 settings(f);
                 break;
-            case 4:     //Zamkniecie gry
+            case 4:     //Quit
                 if (!lang)
                     printf("See you next time!");
                 else
@@ -82,15 +82,15 @@ int main() {
                 break;
         }
         screen_cleaner(40);
-    } while (zwrot != 4);
+    } while (controller != 4);
     return 0;
 }
 
 int main_menu(FILE *pf) {
-    int tekst = 0;      //Opcja wybrana przez gamecza
-    char sprzatacz;     //Czyszczenie pozostalego wprowadzonego tesktu
-    unsigned short save;    //Sprawdzenie wystepowania pliku zapisu: 0 - brak, 1 - istnieje
-    int i;      //Dla petli
+    int mode = 0;      //Mode picked up by gamer
+    char cleaner;     //Cleaning input buffer
+    unsigned short save;    //Check presence of save file: 0 - there isn't, 1 - there is
+    int i;      //For loop
 
     pf = fopen("save.txt","r");
     if (pf != NULL)
@@ -151,13 +151,13 @@ int main_menu(FILE *pf) {
                 break;
         }
     }
-    scanf("%d", &tekst);
+    scanf("%d", &mode);
     screen_cleaner(40);
-    while ((sprzatacz = getchar()) != '\n');
-    if (save || tekst == 1)
-        return tekst;
+    while ((cleaner = getchar()) != '\n');
+    if (save || mode == 1)
+        return mode;
     else
-        return tekst + 1;
+        return mode + 1;
 }
 
 void settings(FILE *pf) {
@@ -190,9 +190,9 @@ void settings(FILE *pf) {
     }
 }
 
-void game(int *pzwrot, FILE *pf) {
+void game(int *pcontroller, FILE *pf) {
     /*
-     * Znaczenie wartosci zmiennej zwrot:
+     * Znaczenie wartosci zmiennej controller:
      * 0 - koniec petli
      * 1 - wczytaj zapis gry
      * 2 - reinicjalizuj tablice tab_mapa
@@ -213,29 +213,29 @@ void game(int *pzwrot, FILE *pf) {
 
     greeting_screen();
 
-    if (*pzwrot == 1)
+    if (*pcontroller == 1)
         load(pf, &ruch, &tab_stat[0], &tab_mapa[0][0][0], i, j);
 
     do {
         //Inicjalizacja tablicy tab_mapa
-        if (*pzwrot == 2)
+        if (*pcontroller == 2)
             init(i, &tab_mapa[0][0][0], &tab_mapa[0][0][1]);
 
         //Ekran gry
         game_screen(i, j, ruch, &tab_stat[0], &tab_mapa[0][0][0], &tab_mapa[0][0][1]);
 
         //Sekcja interaktywna
-        reaction(i, j, pzwrot, &ruch, &tab_stat[0], &tab_mapa[0][0][0], &tab_mapa[0][0][0], &tab_mapa[0][0][1]);
+        reaction(i, j, pcontroller, &ruch, &tab_stat[0], &tab_mapa[0][0][0], &tab_mapa[0][0][0], &tab_mapa[0][0][1]);
 
         //Test stanu gry
-        if (*pzwrot == 3)
-            test(i, pzwrot, &ruch, &tab_mapa[0][0][0], &tab_mapa[0][0][1]);
+        if (*pcontroller == 3)
+            test(i, pcontroller, &ruch, &tab_mapa[0][0][0], &tab_mapa[0][0][1]);
 
         screen_cleaner(40);
 
-    } while (*pzwrot > 0);
+    } while (*pcontroller > 0);
 
-    if (*pzwrot < 0)
+    if (*pcontroller < 0)
         save(pf, &ruch, &tab_stat[0], &tab_mapa[0][0][0], i, j);
 
     end_screen(&tab_stat[0]);
@@ -542,8 +542,8 @@ void game_screen(int i, int j, int ruch, int *ptab_stat, char *ptab_mapa, char *
     }
 }
 
-void reaction(int i, int j, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3) {
-    char tekst;   //Przechowuje tekst wpisany przez gamecza
+void reaction(int i, int j, int *pcontroller, int *pruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3) {
+    char mode;   //Przechowuje mode wpisany przez gamecza
     int wiersz, kolumna = 0;    //Polozenie elementu wybranego przez gamecza
     int spacja = 0;     //Liczba spacji wprowadzonych przez gamecza
 
@@ -566,31 +566,31 @@ void reaction(int i, int j, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_
 
     for (i = 0; i < 3; i++) {   //Petla w razie pomylki gamecza - 3 proby
         printf("\t");
-        tekst = getchar();
+        mode = getchar();
 
-        if (tekst == '\n') {    //Wyjscie z gry
-            *pzwrot = -1;
+        if (mode == '\n') {    //Wyjscie z gry
+            *pcontroller = -1;
             break;
-        } else if (tekst == 'm' || tekst == 'M' || tekst == 'i' || tekst == 'I') {      //Instrukcja
-            while (tekst != '\n') tekst = getchar();
+        } else if (mode == 'm' || mode == 'M' || mode == 'i' || mode == 'I') {      //Instrukcja
+            while (mode != '\n') mode = getchar();
             manual(i, &tab_legenda[0][0], &tab_legenda[0][1]);
             break;
-        } else if (isdigit(tekst) && tekst != '0') {    //Wybor atrybutu
-            wiersz = tekst - 48;    //Inicjalizacja dla zmiennej wiersz
+        } else if (isdigit(mode) && mode != '0') {    //Wybor atrybutu
+            wiersz = mode - 48;    //Inicjalizacja dla zmiennej wiersz
             for (j = 0; j < 5; j++) {
-                tekst = getchar();
-                if (isdigit(tekst)) {
-                    if (j == 0) wiersz = (wiersz * 10) + (tekst - 48);      //Inicjalizacja dla zmiennej wiersz (dodanie cyfry jednosci)
-                    else if (!kolumna && tekst != '0') kolumna = tekst - 48;    //Inicjalizacja dla zmiennej kolumna
-                    else kolumna = (kolumna * 10) + (tekst - 48);       //Inicjalizacja dla zmiennej kolumna (dodanie cyfry jednosci)
+                mode = getchar();
+                if (isdigit(mode)) {
+                    if (j == 0) wiersz = (wiersz * 10) + (mode - 48);      //Inicjalizacja dla zmiennej wiersz (dodanie cyfry jednosci)
+                    else if (!kolumna && mode != '0') kolumna = mode - 48;    //Inicjalizacja dla zmiennej kolumna
+                    else kolumna = (kolumna * 10) + (mode - 48);       //Inicjalizacja dla zmiennej kolumna (dodanie cyfry jednosci)
                 }
-                else if (tekst == ' ') {      //Sprawdzenie wystapienia spacji
+                else if (mode == ' ') {      //Sprawdzenie wystapienia spacji
                     if (j == 0 || j == 1 && !spacja)
                         spacja = 1;
                     else break;
                 } else break;
             }
-            if (tekst == '\n' && wiersz && kolumna) {        //Weryfikacja przebiegu wczesniejszej inicjalizacji
+            if (mode == '\n' && wiersz && kolumna) {        //Weryfikacja przebiegu wczesniejszej inicjalizacji
                 ptab_mapa += 2 * ((wiersz - 1) * COLUMN + (kolumna - 1));
                 ptab_mapa2 = ptab_mapa;
                 ptab_mapa2++;
@@ -611,26 +611,26 @@ void reaction(int i, int j, int *pzwrot, int *pruch, int *ptab_stat, char *ptab_
                     printf("\tIncorrect values!\n");
                 else
                     printf("\tBledne wartosci!\n");
-                while (tekst != '\n') tekst = getchar();
+                while (mode != '\n') mode = getchar();
             }
         } else {      //Reakcja na blad
             if (!lang)
                 printf("\tIncorrect values!\n");
             else
                 printf("\tBledne wartosci!\n");
-            while (tekst != '\n') tekst = getchar();
+            while (mode != '\n') mode = getchar();
         }
     }
 
-    if(*pzwrot > 0) {
+    if(*pcontroller > 0) {
         if (*ptab_mapa == '!')
-            *pzwrot = 2;
-        else *pzwrot = 3;
+            *pcontroller = 2;
+        else *pcontroller = 3;
     }
 }
 
 void manual(int i, int *ptab_legenda, int *ptab_legenda2) {
-    char tekst;     //Przechowuje tekst wpisany przez gamecza
+    char mode;     //Przechowuje mode wpisany przez gamecza
 
     screen_cleaner(40);
     tabulator(3);
@@ -754,8 +754,8 @@ void manual(int i, int *ptab_legenda, int *ptab_legenda2) {
         printf("Press Enter to get back into game...\n");
     else
         printf("\tAby wrocic do gry, wcisnij Enter...");
-    tekst = getchar();
-    while (tekst != '\n') tekst = getchar();
+    mode = getchar();
+    while (mode != '\n') mode = getchar();
 }
 
 void attribute(int i, char *ptab_mapa, char *ptab_mapa2,  char *ptab_mapa3, int *ptab_stat, int *ptab_legenda, int *pruch) {
@@ -1504,11 +1504,11 @@ void eye(int i, char *ptab_mapa, char *ptab_mapa2, char *ptmp, char *ptmk) {
     }
 }
 
-void test(int i, int *pzwrot, int *pruch, char *ptab_mapa, char *ptab_mapa2) {
+void test(int i, int *pcontroller, int *pruch, char *ptab_mapa, char *ptab_mapa2) {
     int zuzyte = 0;     //Libcza zuzytych elementow
 
     if (*pruch <= 0) {      //Sprawdzenie liczby pkt ruchu
-        *pzwrot = 0;
+        *pcontroller = 0;
 
         if (!*pruch) {
             screen_cleaner(40);
@@ -1538,7 +1538,7 @@ void test(int i, int *pzwrot, int *pruch, char *ptab_mapa, char *ptab_mapa2) {
             ptab_mapa2 += 2;
         }
         if (zuzyte == (ROW * COLUMN)) {
-            *pzwrot = 0;
+            *pcontroller = 0;
 
             screen_cleaner(40);
             tabulator(3);
@@ -1803,13 +1803,13 @@ void load(FILE *pf, int *pruch, int *ptab_stat, char *ptab_mapa, int i, int j) {
     fclose(pf);
 }
 
-//Funkcja "screen_cleaner" odpowiada za "czyszczenie ekranu" - przesuwanie tekstu tak, aby nie bylo widac wczesniejszych, niepotrzebnych komunikatow.
+//Funkcja "screen_cleaner" odpowiada za "czyszczenie ekranu" - przesuwanie modeu tak, aby nie bylo widac wczesniejszych, niepotrzebnych komunikatow.
 void screen_cleaner (int linia) {
     for (int i = 0; i < linia; i++)
         printf("\n");
 }
 
-//Funkcja "tabulator" odpowiada za wykonanie tabulacji tekstu
+//Funkcja "tabulator" odpowiada za wykonanie tabulacji modeu
 void tabulator (int tab) {
     for (int i = 0; i < tab; i++)
         printf("\t");
