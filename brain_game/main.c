@@ -13,12 +13,12 @@
 
 boolean lang;       //Language version: 0 - English, 1 - polski
 
+void greeting_screen();
 int main_menu(FILE *pf);
 
 void settings(FILE *pf);
 
 void game(int *pcontroller, FILE *pf);
-void greeting_screen();
 void init(int i, char *ptab_mapa, char *ptab_mapa2);
 void game_screen(int i, int j, int ruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2);
 
@@ -54,6 +54,8 @@ int main() {
         lang = fgetc(f) - 48;
     fclose(f);
 
+    greeting_screen();
+
     do {
         controller = main_menu(f);      //Main Menu
         switch (controller) {
@@ -84,6 +86,24 @@ int main() {
         screen_cleaner(40);
     } while (controller != 4);
     return 0;
+}
+
+void greeting_screen() {
+    screen_cleaner(3);
+    tabulator(4);
+    if (!lang)
+        printf("Welcome in Brain Game!\n");
+    else
+        printf("Witaj w Brain Game!\n");
+    Sleep(500);
+    if (!lang)
+        printf("\t\tThis game was inspired by mini-game from game \"Growing Up\".");
+    else {
+        tabulator(3);
+        printf("Gra ta jest inspirowana mini game z \"Growing Up\".");
+    }
+    Sleep(1000);
+    screen_cleaner(40);
 }
 
 int main_menu(FILE *pf) {
@@ -126,7 +146,7 @@ int main_menu(FILE *pf) {
                         printf("(%d) Ustawienia\n", i);
                 } else {
                     if (!lang)
-                        printf("(%d) Settings\n", i + 1);
+                        printf("(%d) Settings\n", i - 1);
                     else
                         printf("(%d) Ustawienia\n", i - 1);
                 }
@@ -139,7 +159,7 @@ int main_menu(FILE *pf) {
                         printf("(%d) Opusc gre\n", i);
                 } else {
                     if (!lang)
-                        printf("(%d) Quit\n", i + 1);
+                        printf("(%d) Quit\n", i - 1);
                     else
                         printf("(%d) Opusc gre\n", i - 1);
                 }
@@ -211,8 +231,6 @@ void game(int *pcontroller, FILE *pf) {
     //Tablica dla elementow wyswietlanych na mapie gry
     char tab_mapa[ROW][COLUMN][DEPTH];
 
-    greeting_screen();
-
     if (*pcontroller == 1)
         load(pf, &ruch, &tab_stat[0], &tab_mapa[0][0][0], i, j);
 
@@ -239,24 +257,6 @@ void game(int *pcontroller, FILE *pf) {
         save(pf, &ruch, &tab_stat[0], &tab_mapa[0][0][0], i, j);
 
     end_screen(&tab_stat[0]);
-}
-
-void greeting_screen() {
-    screen_cleaner(3);
-    tabulator(4);
-    if (!lang)
-        printf("Welcome in Brain Game!\n");
-    else
-        printf("Witaj w Brain Game!\n");
-    Sleep(500);
-    if (!lang)
-        printf("\t\tThis game was inspired by mini-game from game \"Growing Up\".");
-    else {
-        tabulator(3);
-        printf("Gra ta jest inspirowana mini game z \"Growing Up\".");
-    }
-    Sleep(1000);
-    screen_cleaner(40);
 }
 
 void init(int i, char *ptab_mapa, char *ptab_mapa2) {
