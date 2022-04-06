@@ -1738,14 +1738,14 @@ void load(FILE *pf, int *pruch, int *ptab_stat, char *ptab_mapa, int i, int j) {
 
     for (i = 0; i < 3; i++) {
         if (!i || i == 1) {
+            for (i = 0; i < 25; i++)        //Clearing array
+                tab_pom[i] = '\000';
+
             ppom = &tab_pom[0];
             while (*ppom != '\n') {
                 *ppom = fgetc(pf);
-                if (*ppom != '\n') {
+                if (*ppom != '\n')
                     ppom++;
-                    if (*ppom == '\n')
-                        *ppom = 0;
-                }
             }
             ppom = &tab_pom[0];
         }
