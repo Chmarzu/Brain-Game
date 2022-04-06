@@ -20,6 +20,7 @@ void settings(FILE *pf);
 
 void game(int *pcontroller, FILE *pf);
 void init(int i, char *ptab_mapa, char *ptab_mapa2);
+void tut_init(int i, FILE *pf, char *ptab_mapa);
 void game_screen(int i, int j, int ruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2);
 
 void reaction(int i, int j, int *pcontroller, int *pruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2, char *ptab_mapa3);
@@ -63,14 +64,18 @@ int main() {
                 controller = 2;
                 game(&controller, f);
                 break;
-            case 2:     //Load Game
+            case 2:     //Tutorial
+                controller = 4;
+                game(&controller, f);
+                break;
+            case 3:     //Load Game
                 controller = 1;
                 game(&controller, f);
                 break;
-            case 3:     //Settings
+            case 4:     //Settings
                 settings(f);
                 break;
-            case 4:     //Quit
+            case 5:     //Quit
                 if (!lang)
                     printf("See you next time!");
                 else
@@ -118,7 +123,7 @@ int main_menu(FILE *pf) {
     else save = 0;
     fclose(pf);
 
-    for (i = 0; i < 5; i++) {
+    for (i = 0; i < 6; i++) {
         tabulator(2);
         switch (i) {
             case 0:
@@ -131,6 +136,12 @@ int main_menu(FILE *pf) {
                     printf("(%d) Nowa Gra\n", i);
                 break;
             case 2:
+                if (!lang)
+                    printf("(%d) Tutorial\n", i);
+                else
+                    printf("(%d) Poradnik\n", i);
+                break;
+            case 3:
                 if (save) {
                     if (!lang)
                         printf("(%d) Load Game\n", i);
@@ -138,7 +149,7 @@ int main_menu(FILE *pf) {
                         printf("(%d) Wczytaj Gre\n", i);
                 } else printf("\r");
                 break;
-            case 3:
+            case 4:
                 if (save) {
                     if (!lang)
                         printf("(%d) Settings\n", i);
@@ -151,7 +162,7 @@ int main_menu(FILE *pf) {
                         printf("(%d) Ustawienia\n", i - 1);
                 }
                 break;
-            case 4:
+            case 5:
                 if (save) {
                     if (!lang)
                         printf("(%d) Quit\n", i);
@@ -217,6 +228,7 @@ void game(int *pcontroller, FILE *pf) {
      * 1 - wczytaj zapis gry
      * 2 - reinicjalizuj tablice tab_mapa
      * 3 - kontynuuj petle bez zmian
+     * 4 - tutorial
      */
 
     int i = 0, j = 0;    //Zmienne obslugujace petle
@@ -238,6 +250,8 @@ void game(int *pcontroller, FILE *pf) {
         //Inicjalizacja tablicy tab_mapa
         if (*pcontroller == 2)
             init(i, &tab_mapa[0][0][0], &tab_mapa[0][0][1]);
+        else if (*pcontroller == 4)
+            tut_init(i, pf, &tab_mapa[0][0][0]);
 
         //Ekran gry
         game_screen(i, j, ruch, &tab_stat[0], &tab_mapa[0][0][0], &tab_mapa[0][0][1]);
@@ -393,6 +407,17 @@ void init(int i, char *ptab_mapa, char *ptab_mapa2) {
         ptab_mapa += 2;
         ptab_mapa2 += 2;
     }
+}
+
+void tut_init(int i, FILE *pf, char *ptab_mapa) {
+    pf = fopen("tut_maps.txt", "r");
+    while (*ptab_mapa != '\n') {
+        *ptab_mapa = fgetc(pf);
+        if (*ptab_mapa != '\n')
+            ptab_mapa++;
+    }
+    *ptab_mapa = '\000';
+    fclose(pf);
 }
 
 void game_screen(int i, int j, int ruch, int *ptab_stat, char *ptab_mapa, char *ptab_mapa2) {
