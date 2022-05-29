@@ -126,7 +126,7 @@ int main_menu(FILE *pf) {
                         printf("(%d) Ustawienia\n", i);
                 } else {
                     if (!lang)
-                        printf("(%d) Settings\n", i + 1);
+                        printf("(%d) Settings\n", i - 1);
                     else
                         printf("(%d) Ustawienia\n", i - 1);
                 }
@@ -139,7 +139,7 @@ int main_menu(FILE *pf) {
                         printf("(%d) Opusc gre\n", i);
                 } else {
                     if (!lang)
-                        printf("(%d) Quit\n", i + 1);
+                        printf("(%d) Quit\n", i - 1);
                     else
                         printf("(%d) Opusc gre\n", i - 1);
                 }
